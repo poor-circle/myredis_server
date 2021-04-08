@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\config">
+      <UniqueIdentifier>{4813a6be-ccd2-4198-bf73-214fc6a6da70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\frameworkClass">
+      <UniqueIdentifier>{09bc15c0-dde5-4c6c-a91c-5807ca27ac3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\frameworkClass">
+      <UniqueIdentifier>{2270d3fa-ad43-4439-acf1-0373afce871c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Session">
+      <UniqueIdentifier>{965b34b6-80f8-4ca3-9634-c69d4b312861}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\config">
+      <UniqueIdentifier>{c62e6553-ccfb-436a-8e52-332f4c9f2a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Session\chatroom">
+      <UniqueIdentifier>{db83dc6f-60cb-48e8-a4c2-ace73b64d2ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Session">
+      <UniqueIdentifier>{b148890f-aac4-497b-8d5d-82fce7716841}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Session\chatroom">
+      <UniqueIdentifier>{6ac13b43-8ca9-4a6d-bce8-32df9245968b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="config.h">
+      <Filter>头文件\config</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件\config</Filter>
+    </ClInclude>
+    <ClInclude Include="stdc++.h">
+      <Filter>头文件\config</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseSession.h">
+      <Filter>头文件\frameworkClass</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>头文件\frameworkClass</Filter>
+    </ClInclude>
+    <ClInclude Include="namespace.h">
+      <Filter>头文件\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>头文件\frameworkClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatRoom.h">
+      <Filter>头文件\Session\chatroom</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatRoomManager.h">
+      <Filter>头文件\Session\chatroom</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatRoomSession.h">
+      <Filter>头文件\Session\chatroom</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseSession.cpp">
+      <Filter>源文件\frameworkClass</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
+      <Filter>源文件\frameworkClass</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>源文件\frameworkClass</Filter>
+    </ClCompile>
+    <ClCompile Include="Echo.cpp">
+      <Filter>源文件\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>源文件\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件\config</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatRoomSession.cpp">
+      <Filter>源文件\Session\chatroom</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatRoomManager.cpp">
+      <Filter>源文件\Session\chatroom</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatRoom.cpp">
+      <Filter>源文件\Session\chatroom</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
