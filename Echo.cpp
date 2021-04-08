@@ -11,7 +11,7 @@ namespace myredis
 
         virtual awaitable<void> Run()
         {
-            array<char,1024> buf;
+            array<char,1> buf;
             auto iterBegin = buf.begin(), iterEnd= buf.begin();
             array<string, 5> replys =
             {
@@ -42,7 +42,7 @@ namespace myredis
             
         }
 
-        awaitable<string> ReadFixChar(array<char, 1024>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, uint64_t length)
+        awaitable<string> ReadFixChar(array<char, 1>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, uint64_t length)
         {
             string line;
             line.reserve(length);
@@ -62,13 +62,13 @@ namespace myredis
             co_return line;
         }
 
-        awaitable<void> SkipLine(array<char, 1024>& buf,decltype(buf.begin()) &iterStart ,decltype(buf.begin())& iterEnd)
+        awaitable<void> SkipLine(array<char, 1>& buf,decltype(buf.begin()) &iterStart ,decltype(buf.begin())& iterEnd)
         {
             co_await ArriveBeforeChar(buf, iterStart,iterEnd, '\n');
             co_return;
         }
 
-        awaitable<uint64_t> ReadULLAfter(array<char, 1024>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, char ch)
+        awaitable<uint64_t> ReadULLAfter(array<char, 1>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, char ch)
         {
             string lineCount;
             co_await ArriveBeforeChar(buf,iterStart,iterEnd,ch);
@@ -80,14 +80,13 @@ namespace myredis
                 if (endIter != iterEnd) break;
                 iterStart = buf.begin();
                 iterEnd = buf.begin()+ co_await socket.async_read_some(asio::buffer(buf), use_awaitable);
-                fmt::print("debug:{}\n", string_view(buf.data(),iterEnd-iterStart));
             } while (true);
             iterStart = endIter;
             
             co_return stoull(lineCount);
         }
 
-        awaitable<void> ArriveBeforeChar(array<char, 1024>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, char ch)
+        awaitable<void> ArriveBeforeChar(array<char, 1>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, char ch)
         {
             auto iterNow = find(iterStart, iterEnd, ch);
             while (iterNow == iterEnd)

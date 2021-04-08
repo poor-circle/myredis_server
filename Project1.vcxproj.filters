@@ -28,14 +28,14 @@
     <Filter Include="源文件\config">
       <UniqueIdentifier>{c62e6553-ccfb-436a-8e52-332f4c9f2a30}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Session\chatroom">
-      <UniqueIdentifier>{db83dc6f-60cb-48e8-a4c2-ace73b64d2ee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Session">
       <UniqueIdentifier>{b148890f-aac4-497b-8d5d-82fce7716841}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Session\chatroom">
-      <UniqueIdentifier>{6ac13b43-8ca9-4a6d-bce8-32df9245968b}</UniqueIdentifier>
+    <Filter Include="头文件\util">
+      <UniqueIdentifier>{cd6ea98d-6052-4fab-8689-fde7136838da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util">
+      <UniqueIdentifier>{1982850a-3990-427e-9063-eb150697da79}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,15 +60,6 @@
     <ClInclude Include="Session.h">
       <Filter>头文件\frameworkClass</Filter>
     </ClInclude>
-    <ClInclude Include="ChatRoom.h">
-      <Filter>头文件\Session\chatroom</Filter>
-    </ClInclude>
-    <ClInclude Include="ChatRoomManager.h">
-      <Filter>头文件\Session\chatroom</Filter>
-    </ClInclude>
-    <ClInclude Include="ChatRoomSession.h">
-      <Filter>头文件\Session\chatroom</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -91,15 +82,6 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件\config</Filter>
-    </ClCompile>
-    <ClCompile Include="ChatRoomSession.cpp">
-      <Filter>源文件\Session\chatroom</Filter>
-    </ClCompile>
-    <ClCompile Include="ChatRoomManager.cpp">
-      <Filter>源文件\Session\chatroom</Filter>
-    </ClCompile>
-    <ClCompile Include="ChatRoom.cpp">
-      <Filter>源文件\Session\chatroom</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

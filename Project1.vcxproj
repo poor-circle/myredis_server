@@ -88,6 +88,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,6 +105,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,9 +156,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BaseSession.h" />
-    <ClInclude Include="ChatRoom.h" />
-    <ClInclude Include="ChatRoomManager.h" />
-    <ClInclude Include="ChatRoomSession.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="namespace.h" />
@@ -162,9 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseSession.cpp" />
-    <ClCompile Include="ChatRoom.cpp" />
-    <ClCompile Include="ChatRoomSession.cpp" />
-    <ClCompile Include="ChatRoomManager.cpp" />
     <ClCompile Include="Echo.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
