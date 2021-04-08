@@ -1,5 +1,6 @@
 #include"stdafx.h"
 #include"Session.h"
+#include"boost/container/set.hpp"
 namespace myredis
 {
 #include"namespace.h"
@@ -17,9 +18,9 @@ namespace myredis
             {
                 "+OK\r\n",
                 "-error:no such key\r\n",
-                ":4213425",
+                ":4213425\r\n",
                 "$6\r\nfoobar\r\n",
-                "*4\r\n$3\r\nfoo\r\n$3\r\nbar\r\n$5\r\nHello\r\n$5\r\nWorld"
+                "*4\r\n$3\r\nfoo\r\n$3\r\nbar\r\n$5\r\nHello\r\n$5\r\nWorld\r\n"
             };
             auto reply = replys.cbegin();
             while (true)
@@ -37,7 +38,7 @@ namespace myredis
                 co_await asio::async_write(socket, asio::buffer(reply->data(),reply->size()), use_awaitable);
                 fmt::print("test reply:{}\n", *reply);
                 ++reply;
-                if (reply == replys.cend()) reply == replys.end();
+                if (reply == replys.cend()) reply = replys.cbegin();
             }
             
         }
@@ -62,7 +63,6 @@ namespace myredis
             co_return line;
         }
 
-
         awaitable<void> SkipLine(array<char, 1024>& buf,decltype(buf.begin()) &iterStart ,decltype(buf.begin())& iterEnd)
         {
             co_await ArriveBeforeChar(buf, iterStart,iterEnd, '\n');
@@ -84,6 +84,7 @@ namespace myredis
                 fmt::print("debug:{}\n", string_view(buf.data(),iterEnd-iterStart));
             } while (true);
             iterStart = endIter;
+            
             co_return stoull(lineCount);
         }
 
@@ -97,6 +98,6 @@ namespace myredis
             }
             iterStart=iterNow+1;
         }
-    };
+    };                                                                                                             
     Regist(Echo, 0);
 }
