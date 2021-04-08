@@ -1,6 +1,5 @@
 #include"stdafx.h"
 #include"Session.h"
-#include"boost/container/set.hpp"
 namespace myredis
 {
 #include"namespace.h"
