@@ -1,5 +1,7 @@
 #include"stdafx.h"
 #include"Session.h"
+#include"object.hpp"
+#include "Func/funcManager.h"
 namespace myredis
 {
 #include"namespace.h"
@@ -13,7 +15,7 @@ namespace myredis
         {
             array<char,1> buf;
             auto iterBegin = buf.begin(), iterEnd= buf.begin();
-            array<string, 5> replys =
+            array<string, 6> replys =
             {
                 "+OK\r\n",
                 "-error:no such key\r\n",
@@ -25,19 +27,40 @@ namespace myredis
             while (true)
             {
                 auto lineCount = co_await ReadULLAfter(buf,iterBegin, iterEnd,'*');
+                vector<string> args;
+                args.reserve(lineCount);
                 fmt::print("line count:{}\n", lineCount);
                 for (size_t i = 0; i < lineCount; ++i)
                 {
                     auto length = co_await ReadULLAfter(buf, iterBegin,iterEnd, '$');
                     fmt::print("line length:{}\n", length);
                     co_await SkipLine(buf, iterBegin, iterEnd);
-                    auto line = co_await ReadFixChar(buf, iterBegin, iterEnd, length);
-                    fmt::print("line context:{}\n", line);
+                    args.emplace_back(co_await ReadFixChar(buf, iterBegin, iterEnd, length));
+                    fmt::print("line context:{}\n", args.back());
                 }
-                co_await asio::async_write(socket, asio::buffer(reply->data(),reply->size()), use_awaitable);
-                fmt::print("test reply:{}\n", *reply);
-                ++reply;
-                if (reply == replys.cend()) reply = replys.cbegin();
+
+                auto iter = getfuncManager().find(args[0]);
+                if (iter == getfuncManager().end())
+                {
+                    co_await asio::async_write(socket, asio::buffer(reply->data(), reply->size()), use_awaitable);
+                    fmt::print("test reply:{}\n", *reply);
+                    ++reply;
+                    if (reply == replys.cend()) reply = replys.cbegin();
+                }
+                else
+                {
+                    auto reply =iter->second(std::move(args));
+                    if (reply.has_value())
+                    {
+                        co_await asio::async_write(socket, asio::buffer(reply.value().data(), reply.value().size()), use_awaitable);
+                        fmt::print("test reply:{}\n", reply.value());
+                    }
+                    else
+                    {
+                        co_await asio::async_write(socket, asio::buffer("-error:server exception\r\n"), use_awaitable);
+                        fmt::print("服务器内部错误\n", reply.value());
+                    }
+                }
             }
             
         }

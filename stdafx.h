@@ -12,7 +12,5 @@
 #include "util/key_ordered_map.hpp"
 #include "util/deque.hpp"
 #include "boost/lexical_cast.hpp"
-#include "object.hpp"
+#include "sparsepp/spp.h"
 #include "stdc++.h"
-#include "error.h"
-//

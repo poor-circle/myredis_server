@@ -163,12 +163,17 @@
     <ClInclude Include="benchmark.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="error.h" />
+    <ClInclude Include="Func\allFunc.h" />
+    <ClInclude Include="Func\func.h" />
+    <ClInclude Include="Func\funcManager.h" />
+    <ClInclude Include="Func\keyFunc.h" />
+    <ClInclude Include="Func\stringFunc.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="namespace.h" />
     <ClInclude Include="object.hpp" />
-    <ClInclude Include="ObjectVisitor\get.hpp" />
+    <ClCompile Include="ObjectVisitor\get.cpp" />
+    <ClInclude Include="ObjectVisitor\get.h" />
     <ClInclude Include="ObjectVisitor\object_encode.hpp" />
-    <ClInclude Include="ObjectVisitor\stringToObject.hpp" />
     <ClInclude Include="ObjectVisitor\type.hpp" />
     <ClInclude Include="ObjectVisitor\typeenum.hpp" />
     <ClInclude Include="Session.h" />
@@ -184,8 +189,11 @@
     <ClCompile Include="BaseSession.cpp" />
     <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="Echo.cpp" />
+    <ClCompile Include="Func\funcManager.cpp" />
+    <ClCompile Include="Func\stringFunc.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

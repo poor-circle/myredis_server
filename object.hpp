@@ -17,5 +17,9 @@ namespace myredis
 															//TODO:ziplist编码，list对象
 	>;
 
+	hash_map<string, object>& getObjectMap();
+
+	//将一个String转换为String类型的对象
+	object stringToObject(string&& str);
 
 }

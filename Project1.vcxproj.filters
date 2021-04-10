@@ -49,6 +49,12 @@
     <Filter Include="源文件\ObjectVisitor">
       <UniqueIdentifier>{30340874-c06a-4ac6-9006-5b520d54bac7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Func">
+      <UniqueIdentifier>{7a0e1f9d-279a-4d7c-ac9a-ad3942eca6db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Func">
+      <UniqueIdentifier>{fe1e073f-67ef-4d08-99ac-10582aa0f284}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -96,19 +102,31 @@
     <ClInclude Include="error.h">
       <Filter>头文件\config</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectVisitor\stringToObject.hpp">
-      <Filter>头文件\ObjectVisitor</Filter>
-    </ClInclude>
     <ClInclude Include="ObjectVisitor\type.hpp">
       <Filter>头文件\ObjectVisitor</Filter>
     </ClInclude>
     <ClInclude Include="ObjectVisitor\typeenum.hpp">
       <Filter>头文件\ObjectVisitor</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectVisitor\get.hpp">
+    <ClInclude Include="ObjectVisitor\object_encode.hpp">
       <Filter>头文件\ObjectVisitor</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectVisitor\object_encode.hpp">
+    <ClInclude Include="Func\stringFunc.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Func\func.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Func\funcManager.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Func\keyFunc.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="Func\allFunc.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\get.h">
       <Filter>头文件\ObjectVisitor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -133,6 +151,18 @@
     </ClCompile>
     <ClCompile Include="benchmark.cpp">
       <Filter>源文件\benchmark</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Func\stringFunc.cpp">
+      <Filter>源文件\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Func\funcManager.cpp">
+      <Filter>源文件\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectVisitor\get.cpp">
+      <Filter>源文件\ObjectVisitor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

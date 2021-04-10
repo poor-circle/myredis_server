@@ -1,7 +1,7 @@
 #pragma once
 #include "../stdafx.h"
 //每一个visitor都要实现所有类型的操作
-namespace myredis
+namespace myredis::visitor
 {
     string type(int64_t object)
     {
