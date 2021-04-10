@@ -82,8 +82,7 @@ namespace myredis
                 iterEnd = buf.begin()+ co_await socket.async_read_some(asio::buffer(buf), use_awaitable);
             } while (true);
             iterStart = endIter;
-            
-            co_return stoull(lineCount);
+            co_return lexical_cast<uint64_t>(lineCount);
         }
 
         awaitable<void> ArriveBeforeChar(array<char, 1>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, char ch)

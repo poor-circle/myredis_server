@@ -91,6 +91,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$ProjectDir</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,6 +109,7 @@
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$ProjectDir</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,6 +129,7 @@
       <EnableModules>true</EnableModules>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$ProjectDir</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,6 +149,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <EnableModules>true</EnableModules>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$ProjectDir</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,15 +160,29 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BaseSession.h" />
+    <ClInclude Include="benchmark.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="error.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="namespace.h" />
+    <ClInclude Include="object.hpp" />
+    <ClInclude Include="ObjectVisitor\get.hpp" />
+    <ClInclude Include="ObjectVisitor\object_encode.hpp" />
+    <ClInclude Include="ObjectVisitor\stringToObject.hpp" />
+    <ClInclude Include="ObjectVisitor\type.hpp" />
+    <ClInclude Include="ObjectVisitor\typeenum.hpp" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdc++.h" />
+    <ClInclude Include="util\deque.hpp" />
+    <ClInclude Include="util\hash_map.hpp" />
+    <ClInclude Include="util\hash_set.hpp" />
+    <ClInclude Include="util\key_ordered_map.hpp" />
+    <ClInclude Include="util\string.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseSession.cpp" />
+    <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="Echo.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
@@ -173,7 +191,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

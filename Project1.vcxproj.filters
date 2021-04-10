@@ -37,6 +37,18 @@
     <Filter Include="源文件\util">
       <UniqueIdentifier>{1982850a-3990-427e-9063-eb150697da79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\benchmark">
+      <UniqueIdentifier>{267cc506-71a1-47e2-96cb-32836bebf9ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\benchmark">
+      <UniqueIdentifier>{68204b21-58c9-4d69-89e1-0f718fd75c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ObjectVisitor">
+      <UniqueIdentifier>{16703723-8f08-4b6e-9699-bf6caa77fac2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ObjectVisitor">
+      <UniqueIdentifier>{30340874-c06a-4ac6-9006-5b520d54bac7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -60,6 +72,45 @@
     <ClInclude Include="Session.h">
       <Filter>头文件\frameworkClass</Filter>
     </ClInclude>
+    <ClInclude Include="benchmark.h">
+      <Filter>头文件\benchmark</Filter>
+    </ClInclude>
+    <ClInclude Include="util\hash_set.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\string.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\hash_map.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="object.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="util\key_ordered_map.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\deque.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="error.h">
+      <Filter>头文件\config</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\stringToObject.hpp">
+      <Filter>头文件\ObjectVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\type.hpp">
+      <Filter>头文件\ObjectVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\typeenum.hpp">
+      <Filter>头文件\ObjectVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\get.hpp">
+      <Filter>头文件\ObjectVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\object_encode.hpp">
+      <Filter>头文件\ObjectVisitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -77,11 +128,11 @@
     <ClCompile Include="Echo.cpp">
       <Filter>源文件\Session</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>源文件\Session</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件\config</Filter>
+    </ClCompile>
+    <ClCompile Include="benchmark.cpp">
+      <Filter>源文件\benchmark</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

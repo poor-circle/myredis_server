@@ -1,8 +1,14 @@
 #define _WIN32_WINNT 0x0A00 //设置操作系统
-#define _SILENCE_CXX17_C_HEADER_DEPRECATION_WARNING //忽略c++17废弃某些旧C标准库的警告
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS //忽略弃用警告
+
 #define Regist(sessionType,value)\
 	uint32_t sessionType::sessionTypeCode = Session::regist<sessionType, value>();
-namespace myRedis
+
+//variant support
+template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;
+
+namespace myredis
 {
 	constexpr int defaultPort = 8848;
 }
