@@ -83,7 +83,7 @@ namespace myredis
             {"1e1000","string"},
             {"0x2348902438","string"},
             {"4218793257993dflksdfjdgldgldskgjlsdlkjslksjdlkjsflkjdsflksjdfg235238943438942980342093824dffdsgsgdfsdfsgsgdsdgdsgsd","string"},
-            {boost::lexical_cast<string>("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1"s),"string"},
+            {boost::lexical_cast<string>("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1"s),"string"},//
         };
         for (auto &e:data)
         {
