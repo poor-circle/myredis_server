@@ -55,6 +55,18 @@
     <Filter Include="源文件\Func">
       <UniqueIdentifier>{fe1e073f-67ef-4d08-99ac-10582aa0f284}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\ObjectVisitor\keyVisitor">
+      <UniqueIdentifier>{a42743df-45a2-4d63-a615-0c9849b0b99d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ObjectVisitor\stringVisitor">
+      <UniqueIdentifier>{8c3d6200-b529-4f1e-8170-2eb6c35545a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ObjectVisitor\keyVisitor">
+      <UniqueIdentifier>{86c9087d-fe12-481f-8175-b92d6650ecb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ObjectVisitor\StringVisitor">
+      <UniqueIdentifier>{4a3d5d45-9882-4c69-81f6-d8c88ffcd2cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -102,15 +114,6 @@
     <ClInclude Include="error.h">
       <Filter>头文件\config</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectVisitor\type.hpp">
-      <Filter>头文件\ObjectVisitor</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectVisitor\typeenum.hpp">
-      <Filter>头文件\ObjectVisitor</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectVisitor\object_encode.hpp">
-      <Filter>头文件\ObjectVisitor</Filter>
-    </ClInclude>
     <ClInclude Include="Func\stringFunc.h">
       <Filter>头文件\Func</Filter>
     </ClInclude>
@@ -126,8 +129,17 @@
     <ClInclude Include="Func\allFunc.h">
       <Filter>头文件\Func</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectVisitor\get.h">
-      <Filter>头文件\ObjectVisitor</Filter>
+    <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.hpp">
+      <Filter>头文件\ObjectVisitor\keyVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\keyVisitor\type.hpp">
+      <Filter>头文件\ObjectVisitor\keyVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\keyVisitor\typeenum.hpp">
+      <Filter>头文件\ObjectVisitor\keyVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\stringVisitor\get.h">
+      <Filter>头文件\ObjectVisitor\StringVisitor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -161,8 +173,8 @@
     <ClCompile Include="Func\funcManager.cpp">
       <Filter>源文件\Func</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectVisitor\get.cpp">
-      <Filter>源文件\ObjectVisitor</Filter>
+    <ClCompile Include="ObjectVisitor\stringVisitor\get.cpp">
+      <Filter>源文件\ObjectVisitor\stringVisitor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
