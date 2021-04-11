@@ -2,9 +2,9 @@
 #include"stdafx.h"
 #include"benchmark.h"
 #include"../object.hpp"
-#include"ObjectVisitor/type.hpp"
-#include"ObjectVisitor/get.h"
-#include"ObjectVisitor/object_encode.hpp"
+#include"ObjectVisitor/keyVisitor/type.hpp"
+#include"ObjectVisitor/StringVisitor/get.h"
+#include"ObjectVisitor/keyVisitor/object_encode.hpp"
 
 //µ¥Ôª²âÊÔ¿ò¼Ü
 
