@@ -36,6 +36,8 @@ assert([&]()\
 
 namespace myredis
 {
+    void stringToObjectTest();//测试set函数能否正常工作
+
 #include "namespace.h"
     void Test()
     {
@@ -50,7 +52,7 @@ namespace myredis
                 "*{1: ^{2}}*\n"
                 "*{0: ^{2}}*\n"
                 "*{0:*^{2}}*\n\n",
-                "", "myredis pass test!", 100
+                "", "myredis pass test!", 75
             );
             return 1;
         }());
@@ -58,6 +60,7 @@ namespace myredis
     using namespace error;
     void stringToObjectTest()
     {
+        //测试数据集合
         const vector<tuple<string, string>> data =
         {
             {"1","int64"},

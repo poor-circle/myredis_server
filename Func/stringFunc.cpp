@@ -3,6 +3,11 @@
 #include "stringFunc.h"
 #include "../object.hpp"
 #include "../ObjectVisitor/get.h"
+//func层相当于spring boot的controller层
+//通过controller调用visitor层
+//调用格式：visit([](auto& e) {return visitor::funcName(e); }, object)
+//visitor::funcName：你要调用的函数名
+//object：你要操作的对象类型
 namespace myredis::func
 {
 #include"../namespace.h"

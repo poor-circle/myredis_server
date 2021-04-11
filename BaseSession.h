@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+//网络框架库，代表一个基本的连接会话
 namespace myredis
 {
     class BaseSession

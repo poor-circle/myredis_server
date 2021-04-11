@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+//多态连接，可以派生出不同的连接类型（在本项目中，目前只有一种连接）
 namespace myredis
 {
     class Session

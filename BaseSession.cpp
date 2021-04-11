@@ -14,16 +14,41 @@ namespace myredis
 
         try
         {
+            ;
+            fmt::print
+            (
+                "|{0:-^{2}}|\n"
+                "|{1: ^{2}}|\n"
+                "|{0:-^{2}}|\n\n",
+                "",
+                fmt::format("connect from client {}:{}", self->socket.remote_endpoint().address(), self->socket.remote_endpoint().port()),
+                75
+            );
+
             //auto sessionType = co_await self->getSessionType();
             auto session = Session::CreateSession(self->ioc, std::move(self->socket), 0);
             if (session != nullptr)
+            {
                 co_await session->Run();
+            }
+                
             else
             {
               //  fmt::print("Error: Unknown Session Type({})!\n", sessionType);
             }
         }
-        catch (exception e) {};
+        catch (const exception& e) 
+        {
+            fmt::print
+            (
+                "*{0:*^{2}}*\n"
+                "{1}\n"
+                "*{0:*^{2}}*\n\n",
+                "",
+                fmt::format("session exception:{}", e.what()),
+                75
+            );
+        };
         co_return;
     }
 

@@ -37,6 +37,6 @@ namespace myredis::visitor
     }
     objectType type(std::unique_ptr<deque<string>>& object)
     {
-        return objectType::zset;
+        return objectType::list;
     }
 }

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "BaseSession.h"
+//ÍøÂç¿ò¼Ü£¬¸ºÔğ¼àÌı¶Ë¿Ú
 namespace myredis
 {
     class Listener

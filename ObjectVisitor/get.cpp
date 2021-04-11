@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "get.h"
 //每一个visitor都要实现所有类型的操作
+//visitor负责处理多态行为（类似于虚函数）
+//get函数：只适用于字符串对象，不能用于其他类型的对象
 namespace myredis::visitor
 {
-    //get函数：只适用于字符串对象，不能用于其他类型的对象
     std::pair<error::code,string&>  get(int64_t object)
     {
         static string temp;

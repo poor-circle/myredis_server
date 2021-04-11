@@ -1,4 +1,5 @@
 #pragma once
+//包含整个标准库的头文件
 #include <cctype>
 #include <cerrno>
 #include <cfloat>
