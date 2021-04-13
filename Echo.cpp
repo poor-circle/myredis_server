@@ -124,7 +124,6 @@ namespace myredis
         awaitable<void> SkipLine(array<char, BUFSIZE>& buf,decltype(buf.begin()) &iterStart ,decltype(buf.begin())& iterEnd)
         {
             co_await ArriveBeforeChar(buf, iterStart,iterEnd, '\n');
-            co_return;
         }
 
         //读取一个uint64_t，位于

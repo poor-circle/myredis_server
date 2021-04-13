@@ -40,9 +40,6 @@ int main()
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     //MSVC内存泄漏侦测，按ctrl+c关闭程序，如果有内存泄漏，则输出窗口会做提示
 #endif
-    std::string s1 = "123", s2 = "4321423";
-
-    auto s = fmt::format("{}", fmt::join(s1.cbegin(),s1.cend(), ""));
     myredis::run();
     return 0;
 }
