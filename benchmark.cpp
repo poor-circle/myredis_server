@@ -57,7 +57,7 @@ namespace myredis
             return 1;
         }());
     }
-    using namespace error;
+    using namespace code;
     void stringToObjectTest()
     {
         //测试数据集合

@@ -23,7 +23,7 @@ namespace myredis::func
 		try
 		{
 			if (args.size() != 3)
-				return "-error:wrong args count\r\n";
+				return code::args_count_error;
 			auto iter=getObjectMap().find(args[1]);//查找数据库中是否有对应的key
 			if (iter == getObjectMap().end())//之前没有，现在插入
 			{
@@ -33,7 +33,7 @@ namespace myredis::func
 			{
 				iter->second = stringToObject(std::move(args[2]));
 			}
-			return "+OK\r\n";
+			return code::succeed;
 		}
 		catch (const exception& e)
 		{
@@ -48,24 +48,16 @@ namespace myredis::func
 		try
 		{
 			if (args.size() != 2)
-				return "-error:wrong args count\r\n";
+				return code::args_count_error;
 			auto iter = getObjectMap().find(args[1]);
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
-				return "-error:no such key\r\n";
+				return code::key_search_error;
 			}
 			else
 			{
-				string s;
 				auto& ret = visit([](auto& e) {return visitor::get(e); }, iter->second).second;
-				fmt::format_to
-				(
-					back_inserter(s),
-					FMT_COMPILE("${}\r\n{}\r\n"),
-					ret.size(),
-					ret
-				);
-				return s;
+				return code::getBulkReply(ret);
 			}
 		}
 		catch (const exception& e)
