@@ -12,5 +12,6 @@ namespace myredis::func
 	//获取一个字符串
 	std::optional<string> get(std::vector<string>&& args) noexcept;
 	//在下面添加更多的函数
+	std::optional<string> ping(std::vector<string>&& args) noexcept;
 
 }

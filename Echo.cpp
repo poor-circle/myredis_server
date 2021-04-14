@@ -4,7 +4,83 @@
 #include "Func/funcManager.h"
 namespace myredis
 {
-    
+#define ReadULLAfter(ret,buf,iterStart,iterEnd,ch)\
+do\
+{\
+    myredis::string _lineCountStr;\
+    auto iterNow = find(iterStart, iterEnd, ch);\
+    while (iterNow == iterEnd)\
+    {\
+        iterEnd = buf.begin() + co_await socket.async_read_some(asio::buffer(buf), use_awaitable);\
+        assert((fmt::print("{}\n", fmt::join(buf.begin(), iterEnd, "")), 1));\
+        iterNow = find(buf.begin(), iterEnd, ch);\
+    }\
+    iterStart = iterNow + 1;\
+    decltype(buf.begin()) endIter;\
+    do\
+    {\
+        endIter = find(iterStart, iterEnd, '\r');\
+        copy(iterStart, endIter, back_inserter(_lineCountStr));\
+        if (endIter != iterEnd) break;\
+        iterStart = buf.begin();\
+        iterEnd = buf.begin()+ co_await socket.async_read_some(asio::buffer(buf), use_awaitable);\
+    } while (true);\
+    iterStart = endIter;\
+    ret=lexical_cast<size_t>(_lineCountStr);\
+}while(false)
+
+
+#define SkipLine(buf,iterStart ,iterEnd)\
+do\
+{\
+    auto _iterNow = find(iterStart, iterEnd, '\n');\
+    while (_iterNow == iterEnd)\
+    {\
+        iterEnd = buf.begin() + co_await socket.async_read_some(asio::buffer(buf), use_awaitable);\
+        assert((fmt::print("{}\n", fmt::join(buf.begin(), iterEnd, "")), 1));\
+        _iterNow = find(buf.begin(), iterEnd, '\n');\
+    }\
+    iterStart = _iterNow + 1;\
+}while(false)
+
+
+#define ReadLine(ret,buf,iterStart ,iterEnd)\
+do\
+{\
+    ret.clear();\
+    auto _iterNow = find(iterStart, iterEnd, '\n');\
+    copy(iterStart,_iterNow,back_inserter(ret));\
+    while (_iterNow == iterEnd)\
+    {\
+        iterEnd = buf.begin() + co_await socket.async_read_some(asio::buffer(buf), use_awaitable);\
+        assert((fmt::print("{}\n", fmt::join(buf.begin(), iterEnd, "")), 1));\
+        _iterNow = find(buf.begin(), iterEnd, '\n');\
+        copy(buf.begin(),_iterNow,back_inserter(ret));\
+    }\
+    ret.pop_back();\
+    iterStart = _iterNow + 1;\
+}while(false)
+
+//读取固定长度的字节
+#define ReadFixChar(line,buf,iterStart,iterEnd,length)\
+do{\
+    line.clear();\
+    line.reserve(length);\
+    auto leastChar = iterEnd - iterStart;\
+    if (leastChar < length)\
+    {\
+        copy(iterStart, iterEnd, back_inserter(line));\
+        line.resize(length);\
+        co_await asio::async_read(socket, asio::buffer(line.data() + leastChar, length - leastChar), use_awaitable);\
+        iterStart = iterEnd;\
+    }\
+    else\
+    {\
+        copy(iterStart, iterStart + length, back_inserter(line));\
+        iterStart += length;\
+    }\
+}while(false)
+
     
 #include"namespace.h"
 #ifdef QPSTEST
@@ -17,7 +93,7 @@ namespace myredis
         static uint32_t sessionTypeCode;
         Echo(asio::io_context& ioc, tcp::socket socket) :Session(ioc, std::move(socket)) {};
         //缓冲区大小暂定为2000个字节
-        constexpr static int BUFSIZE = 2000;//缓冲区大小暂定为2000个字节
+        constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为4000个字节
         //处理myredis网络连接（在此之前，已建立网络连接）
         virtual awaitable<void> Run()
         {
@@ -39,23 +115,43 @@ namespace myredis
             while (true)
             {
                 //读取*号后面的正整数（一共有多少行）
-                auto lineCount = co_await ReadULLAfter(buf, iterBegin, iterEnd, '*');
-                vector<string> args;
-                args.reserve(lineCount);
-                assert((fmt::print("line count:{}\n", lineCount), 1));
-                for (size_t i = 0; i < lineCount; ++i)
+                size_t lineCount = 0;
+                if (iterEnd == iterBegin)
                 {
-                    //读取'$'号后面的正整数（一行有多长）
-                    auto length = co_await ReadULLAfter(buf, iterBegin, iterEnd, '$');
-                    assert((fmt::print("line length:{}\n", length), 1));
-                    //跳过当前没读完的行
-                    co_await SkipLine(buf, iterBegin, iterEnd);
-                    //读取固定大小的字符，并塞入参数列表中
-                    args.emplace_back(co_await ReadFixChar(buf, iterBegin, iterEnd, length));
-                    assert((fmt::print("line context:\n{}\n", args.back()), 1));
+                    iterBegin = buf.begin();
+                    iterEnd = iterBegin + co_await socket.async_read_some(asio::buffer(buf), use_awaitable);
                 }
+                    
+                vector<string> args;
+                string line;
+                if (*iterBegin == '*') //bulk string
+                {
+                    ReadULLAfter(lineCount,buf, iterBegin, iterEnd, '*');
+                    args.reserve(lineCount);
+                    assert((fmt::print("line count:{}\n", lineCount), 1));
+                    for (size_t i = 0; i < lineCount; ++i)
+                    {
+                        //读取'$'号后面的正整数（一行有多长）
+                        size_t length = 0;
+                        ReadULLAfter(length, buf, iterBegin, iterEnd, '$');
+                        assert((fmt::print("line length:{}\n", length), 1));
+                        //跳过当前没读完的行
+                        SkipLine(buf, iterBegin, iterEnd);
+                        //读取固定大小的字符，并塞入参数列表中
+                        ReadFixChar(line, buf, iterBegin, iterEnd, length);
+                        args.emplace_back(std::move(line));
+                        assert((fmt::print("line context:\n{}\n", args.back()), 1));
+                    }
+                }
+                else //single line command
+                {
+                    ReadLine(line,buf,iterBegin,iterEnd);
+                    args.emplace_back(std::move(line));
+                }
+                
                 //参数的第一个字符串是函数名，查找是否有这个函数
                 if (args.size() == 0) continue;
+                boost::algorithm::to_lower(args[0]);
                 auto iter = getfuncManager().find(args[0]);
                 //函数不存在，返回错误信息（当前为了客户端调试方便，返回一个用于测试的回复
                 if (iter == getfuncManager().end())
@@ -96,64 +192,20 @@ namespace myredis
             }
          
         }
-        //读取固定长度的字节
-        awaitable<string> ReadFixChar(array<char, BUFSIZE>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, uint64_t length)
-        {
-            string line;
-            line.reserve(length);
-            //判断当前缓冲区中还有多少字节可读
-            auto leastChar = iterEnd - iterStart;
-            //如果不够读
-            if (leastChar < length)
-            {
-                copy(iterStart, iterEnd, back_inserter(line));
-                line.resize(length);
-                co_await asio::async_read(socket,asio::buffer(line.data()+leastChar,length-leastChar),use_awaitable);
-                iterStart = iterEnd;
-            }
-            //否则，可以一次性读完
-            else
-            {
-                copy(iterStart, iterStart+length, back_inserter(line));
-                iterStart += length;
-            }
-            co_return line;
-        }
+        
 
-        //跳过一行
-        awaitable<void> SkipLine(array<char, BUFSIZE>& buf,decltype(buf.begin()) &iterStart ,decltype(buf.begin())& iterEnd)
-        {
-            co_await ArriveBeforeChar(buf, iterStart,iterEnd, '\n');
-        }
 
-        //读取一个uint64_t，位于
-        awaitable<uint64_t> ReadULLAfter(array<char, BUFSIZE>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, char ch)
-        {
-            string lineCount;
-            co_await ArriveBeforeChar(buf,iterStart,iterEnd,ch);
-            decltype(buf.begin()) endIter;
-            do
-            {
-                endIter = find(iterStart, iterEnd, '\r');
-                copy(iterStart, endIter, back_inserter(lineCount));
-                if (endIter != iterEnd) break;
-                iterStart = buf.begin();
-                iterEnd = buf.begin()+ co_await socket.async_read_some(asio::buffer(buf), use_awaitable);
-            } while (true);
-            iterStart = endIter;
-            co_return lexical_cast<uint64_t>(lineCount);
-        }
-
-        awaitable<void> ArriveBeforeChar(array<char, BUFSIZE>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, char ch)
-        {
-            auto iterNow = find(iterStart, iterEnd, ch);
-            while (iterNow == iterEnd)
-            {
-                iterEnd = buf.begin()+ co_await socket.async_read_some(asio::buffer(buf), use_awaitable);
-                iterNow = find(buf.begin(), iterEnd, ch);
-            }
-            iterStart=iterNow+1;
-        }
+        //awaitable<void> ArriveBeforeChar(array<char, BUFSIZE>& buf, decltype(buf.begin())& iterStart, decltype(buf.begin())& iterEnd, char ch)
+        //{
+        //    auto iterNow = find(iterStart, iterEnd, ch);
+        //    while (iterNow == iterEnd)
+        //    {
+        //        iterEnd = buf.begin()+ co_await socket.async_read_some(asio::buffer(buf), use_awaitable);
+        //        assert((fmt::print("{}\n", fmt::join(buf.begin(), iterEnd, "")),1));
+        //        iterNow = find(buf.begin(), iterEnd, ch);
+        //    }
+        //    iterStart=iterNow+1;
+        //}
     };                                                                                                             
     Regist(Echo, 0);
 }

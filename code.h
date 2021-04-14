@@ -22,6 +22,7 @@ namespace myredis::code
 	}
 
 	const string succeed = "+OK\r\n";
+	const string pong = "+PONG\r\n";
 	const string args_count_error = "-error:wrong args count\r\n";
 	const string key_search_error = "-error:no such key\r\n";
 

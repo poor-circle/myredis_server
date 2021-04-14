@@ -24,15 +24,7 @@ namespace myredis::func
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			auto iter=getObjectMap().find(args[1]);//查找数据库中是否有对应的key
-			if (iter == getObjectMap().end())//之前没有，现在插入
-			{
-				getObjectMap().emplace(std::move(args[1]),stringToObject(std::move(args[2])));
-			}
-			else //原来就有，只需要更新value即可
-			{
-				iter->second = stringToObject(std::move(args[2]));
-			}
+			getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
 			return code::succeed;
 		}
 		catch (const exception& e)
@@ -49,7 +41,7 @@ namespace myredis::func
 		{
 			if (args.size() != 2)
 				return code::args_count_error;
-			auto iter = getObjectMap().find(args[1]);
+			auto iter = getObjectMap().find(std::move(args[1]));
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
 				return code::key_search_error;
@@ -63,6 +55,22 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			fmt::print("exception error:{}",e.what());
+			return nullopt;//返回空值
+		}
+	}
+	std::optional<string> ping(std::vector<string>&& args) noexcept
+	{
+		try
+		{
+			if (args.size() == 1)
+				return code::pong;
+			else if (args.size() == 2)
+				return code::getSingleReply(args[1]);
+			return code::args_count_error;
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
 			return nullopt;//返回空值
 		}
 	}

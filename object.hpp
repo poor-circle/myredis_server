@@ -2,6 +2,31 @@
 #include"stdc++.h"
 namespace myredis
 {
+	struct keyIter
+	{
+		mutable std::list<string>::iterator iter;
+		friend bool operator == (const keyIter& iter1, const keyIter& iter2)
+		{
+			return *iter1.iter == *iter2.iter;
+		}
+		template<typename T>
+		keyIter(T && v):iter(std::forward<T>(v)){}
+	};
+}
+namespace std
+{
+	template<>
+	struct hash<myredis::keyIter>
+	{
+		std::size_t operator()(myredis::keyIter const& p) const
+		{
+			return boost::container::hash_value(*p.iter);
+		}
+	};
+	//添加标准库对于myredis::string的哈希支持
+}
+namespace myredis
+{
 
 	//myredis中：key一定是原始字符串，value则可能是各种对象：
 
@@ -27,10 +52,29 @@ namespace myredis
 		std::unique_ptr<deque<string>>						//双端队列编码，list对象
 															//TODO:ziplist编码，list对象
 	>;
-	//通过key获取对象类型
-	hash_map<string, object>& getObjectMap();
+	
 
 	//将一个String转换为String类型的对象
 	object stringToObject(string&& str);
 
+	class objectMap
+	{
+	private:
+		std::list<string> keylist;
+		hash_map<keyIter, object> map;
+		objectMap() = default;
+		~objectMap() = default;
+	public:
+		static objectMap& Singleton();
+		//判断是否包括某个一个key
+		bool contains(const string& str);
+		//插入(更新)一个key
+		void update(string&& str,object&& obj);
+		hash_map<keyIter, object>::iterator find(string& str);
+		hash_map<keyIter, object>::iterator find(string&& str);
+		hash_map<keyIter, object>::iterator end();
+	};
+
+	//通过key获取对象类型
+	objectMap& getObjectMap();
 }

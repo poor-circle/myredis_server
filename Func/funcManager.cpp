@@ -12,7 +12,8 @@ namespace myredis
 		{
 			//在这里注册每一种func
 			add(get),
-			add(set)
+			add(set),
+			add(ping)
 			//regist func at here
 			//{"name",func::name}
 		};
