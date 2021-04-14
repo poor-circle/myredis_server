@@ -141,6 +141,7 @@ do{\
                         ReadFixChar(line, buf, iterBegin, iterEnd, length);
                         args.emplace_back(std::move(line));
                         assert((fmt::print("line context:\n{}\n", args.back()), 1));
+                        SkipLine(buf, iterBegin, iterEnd);
                     }
                 }
                 else //single line command
