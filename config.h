@@ -10,5 +10,5 @@ template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;
 
 namespace myredis
 {
-	constexpr int defaultPort = 8848;//默认端口，TODO:改为从配置文件中读取
+	constexpr int defaultPort = 6379;//默认端口，TODO:改为从配置文件中读取
 }

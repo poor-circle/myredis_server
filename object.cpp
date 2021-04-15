@@ -12,8 +12,6 @@ namespace myredis
 	object stringToObject(string&& str)
 	{
 		static string temp;
-		static string upper = boost::lexical_cast<string>(LLONG_MAX),
-			lower = boost::lexical_cast<string>(LLONG_MIN);
 		if (str.size() > 20)//it must be string
 			return make_unique<string>(std::move(str));
 		int64_t integer;

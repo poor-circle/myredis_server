@@ -21,7 +21,7 @@ namespace myredis
             //iterBegin:应该从哪里开始读
             //iterEnd:读到哪里算结束
 
-            array<string, 6> replys =//用于测试的回复
+            array<string, 5> replys =//用于测试的回复
             {
                 "+OK\r\n",
                 "-error:no such key\r\n",
