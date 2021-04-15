@@ -88,6 +88,7 @@ do{\
 
     awaitable<void> BaseSession::Run(unique_ptr<BaseSession> self)
     {
+        assert((fmt::print("session at thread:{}\n", std::this_thread::get_id()),1));
         assert((fmt::print
         (
             "|{0:-^{2}}|\n"
@@ -152,7 +153,7 @@ do{\
                 if (iter == getfuncManager().end())
                 {
                     co_await asio::async_write(self->socket, asio::buffer(errorReply.data(),errorReply.size()), use_awaitable);
-                    assert((fmt::print("test reply:{}\n", reply), 1));
+                    assert((fmt::print("test reply:{}\n", errorReply), 1));
                 }
                 //函数存在，运行该函数，并将结果返回给客户端
                 else
