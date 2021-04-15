@@ -4,6 +4,11 @@
 #define Regist(sessionType,value)\
 	uint32_t sessionType::sessionTypeCode = Session::regist<sessionType, value>();
 
+ //#define QPSTEST
+
+
+constexpr bool allKeyLRU = 1;
+
 //variant support
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;

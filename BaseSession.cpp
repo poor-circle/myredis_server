@@ -14,8 +14,7 @@ namespace myredis
 
         try
         {
-            ;
-            fmt::print
+            assert((fmt::print
             (
                 "|{0:-^{2}}|\n"
                 "|{1: ^{2}}|\n"
@@ -23,7 +22,7 @@ namespace myredis
                 "",
                 fmt::format("connect from client {}:{}", self->socket.remote_endpoint().address(), self->socket.remote_endpoint().port()),
                 75
-            );
+            ),1));
 
             //auto sessionType = co_await self->getSessionType();
             auto session = Session::CreateSession(self->ioc, std::move(self->socket), 0);
@@ -39,7 +38,7 @@ namespace myredis
         }
         catch (const exception& e) 
         {
-            fmt::print
+            assert((fmt::print
             (
                 "*{0:*^{2}}*\n"
                 "{1}\n"
@@ -47,7 +46,7 @@ namespace myredis
                 "",
                 fmt::format("session exception:{}", e.what()),
                 75
-            );
+            ), 1));
         };
         co_return;
     }

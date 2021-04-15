@@ -111,7 +111,7 @@
     <ClInclude Include="util\deque.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
-    <ClInclude Include="error.h">
+    <ClInclude Include="code.h">
       <Filter>头文件\config</Filter>
     </ClInclude>
     <ClInclude Include="Func\stringFunc.h">
