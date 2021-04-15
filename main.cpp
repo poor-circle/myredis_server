@@ -9,7 +9,7 @@
 #endif
 namespace myredis
 {
-    #include "namespace.h"
+    #include "namespace.i"
     static void run()
     {
         Test();//debug时执行单元测试

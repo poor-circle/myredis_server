@@ -22,9 +22,6 @@
     <Filter Include="头文件\frameworkClass">
       <UniqueIdentifier>{2270d3fa-ad43-4439-acf1-0373afce871c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Session">
-      <UniqueIdentifier>{965b34b6-80f8-4ca3-9634-c69d4b312861}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\config">
       <UniqueIdentifier>{c62e6553-ccfb-436a-8e52-332f4c9f2a30}</UniqueIdentifier>
     </Filter>
@@ -84,11 +81,8 @@
     <ClInclude Include="Listener.h">
       <Filter>头文件\frameworkClass</Filter>
     </ClInclude>
-    <ClInclude Include="namespace.h">
+    <ClInclude Include="namespace.i">
       <Filter>头文件\config</Filter>
-    </ClInclude>
-    <ClInclude Include="Session.h">
-      <Filter>头文件\frameworkClass</Filter>
     </ClInclude>
     <ClInclude Include="benchmark.h">
       <Filter>头文件\benchmark</Filter>
@@ -151,12 +145,6 @@
     </ClCompile>
     <ClCompile Include="Listener.cpp">
       <Filter>源文件\frameworkClass</Filter>
-    </ClCompile>
-    <ClCompile Include="Session.cpp">
-      <Filter>源文件\frameworkClass</Filter>
-    </ClCompile>
-    <ClCompile Include="Echo.cpp">
-      <Filter>源文件\Session</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件\config</Filter>

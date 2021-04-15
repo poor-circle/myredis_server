@@ -12,6 +12,5 @@ namespace myredis
     private:
         asio::io_context& ioc;
         asio::ip::tcp::socket socket;
-        asio::awaitable<uint32_t> getSessionType();
     };
 }

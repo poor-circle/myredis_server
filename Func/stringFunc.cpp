@@ -10,7 +10,7 @@
 //object：你要操作的对象类型
 namespace myredis::func
 {
-#include"../namespace.h"
+#include"../namespace.i"
 
 	//设置一个字符串
 

@@ -2,7 +2,7 @@
 #include"object.hpp"
 namespace myredis
 {
-#include"namespace.h"
+#include"namespace.i"
 
 
 	objectMap& getObjectMap()
