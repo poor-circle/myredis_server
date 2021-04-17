@@ -3,6 +3,7 @@
 #include "stringFunc.h"
 #include "../object.hpp"
 #include "../ObjectVisitor/StringVisitor/get.h"
+#include "../ObjectVisitor/StringVisitor/append.h"
 //func层相当于spring boot的controller层
 //通过controller调用visitor层
 //调用格式：visit([](auto& e) {return visitor::funcName(e); }, object)
@@ -48,7 +49,7 @@ namespace myredis::func
 			}
 			else
 			{
-				auto& ret = visit([](auto& e) {return visitor::get(e); }, iter->second).second;
+				auto& ret = visit([](auto& e) {return visitor::append(e); }, iter->second).second;
 				return code::getBulkReply(ret);
 			}
 		}
@@ -58,6 +59,40 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
+
+	//append  
+	/*
+	* append 针对string对象
+	* 如果 key 已经存在，并且值为字符串，那么这个命令会把 value 追加到原来值（value）的结尾。 
+	* 如果 key 不存在，那么它将首先创建一个空字符串的key，再执行追加操作，这种情况 APPEND 将类似于 SET 操作。
+	* code by tigerwang  2021/4/17 20:00
+	*/
+	std::optional<string> append(std::vector<string>&& args) noexcept 
+	{
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto iter = getObjectMap().find(std::move(args[1]));
+			if (iter == getObjectMap().end())//找不到对应的key
+			{
+				// 调用set函数
+				return code::key_search_error;
+			}
+			else
+			{
+
+				auto& ret = visit([](auto& e) {return visitor::append(e); }, iter->second).second;
+				return code::getBulkReply(ret);
+			}
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
+
 	std::optional<string> ping(std::vector<string>&& args) noexcept
 	{
 		try
