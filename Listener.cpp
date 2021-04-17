@@ -6,6 +6,7 @@ namespace myredis
     asio::awaitable<void> Listener::Run()
     {
         auto executor = co_await asio::this_coro::executor;
+        
         asio::ip::tcp::acceptor acceptor(executor, { asio::ip::tcp::v4(), port });
         fmt::print
         (
@@ -18,11 +19,12 @@ namespace myredis
         );
         for (;;)
         {
-            asio::co_spawn(executor, BaseSession::Run(std::make_unique<BaseSession>
+            asio::co_spawn(ioc.get_executor(), BaseSession::Run(std::make_unique<BaseSession>
             (
                 ioc,                                                //io_context
                 co_await acceptor.async_accept(asio::use_awaitable) //socket
             )), asio::detached);
+            assert((fmt::print("listen at thread:{}\n", std::this_thread::get_id()), 1));
         }
     }
 }

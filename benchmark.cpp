@@ -38,7 +38,7 @@ namespace myredis
 {
     void stringToObjectTest();//测试set函数能否正常工作
 
-#include "namespace.h"
+#include "namespace.i"
     void Test()
     {
         assert([]()
