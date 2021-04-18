@@ -70,6 +70,7 @@ namespace myredis
 		bool contains(const string& str);
 		//插入(更新)一个key
 		void update(string&& str,object&& obj);
+		void try_insert(string&& str, object&& obj);
 		hash_map<keyIter, object>::iterator find(string& str);
 		hash_map<keyIter, object>::iterator find(string&& str);
 		hash_map<keyIter, object>::iterator end();
