@@ -3,7 +3,7 @@
 #include "stringFunc.h"
 #include "../object.hpp"
 #include "../ObjectVisitor/StringVisitor/get.h"
-#include "../ObjectVisitor/StringVisitor/append.h"
+
 //func层相当于spring boot的controller层
 //通过controller调用visitor层
 //调用格式：visit([](auto& e) {return visitor::funcName(e); }, object)
@@ -49,7 +49,7 @@ namespace myredis::func
 			}
 			else
 			{
-				auto& ret = visit([](auto& e) {return visitor::append(e); }, iter->second).second;
+				auto& ret = visit([](auto& e) {return visitor::get(e); }, iter->second).second;
 				return code::getBulkReply(ret);
 			}
 		}
@@ -63,7 +63,7 @@ namespace myredis::func
 	//append  
 	/*
 	* append 针对string对象
-	* 如果 key 已经存在，并且值为字符串，那么这个命令会把 value 追加到原来值（value）的结尾。 
+	* 如果 key 已经存在，并且值为字符串，那么这个命令会把 value 追加到原来值（value）的结尾，并返回string的长度。 
 	* 如果 key 不存在，那么它将首先创建一个空字符串的key，再执行追加操作，这种情况 APPEND 将类似于 SET 操作。
 	* code by tigerwang  2021/4/17 20:00
 	*/
@@ -73,17 +73,27 @@ namespace myredis::func
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			auto iter = getObjectMap().find(std::move(args[1]));
+			auto iter = getObjectMap().find(args[1]);
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
 				// 调用set函数
-				return code::key_search_error;
+				getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
+				return code::succeed;
 			}
 			else
 			{
-
-				auto& ret = visit([](auto& e) {return visitor::append(e); }, iter->second).second;
-				return code::getBulkReply(ret);
+				// 找到key取出
+				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
+			
+				if (ret.first != code::code::success) {
+					return code::getErrorReply(std::move(ret.second));
+				}
+				// append操作
+				string& appendString = ret.second.append(std::move(args[2]));
+				INT64 len = appendString.size();
+				// 更新
+				iter->second = stringToObject(std::move(appendString));
+				return code::getIntegerReply(std::move(len));
 			}
 		}
 		catch (const exception& e)

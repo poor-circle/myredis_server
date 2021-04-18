@@ -170,7 +170,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="append.h" />
     <ClInclude Include="BaseSession.h" />
     <ClInclude Include="benchmark.h" />
     <ClInclude Include="config.h" />
@@ -196,7 +195,6 @@
     <ClInclude Include="util\string.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="append.cpp" />
     <ClCompile Include="BaseSession.cpp" />
     <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="Func\funcManager.cpp" />
