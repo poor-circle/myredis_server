@@ -193,7 +193,12 @@ namespace myredis::func
 					end = strLen + end;
 				if (end < 0)
 					end = 0;
+				
 				int len = end - start + 1;
+				if (start + len > strLen) 
+				{
+					len = strLen - start;
+				}
 				if (start > strLen || len < 0)
 				{
 					return code::getBulkReply("");
