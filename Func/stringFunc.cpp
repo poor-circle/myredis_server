@@ -183,7 +183,7 @@ namespace myredis::func
 					boost::conversion::try_lexical_convert(args[3], end) == false) {
 					return code::getErrorReply("error:invalid_arugment or integer out of range");
 				}
-				const int strLen = ret.second.size();
+				const int64_t strLen = ret.second.size();
 				// 如果小于零 + strLen ，还小于0说明超过长度了，直接置0
 				if (start < 0) 
 					start = strLen + start;
@@ -194,7 +194,7 @@ namespace myredis::func
 				if (end < 0)
 					end = 0;
 				
-				int len = end - start + 1;
+				int64_t len = end - start + 1;
 				if (start + len > strLen) 
 				{
 					len = strLen - start;
@@ -231,19 +231,7 @@ namespace myredis::func
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			auto iter = getObjectMap().find(args[1]);
-			if (iter == getObjectMap().end())//找不到对应的key
-			{
-				// 调用set
-				getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
-				return code::getIntegerReply(1);
-			}
-			else 
-			{
-				return code::getIntegerReply(0);
-			}
-
-			return code::succeed;
+			return 	code::getIntegerReply(getObjectMap().try_insert(std::move(args[1]), stringToObject(std::move(args[2]))));
 		}
 		catch (const exception& e)
 		{
@@ -280,10 +268,12 @@ namespace myredis::func
 					return code::getErrorReply(ret.second);
 				}
 				// 获取之前的值
-				// 
+				const string value = ret.second;
+
 				// 更新
+				iter->second = stringToObject(std::move(args[2]));
 				// 返回之前的值
-				return code::getBulkReply(ret.second);
+				return code::getBulkReply(std::move(value));
 			}
 		}
 		catch (const exception& e)
