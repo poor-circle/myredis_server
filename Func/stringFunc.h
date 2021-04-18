@@ -13,8 +13,14 @@ namespace myredis::func
 	std::optional<string> get(std::vector<string>&& args) noexcept;
 	//在下面添加更多的函数
 	std::optional<string> ping(std::vector<string>&& args) noexcept;
-	//	append	code:tigerwang	date:2021/4/18
+	//	append		created by tigerwang	date:2021/4/18
 	std::optional<string> append(std::vector<string>&& args) noexcept;
-	//	strlen	code:tigerwang	date:2021/4/18
+	//	strlen		created by tigerwang	date:2021/4/18
 	std::optional<string> strlen(std::vector<string>&& args) noexcept;
+	//	getrange	created by tigerwang	date:2021/4/18
+	std::optional<string> getrange(std::vector<string>&& args) noexcept;
+	//	setnx		created by tigerwang	date:2021/4/18
+	std::optional<string> setnx(std::vector<string>&& args) noexcept;
+	//	getset		created by tigerwang	date:2021/4/18
+	std::optional<string> getset(std::vector<string>&& args) noexcept;
 }

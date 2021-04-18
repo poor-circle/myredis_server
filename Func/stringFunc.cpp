@@ -60,12 +60,12 @@ namespace myredis::func
 		}
 	}
 
-	//append  
+	//append  created in 2021/4/17
 	/*
 	* append 针对string对象
 	* 如果 key 已经存在，并且值为字符串，那么这个命令会把 value 追加到原来值（value）的结尾，并返回string的长度。 
 	* 如果 key 不存在，那么它将首先创建一个空字符串的key，再执行追加操作，这种情况 APPEND 将类似于 SET 操作。
-	* code by tigerwang  2021/4/17 20:00
+	* created by tigerwang  2021/4/17 20:00
 	*/
 	std::optional<string> append(std::vector<string>&& args) noexcept 
 	{
@@ -103,12 +103,13 @@ namespace myredis::func
 		}
 	}
 
-	// strlen
+	// strlen	create 2021/4/18 
 	/* strlen 针对string类型的对象
+	* 
 	* 返回key的string类型value的长度。
 	* 如果key对应的非string类型，就返回错误。
 	* 如果key不存在返回0
-	* code by tigerwang  2021/4/18 10:00
+	* created by tigerwang  2021/4/18 10:00
 	*/
 	std::optional<string> strlen(std::vector<string>&& args) noexcept
 	{
@@ -140,6 +141,75 @@ namespace myredis::func
 		}
 	}
 
+	// getrange	create 2021/4/18 
+	/*
+	* usage: GETRANGE key start end
+	* 警告：这个命令是被改成GETRANGE的，在小于2.0的Redis版本中叫SUBSTR。
+	* 返回key对应的字符串value的子串，这个子串是由start和end位移决定的（两者都在string内）
+	* 可以用负的位移来表示从string尾部开始数的下标。所以-1就是最后一个字符，-2就是倒数第二个，以此类推。
+	* 这个函数处理超出范围的请求时，都把结果限制在string内。
+	* 返回值 bulk-reply
+	* created by tigerwang	date:2021/4/18
+	*/
+	std::optional<string> getrange(std::vector<string>&& args) noexcept
+	{
+		try
+		{
+			if (args.size() != 4)
+				return code::args_count_error;
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())
+			{
+				//找不到对应的key 返回0
+				return code::getIntegerReply(0);
+			}
+			else
+			{
+				// 找到key取出
+				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
+				if (ret.first != code::code::success) {
+					return std::move(code::getErrorReply(ret.second));
+				}
+				INT64 len = ret.second.size();
+				return code::getIntegerReply(std::move(len));
+			}
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
+
+	//	setnx	create 2021/4/18 
+	/*
+	* 将key设置值为value，
+	* 如果key不存在，这种情况下等同SET命令。 
+	* 当key存在时，什么也不做。
+	* SETNX是”SET if Not eXists”的简写。
+	* 
+	* 返回值： Integer Reply
+	* 1 如果key被设置了
+	* 0 如果key没有被设置
+	* created by tigerwang	date:2021/4/18
+	*/
+	std::optional<string> setnx(std::vector<string>&& args) noexcept
+	{
+
+	}
+
+	//	getset		create 2021/4/18 
+	/*
+	* 自动将key对应到value并且返回原来key对应的value。
+	* 如果key存在但是对应的value不是字符串，就返回错误。
+	* 返回值： bulk-string-reply
+	* 返回之前的旧值，如果之前Key不存在将返回nil。
+	* created by tigerwang	date:2021/4/18
+	*/
+	std::optional<string> getset(std::vector<string>&& args) noexcept
+	{
+
+	}
 
 	std::optional<string> ping(std::vector<string>&& args) noexcept
 	{
