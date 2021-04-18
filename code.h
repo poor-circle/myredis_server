@@ -12,13 +12,13 @@ namespace myredis::code
 	};
 	static string& getErrorMessage(status i)			// 从错误码获取错误信息
 	{
-		static string object_type_error_message[] = // 必须保证message顺序和code相同!
+		static string error_message[] = // 必须保证message顺序和code相同!
 		{
 			"success",
 			"object type error"
 			//add other message here
 		};
-		return object_type_error_message[static_cast<std::size_t>(i)];
+		return error_message[static_cast<std::size_t>(i)];
 	}
 
 	const string succeed = "+OK\r\n";

@@ -42,7 +42,7 @@ namespace myredis::func
 		{
 			if (args.size() != 2)
 				return code::args_count_error;
-			auto iter = getObjectMap().find(std::move(args[1]));
+			auto iter = getObjectMap().find(args[1]);
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
 				return code::key_search_error;
