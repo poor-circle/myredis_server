@@ -227,7 +227,29 @@ namespace myredis::func
 	*/
 	std::optional<string> setnx(std::vector<string>&& args) noexcept
 	{
-		return nullopt;
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())//找不到对应的key
+			{
+				// 调用set
+				getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
+				return code::getIntegerReply(1);
+			}
+			else 
+			{
+				return code::getIntegerReply(0);
+			}
+
+			return code::succeed;
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
 	}
 
 	//	getset		create 2021/4/18 
@@ -240,7 +262,35 @@ namespace myredis::func
 	*/
 	std::optional<string> getset(std::vector<string>&& args) noexcept
 	{
-		return nullopt;
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())//找不到对应的key
+			{
+				// 返回nil
+				return code::key_search_error;
+			}
+			else
+			{
+				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.second);
+				}
+				// 获取之前的值
+				// 
+				// 更新
+				// 返回之前的值
+				return code::getBulkReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
 	}
 
 	std::optional<string> ping(std::vector<string>&& args) noexcept
