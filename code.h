@@ -52,7 +52,7 @@ namespace myredis::code
 		return s;
 	}
 
-	static string getErrorReply(const string& errorInfo) //´íÎó»Ø¸´
+	static string getErrorReply(int64_t errorInfo) //´íÎó»Ø¸´
 	{
 		string s;
 		fmt::format_to

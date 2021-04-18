@@ -82,11 +82,11 @@ namespace myredis::func
 			}
 			else
 			{
-				// 找到key取出
+				// 找到key取出 
 				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
 			
 				if (ret.first != code::code::success) {
-					return code::getErrorReply(std::move(ret.second));
+					return std::move(ret.second);
 				}
 				// append操作
 				string& appendString = ret.second.append(std::move(args[2]));
@@ -107,6 +107,7 @@ namespace myredis::func
 	/* strlen 针对string类型的对象
 	* 返回key的string类型value的长度。
 	* 如果key对应的非string类型，就返回错误。
+	* 如果key不存在返回0
 	* code by tigerwang  2021/4/18 10:00
 	*/
 	std::optional<string> strlen(std::vector<string>&& args) noexcept
@@ -118,14 +119,17 @@ namespace myredis::func
 			auto iter = getObjectMap().find(args[1]);
 			if (iter == getObjectMap().end())
 			{
-				//找不到对应的key 返回错误
-				return code::key_search_error;
+				//找不到对应的key 返回0
+				return code::getIntegerReply(0);
 			}
 			else
 			{
 				// 找到key取出
-				auto& ret = visit([](auto& e) {return visitor::get(e); }, iter->second).second;
-				INT64 len = ret.size();
+				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
+				if (ret.first != code::code::success) {
+					return std::move(ret.second);
+				}
+				INT64 len = ret.second.size();
 				return code::getIntegerReply(std::move(len));
 			}
 		}
