@@ -2,6 +2,7 @@
 #include "util/string.hpp"
 #include "fmt/core.h"
 #include "fmt/compile.h"
+#include <string_view>
 namespace myredis::code
 {
 	enum class status			//函数错误码
@@ -26,7 +27,7 @@ namespace myredis::code
 	const string args_count_error = "-error:wrong args count\r\n";
 	const string key_search_error = "-error:no such key\r\n";
 
-	static string getBulkReply(const string& str)  //批量回复
+	static string getBulkReply(const std::string_view str)  //批量回复
 	{
 		string s;
 		fmt::format_to
@@ -39,7 +40,7 @@ namespace myredis::code
 		return s;
 	}
 
-	static string getSingleReply(const string& str) //状态回复
+	static string getSingleReply(const std::string_view str) //状态回复
 	{
 		string s;
 		fmt::format_to
@@ -51,7 +52,7 @@ namespace myredis::code
 		return s;
 	}
 
-	static string getErrorReply(const string& errorInfo) //错误回复
+	static string getErrorReply(const std::string_view errorInfo) //错误回复
 	{
 		string s;
 		fmt::format_to
