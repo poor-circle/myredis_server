@@ -103,6 +103,40 @@ namespace myredis::func
 		}
 	}
 
+	// strlen
+	/* strlen 针对string类型的对象
+	* 返回key的string类型value的长度。
+	* 如果key对应的非string类型，就返回错误。
+	* code by tigerwang  2021/4/18 10:00
+	*/
+	std::optional<string> strlen(std::vector<string>&& args) noexcept
+	{
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())
+			{
+				//找不到对应的key 返回错误
+				return code::key_search_error;
+			}
+			else
+			{
+				// 找到key取出
+				auto& ret = visit([](auto& e) {return visitor::get(e); }, iter->second).second;
+				INT64 len = ret.size();
+				return code::getIntegerReply(std::move(len));
+			}
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
+
+
 	std::optional<string> ping(std::vector<string>&& args) noexcept
 	{
 		try

@@ -4,6 +4,7 @@
 #include "fmt/compile.h"
 namespace myredis::code
 {
+	// Q: 我觉得要不然命名空间改一下或者这个错误码改成errcode，code::code的写法有点emm..  ---tigerwang
 	enum class code			//函数错误码
 	{
 		success,

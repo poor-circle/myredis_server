@@ -10,11 +10,12 @@ namespace myredis
 	{
 		const static hash_map<string, func::funcPtr> manager
 		{
-			//在这里注册每一种func
+			//在这里注册每一种func 
 			add(get),
 			add(set),
 			add(ping),
-			add(append)
+			add(append),
+			add(strlen)
 			//regist func at here
 			//{"name",func::name}
 		};
