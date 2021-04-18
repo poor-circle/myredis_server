@@ -109,7 +109,7 @@ namespace myredis
             auto ans = visit([](auto &&o) {return visitor::get(o); },object);
 
             //测试普通类型是否相等（待比较值1，函数或lambda，待比较值2，错误提示）
-            TEST_EQAUL(ans,[](auto&& o) {return o.first; }, myredis::code::code::success,e, "操作不成功");
+            TEST_EQAUL(ans,[](auto&& o) {return o.first; }, myredis::code::status::success,e, "操作不成功");
             TEST_EQAUL(ans,[](auto&& o) {return o.second;}, std::get<0>(e),e,"操作返回的字符串有误");
 
         }

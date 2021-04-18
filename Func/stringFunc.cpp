@@ -49,8 +49,12 @@ namespace myredis::func
 			}
 			else
 			{
-				auto& ret = visit([](auto& e) {return visitor::get(e); }, iter->second).second;
-				return code::getBulkReply(ret);
+				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.second);
+				}
+				return code::getBulkReply(ret.second);
 			}
 		}
 		catch (const exception& e)
@@ -76,24 +80,25 @@ namespace myredis::func
 			auto iter = getObjectMap().find(args[1]);
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
+				auto len = args[2].size();
 				// 调用set函数
 				getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
-				return code::succeed;
+				//set以后要返回长度
+				return code::getIntegerReply(len);
 			}
 			else
 			{
 				// 找到key取出 
 				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
 			
-				if (ret.first != code::code::success) {
-					return std::move(ret.second);
+				if (ret.first != code::status::success) {
+					return code::getErrorReply(ret.second);
 				}
 				// append操作
-				string& appendString = ret.second.append(std::move(args[2]));
-				INT64 len = appendString.size();
-				// 更新
-				iter->second = stringToObject(std::move(appendString));
-				return code::getIntegerReply(std::move(len));
+				ret.second.append(args[2]);
+				int64_t len = ret.second.size();
+				iter->second = stringToObject(std::move(ret.second));
+				return code::getIntegerReply(len);
 			}
 		}
 		catch (const exception& e)
@@ -126,11 +131,10 @@ namespace myredis::func
 			{
 				// 找到key取出
 				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
-				if (ret.first != code::code::success) {
-					return std::move(ret.second);
+				if (ret.first != code::status::success) {
+					return code::getErrorReply(ret.second);
 				}
-				INT64 len = ret.second.size();
-				return code::getIntegerReply(std::move(len));
+				return code::getIntegerReply(ret.second.size());
 			}
 		}
 		catch (const exception& e)
