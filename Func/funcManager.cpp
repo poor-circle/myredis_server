@@ -18,7 +18,10 @@ namespace myredis
 			add(strlen),
 			add(getrange),
 			add(setnx),
-			add(getset)
+			add(getset),
+			add(mset),
+			add(mget),
+			add(setrange),
 			//regist func at here
 			//{"name",func::name}
 		};

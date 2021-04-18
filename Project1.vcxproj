@@ -185,6 +185,7 @@
     <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.hpp" />
     <ClInclude Include="ObjectVisitor\keyVisitor\type.hpp" />
     <ClInclude Include="ObjectVisitor\keyVisitor\typeenum.hpp" />
+    <ClInclude Include="ObjectVisitor\stringVisitor\changeCodetoString.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\get.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdc++.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="ObjectVisitor\stringVisitor\changeCodetoString.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\get.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

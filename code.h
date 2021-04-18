@@ -22,10 +22,10 @@ namespace myredis::code
 		return error_message[static_cast<std::size_t>(i)];
 	}
 
-	const string succeed = "+OK\r\n";
+	const string succees_reply = "+OK\r\n";
 	const string pong = "+PONG\r\n";
 	const string args_count_error = "-error:wrong args count\r\n";
-	const string key_search_error = "-error:no such key\r\n";
+	const string nil = "$-1\r\n";
 
 	static string getBulkReply(const std::string_view str)  //批量回复
 	{
@@ -75,9 +75,16 @@ namespace myredis::code
 		);
 		return s;
 	}
-
-	template<class Iter>
-	static string getMultiReply(Iter begin, Iter end) //多批量回复
+	/*
+	*
+	* @author: Lizezheng
+	* getMultiReply:用于格式化多批量回复
+	* date:2021/04/18
+	* begin,end:一对迭代器
+	* lambda:一个函数，接收一个迭代器，返回一个string&
+	*/
+	template<class Iter,typename func>
+	static string getMultiReply(Iter begin, Iter end,func lambda) //多批量回复
 	{
 		string s;
 		auto dis = std::distance(begin, end);
@@ -92,9 +99,8 @@ namespace myredis::code
 			fmt::format_to
 			(
 				back_inserter(s),
-				FMT_COMPILE("${}\r\n{}\r\n"),
-				begin.size(),
-				begin
+				FMT_COMPILE("{}"),
+				lambda(begin)
 			);
 		}
 		return s;

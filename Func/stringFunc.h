@@ -11,6 +11,8 @@ namespace myredis::func
 	std::optional<string> set(std::vector<string>&& args) noexcept;
 	//获取一个字符串
 	std::optional<string> get(std::vector<string>&& args) noexcept;
+	//	sgetrange	created by lizezheng	date:2021/4/18
+	std::optional<string> setrange(std::vector<string>&& args) noexcept;
 	//在下面添加更多的函数
 	std::optional<string> ping(std::vector<string>&& args) noexcept;
 	//	append		created by tigerwang	date:2021/4/18
@@ -23,4 +25,8 @@ namespace myredis::func
 	std::optional<string> setnx(std::vector<string>&& args) noexcept;
 	//	getset		created by tigerwang	date:2021/4/18
 	std::optional<string> getset(std::vector<string>&& args) noexcept;
+	//	mset		created by lizezheng	date:2021/4/18
+	std::optional<string> mset(std::vector<string>&& args) noexcept;
+	//	mget		created by lizezheng	date:2021/4/18
+	std::optional<string> mget(std::vector<string>&& args) noexcept;
 }

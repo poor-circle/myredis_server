@@ -6,13 +6,13 @@
 
 namespace myredis::visitor
 {
-    std::pair<code::status,string&>  get(int64_t object)
+    std::pair<code::status,string&>  get(int64_t& object)
     {
         static string temp;
         temp = boost::lexical_cast<string>(object);
         return myredis_succeed(temp);
     }
-    std::pair<code::status, string&> get(double object)
+    std::pair<code::status, string&> get(double& object)
     {
         static string temp;
         temp=string();

@@ -3,6 +3,7 @@
 #include "stringFunc.h"
 #include "../object.hpp"
 #include "../ObjectVisitor/StringVisitor/get.h"
+#include "../ObjectVisitor/StringVisitor/changeCodetoString.h"
 
 //func层相当于spring boot的controller层
 //通过controller调用visitor层
@@ -26,7 +27,7 @@ namespace myredis::func
 			if (args.size() != 3)
 				return code::args_count_error;
 			getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
-			return code::succeed;
+			return code::succees_reply;
 		}
 		catch (const exception& e)
 		{
@@ -45,7 +46,7 @@ namespace myredis::func
 			auto iter = getObjectMap().find(args[1]);
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
-				return code::key_search_error;
+				return code::nil;
 			}
 			else
 			{
@@ -88,17 +89,18 @@ namespace myredis::func
 			}
 			else
 			{
-				// 找到key取出 
-				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
+				//将对象编码强制转化为字符串
+				auto ret = visit([iter](auto& e)
+				{
+					return visitor::changeCodetoString(e,iter->second);
+				}, iter->second);
 			
 				if (ret.first != code::status::success) {
 					return code::getErrorReply(ret.second);
 				}
 				// append操作
 				ret.second.append(args[2]);
-				int64_t len = ret.second.size();
-				iter->second = stringToObject(std::move(ret.second));
-				return code::getIntegerReply(len);
+				return code::getIntegerReply(ret.second.size());
 			}
 		}
 		catch (const exception& e)
@@ -165,7 +167,7 @@ namespace myredis::func
 			if (iter == getObjectMap().end())
 			{
 				//找不到对应的key
-				return code::key_search_error;
+				return code::nil;
 			}
 			else
 			{
@@ -179,8 +181,8 @@ namespace myredis::func
 				// 不能转换会抛出invalid_argument异常
 				// 超过返回会抛出out_of_range异常
 				int64_t start, end;
-				if (boost::conversion::try_lexical_convert(args[2], start) == false || 
-					boost::conversion::try_lexical_convert(args[3], end) == false) {
+				if (try_lexical_convert(args[2], start) == false || 
+					try_lexical_convert(args[3], end) == false) {
 					return code::getErrorReply("error:invalid_arugment or integer out of range");
 				}
 				const int64_t strLen = ret.second.size();
@@ -231,7 +233,8 @@ namespace myredis::func
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			return 	code::getIntegerReply(getObjectMap().try_insert(std::move(args[1]), stringToObject(std::move(args[2]))));
+			auto iter=getObjectMap().try_insert(std::move(args[1]), stringToObject(std::move(args[2])));
+			return code::getIntegerReply(iter != getObjectMap().end()?1:0);
 		}
 		catch (const exception& e)
 		{
@@ -258,7 +261,7 @@ namespace myredis::func
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
 				// 返回nil
-				return code::key_search_error;
+				return code::nil;
 			}
 			else
 			{
@@ -275,6 +278,140 @@ namespace myredis::func
 
 				// 返回之前的值
 				return retstr;
+			}
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
+	/*
+	* 
+	* @author: Lizezheng
+	* mset:用于一次性设置多个键值
+	* date:2021/04/18
+	* 
+	*/
+	std::optional<string> mset(std::vector<string>&& args) noexcept
+	{
+		try
+		{
+			if (args.size()>1 && args.size()%2==0)
+				return code::args_count_error;
+			for (auto arg = args.begin() + 1; arg < args.end(); arg += 2)
+			{
+				getObjectMap().update(std::move(*arg), stringToObject(std::move(*(arg+1))));
+			}
+			return code::succees_reply;
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
+	/*
+	*
+	* @author: Lizezheng
+	* mget:用于一次性获取多个键值
+	* date:2021/04/18
+	*
+	*/
+	std::optional<string> mget(std::vector<string>&& args) noexcept
+	{
+		try
+		{
+			if (args.size() <= 1)
+				return code::args_count_error;
+			else
+				return code::getMultiReply(args.begin() + 1, args.end(),
+				[](vector<string>::iterator &arg)
+				{
+					auto iter = getObjectMap().find(*arg);
+					if (iter == getObjectMap().end())
+					{
+						return code::nil;
+					}
+					else
+					{
+						auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
+						if (ret.first != code::status::success)
+							return code::nil;
+						else
+							return code::getBulkReply(ret.second);
+					}
+				});
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
+	/*
+	*
+	* @author: Lizezheng
+	* setrange:对一个string的区间赋值
+	* 当字符串没有那么长（或不存在）时，在前面补0
+	* date:2021/04/18
+	*/
+	std::optional<string> setrange(std::vector<string>&& args) noexcept
+	{
+		try
+		{
+			if (args.size() != 4)
+				return code::args_count_error;
+			int64_t offset;
+			if (!try_lexical_convert<int64_t>(args[2], offset)||offset<0)
+				return code::getErrorReply("invalid argument");
+			else
+			{
+				auto iter = getObjectMap().find(args[1]);
+				size_t retlength;
+				if (iter != getObjectMap().end())
+				{
+					//将对象编码设置为字符串（setrange以后，对象一定变成字符串）
+					auto ret = visit([&iter](auto& e)
+					{
+						return visitor::changeCodetoString(e, iter->second);
+					}, iter->second);
+					if (ret.first != code::status::success)
+					{
+						return code::getErrorReply(ret.second);
+					}
+					else
+					{
+						string& str = ret.second;
+						str.reserve(offset + args[3].size());//预申请空间
+						if (str.length() >= offset)//如果字符串比offset长
+						{
+							if (str.length() < offset + args[3].size())//如果字符串不够长
+							{
+								str.append(offset + args[3].size()-str.length(), '\0');//补零
+							}
+							copy(args[3].begin(), args[3].end(), str.begin() + offset);
+						}
+						else
+						{
+							str.append(offset-str.length(), '\0');//补零
+							str.append(args[3]);//插入字符串
+						}
+						retlength = str.length();
+					}
+				}
+				else
+				{
+					auto ptr = make_unique<string>();
+					string& str = *ptr;//获取指针所指的字符串
+					//插入一个字符串对象
+					auto iter=getObjectMap().try_insert(std::move(args[1]), std::move(ptr));
+					str.reserve(offset + args[3].size());//预申请空间
+					str.append(offset, '\0');//补零
+					str.append(args[3]);//插入字符串
+					retlength = str.length();
+				}
+				return code::getIntegerReply(retlength);
 			}
 		}
 		catch (const exception& e)
