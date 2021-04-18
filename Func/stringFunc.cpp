@@ -164,18 +164,42 @@ namespace myredis::func
 			auto iter = getObjectMap().find(args[1]);
 			if (iter == getObjectMap().end())
 			{
-				//找不到对应的key 返回0
-				return code::getIntegerReply(0);
+				//找不到对应的key
+				return code::key_search_error;
 			}
 			else
 			{
-				// 找到key取出
+				
+				// 找到key取出string
 				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
-				if (ret.first != code::code::success) {
+				if (ret.first != code::status::success) {
 					return std::move(code::getErrorReply(ret.second));
 				}
-				INT64 len = ret.second.size();
-				return code::getIntegerReply(std::move(len));
+				// 使用stoi将start和end转换为Int
+				// 不能转换会抛出invalid_argument异常
+				// 超过返回会抛出out_of_range异常
+				int64_t start, end;
+				if (boost::conversion::try_lexical_convert(args[2], start) == false || 
+					boost::conversion::try_lexical_convert(args[3], end) == false) {
+					return code::getErrorReply("error:invalid_arugment or integer out of range");
+				}
+				const int strLen = ret.second.size();
+				// 如果小于零 + strLen ，还小于0说明超过长度了，直接置0
+				if (start < 0) 
+					start = strLen + start;
+				if (start < 0) 
+					start = 0;
+				if (end < 0)
+					end = strLen + end;
+				if (end < 0)
+					end = 0;
+				int len = end - start + 1;
+				if (start > strLen || len < 0)
+				{
+					return code::getBulkReply("");
+				}
+				string subString = ret.second.substr(start, len);
+				return code::getBulkReply(std::move(subString));
 			}
 		}
 		catch (const exception& e)
@@ -199,7 +223,7 @@ namespace myredis::func
 	*/
 	std::optional<string> setnx(std::vector<string>&& args) noexcept
 	{
-
+		return nullopt;
 	}
 
 	//	getset		create 2021/4/18 
@@ -212,7 +236,7 @@ namespace myredis::func
 	*/
 	std::optional<string> getset(std::vector<string>&& args) noexcept
 	{
-
+		return nullopt;
 	}
 
 	std::optional<string> ping(std::vector<string>&& args) noexcept
