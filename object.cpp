@@ -31,6 +31,16 @@ namespace myredis
 		return;
 	}
 
+	//TODO::插入需要检查是否需要淘汰某个缓存
+	void objectMap::try_insert(string&& str, object&& obj)
+	{
+		keylist.push_front(std::move(str));
+		auto ans = map.emplace(keylist.begin(), std::move(obj));
+		if (!ans.second)
+			keylist.pop_front();
+		return;
+	}
+
 	//每次查找都需要更新缓存优先级
 	hash_map<keyIter, object>::iterator objectMap::find(string& str)
 	{
