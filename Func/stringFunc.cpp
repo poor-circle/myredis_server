@@ -198,8 +198,7 @@ namespace myredis::func
 				{
 					return code::getBulkReply("");
 				}
-				string subString = ret.second.substr(start, len);
-				return code::getBulkReply(std::move(subString));
+				return code::getBulkReply(string_view(ret.second.c_str()+ start,len));
 			}
 		}
 		catch (const exception& e)
