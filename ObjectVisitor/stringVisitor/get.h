@@ -11,11 +11,11 @@
 namespace myredis::visitor
 {
     //get函数：只适用于字符串对象，不能用于其他类型的对象
-    std::pair<code::code, string&> get(int64_t object);
-    std::pair<code::code, string&> get(double object);
-    std::pair<code::code, string&> get(std::unique_ptr<string>& object);
-    std::pair<code::code, string&> get(std::unique_ptr<hash_set<string>>& object);
-    std::pair<code::code, string&> get(std::unique_ptr<hash_map<string, string>>& object);
-    std::pair<code::code, string&> get(std::unique_ptr<key_ordered_map<double, string>>& object);
-    std::pair<code::code, string&> get(std::unique_ptr<deque<string>>& object);
+    std::pair<code::status, string&> get(int64_t object);
+    std::pair<code::status, string&> get(double object);
+    std::pair<code::status, string&> get(std::unique_ptr<string>& object);
+    std::pair<code::status, string&> get(std::unique_ptr<hash_set<string>>& object);
+    std::pair<code::status, string&> get(std::unique_ptr<hash_map<string, string>>& object);
+    std::pair<code::status, string&> get(std::unique_ptr<key_ordered_map<double, string>>& object);
+    std::pair<code::status, string&> get(std::unique_ptr<deque<string>>& object);
 }

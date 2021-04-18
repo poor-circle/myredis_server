@@ -46,20 +46,6 @@ namespace myredis
 		}
 		return ans;
 	}
-	//每次查找都需要更新缓存优先级
-	hash_map<keyIter, object>::iterator objectMap::find(string&& str)
-	{
-		keylist.push_front(std::move(str));
-		auto ans = map.find(keylist.begin());
-		keylist.pop_front();
-		if (allKeyLRU && ans != map.end())
-		{
-			keylist.push_front(std::move(*(ans->first.iter)));
-			keylist.erase(ans->first.iter);
-			ans->first.iter = keylist.begin();
-		}
-		return ans;
-	}
 
 	hash_map<keyIter, object>::iterator objectMap::end()
 	{

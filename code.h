@@ -4,22 +4,21 @@
 #include "fmt/compile.h"
 namespace myredis::code
 {
-	// Q: 我觉得要不然命名空间改一下或者这个错误码改成errcode，code::code的写法有点emm..  ---tigerwang
-	enum class code			//函数错误码
+	enum class status			//函数错误码
 	{
 		success,
 		object_type_error	//对象类型错误
 		//add other error here
 	};
-	static string& getErrorMessage(code i)			// 从错误码获取错误信息
+	static string& getErrorMessage(status i)			// 从错误码获取错误信息
 	{
-		static string object_type_error_message[] = // 必须保证message顺序和code相同!
+		static string error_message[] = // 必须保证message顺序和code相同!
 		{
 			"success",
 			"object type error"
 			//add other message here
 		};
-		return object_type_error_message[static_cast<std::size_t>(i)];
+		return error_message[static_cast<std::size_t>(i)];
 	}
 
 	const string succeed = "+OK\r\n";
@@ -52,7 +51,7 @@ namespace myredis::code
 		return s;
 	}
 
-	static string getErrorReply(int64_t errorInfo) //错误回复
+	static string getErrorReply(const string& errorInfo) //错误回复
 	{
 		string s;
 		fmt::format_to
@@ -103,6 +102,6 @@ namespace myredis::code
 	//add error info here;
 
 
-#define myredis_succeed(X) {myredis::code::code::success,X}
-#define myredis_failed(X)  {myredis::code::code::##X,myredis::code::getErrorMessage(myredis::code::code::##X)}
+#define myredis_succeed(X) {myredis::code::status::success,X}
+#define myredis_failed(X)  {myredis::code::status::##X,myredis::code::getErrorMessage(myredis::code::status::##X)}
 }
