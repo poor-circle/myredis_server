@@ -268,12 +268,13 @@ namespace myredis::func
 					return code::getErrorReply(ret.second);
 				}
 				// 获取之前的值
-				const string value = ret.second;
+				auto retstr = code::getBulkReply(ret.second);
 
 				// 更新
 				iter->second = stringToObject(std::move(args[2]));
+
 				// 返回之前的值
-				return code::getBulkReply(std::move(value));
+				return retstr;
 			}
 		}
 		catch (const exception& e)
