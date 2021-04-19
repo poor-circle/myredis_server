@@ -8,31 +8,28 @@ namespace myredis::func
 	//这个文件负责各种和string有关的函数
 
 	//设置一个字符串
-	std::optional<string> set(std::vector<string>&& args) noexcept;
+	std::optional<string> set(context&& ctx) noexcept;
 	//获取一个字符串
-	std::optional<string> get(std::vector<string>&& args) noexcept;
+	std::optional<string> get(context&& ctx) noexcept;
 	//	sgetrange	created by lizezheng	date:2021/4/18
-	std::optional<string> setrange(std::vector<string>&& args) noexcept;
+	std::optional<string> setrange(context&& ctx) noexcept;
 	//	mset		created by lizezheng	date:2021/4/18
-	std::optional<string> mset(std::vector<string>&& args) noexcept;
+	std::optional<string> mset(context&& ctx) noexcept;
 	//	mget		created by lizezheng	date:2021/4/18
-	std::optional<string> mget(std::vector<string>&& args) noexcept;
-
-	//在下面添加更多的函数
-	std::optional<string> ping(std::vector<string>&& args) noexcept;
+	std::optional<string> mget(context&& ctx) noexcept;
 	//	append		created by tigerwang	date:2021/4/18
-	std::optional<string> append(std::vector<string>&& args) noexcept;
+	std::optional<string> append(context&& ctx) noexcept;
 	//	strlen		created by tigerwang	date:2021/4/18
-	std::optional<string> strlen(std::vector<string>&& args) noexcept;
+	std::optional<string> strlen(context&& ctx) noexcept;
 	//	getrange	created by tigerwang	date:2021/4/18
-	std::optional<string> getrange(std::vector<string>&& args) noexcept;
+	std::optional<string> getrange(context&& ctx) noexcept;
 	//	setnx		created by tigerwang	date:2021/4/18
-	std::optional<string> setnx(std::vector<string>&& args) noexcept;
+	std::optional<string> setnx(context&& ctx) noexcept;
 	//	getset		created by tigerwang	date:2021/4/18
-	std::optional<string> getset(std::vector<string>&& args) noexcept;
+	std::optional<string> getset(context&& ctx) noexcept;
 	//	msetnx		created by tigerwang	date:2021/4/19
-	std::optional<string> msetnx(std::vector<string>&& args) noexcept;
+	std::optional<string> msetnx(context&& ctx) noexcept;
 	//	incre		created by tigerwang	date:2021/4/19
-	std::optional<string> incr(std::vector<string>&& args) noexcept;
+	std::optional<string> incr(context&& ctx) noexcept;
 
 }

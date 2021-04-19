@@ -19,7 +19,7 @@ namespace myredis
         );
         for (;;)
         {
-            asio::co_spawn(ioc.get_executor(), BaseSession::Run(std::make_unique<BaseSession>
+            asio::co_spawn(ioc.get_executor(), BaseSession::run(std::make_unique<BaseSession>
             (
                 ioc,                                                //io_context
                 co_await acceptor.async_accept(asio::use_awaitable) //socket
