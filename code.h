@@ -8,7 +8,8 @@ namespace myredis::code
 	enum class status			//函数错误码
 	{
 		success,
-		object_type_error	//对象类型错误
+		object_type_error,	//对象类型错误
+		value_overflow		//数值溢出
 		//add other error here
 	};
 	static string& getErrorMessage(status i)			// 从错误码获取错误信息
@@ -16,7 +17,8 @@ namespace myredis::code
 		static string error_message[] = // 必须保证message顺序和code相同!
 		{
 			"success",
-			"object type error"
+			"object type error",
+			"value overflow" // 为了对齐errMsg和status ,这个在incr中没有使用 ---tigerwang
 			//add other message here
 		};
 		return error_message[static_cast<std::size_t>(i)];

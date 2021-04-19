@@ -149,7 +149,6 @@ do{\
                 if (args.size() == 0) continue;
                 boost::algorithm::to_lower(args[0]);
                 auto iter = getfuncManager().find(args[0]);
-                
                 //函数不存在，返回错误信息（当前为了客户端调试方便，返回一个用于测试的回复
                 if (iter == getfuncManager().end())
                 {
@@ -160,9 +159,7 @@ do{\
                 else
                 {
                     //iter->second是一个函数（通过args[0]查找而得）
-                    auto reply = iter->second(func::Ctx(std::move(args), *self.get()));
-                    if (!self->socket.is_open())  //如果操作导致连接关闭，直接返回
-                        co_return;
+                    auto reply = iter->second(std::move(args));
                     //如果reply不为空
                     if (reply.has_value())
                     {
@@ -200,22 +197,6 @@ do{\
             ), 1));
         };
         co_return;
-    }
-
-    void BaseSession::stop()
-    {
-        socket.shutdown(asio::socket_base::shutdown_both);
-        socket.close();
-    }
-
-    int BaseSession::getDataBaseIndex()
-    {
-        return dataBaseIndex;
-    }
-
-    void BaseSession::setDataBaseIndex(int index)
-    {
-
     }
 
 }
