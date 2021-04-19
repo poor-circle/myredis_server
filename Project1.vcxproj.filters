@@ -138,6 +138,9 @@
     <ClInclude Include="ObjectVisitor\stringVisitor\changeCodetoString.h">
       <Filter>头文件\ObjectVisitor\StringVisitor</Filter>
     </ClInclude>
+    <ClInclude Include="Func\connectFunc.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
