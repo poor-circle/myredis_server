@@ -32,13 +32,13 @@ namespace myredis
 	}
 
 	//TODO::插入需要检查是否需要淘汰某个缓存
-	bool objectMap::try_insert(string&& str, object&& obj)
+	hash_map<keyIter, object>::iterator objectMap::try_insert(string&& str, object&& obj)
 	{
 		keylist.push_front(std::move(str));
 		auto ans = map.emplace(keylist.begin(), std::move(obj));
 		if (!ans.second)
 			keylist.pop_front();
-		return ans.second;
+		return ans.second?ans.first:map.end();
 	}
 
 	//每次查找都需要更新缓存优先级
@@ -73,7 +73,7 @@ namespace myredis
 		for (auto &&e:str)
 			if (!isdigit(e) && e != '-'&& e != '.')
 				return make_unique<string>(std::move(str));
-		if (boost::conversion::try_lexical_convert(str, integer))
+		if (try_lexical_convert(str, integer))
 		{
 			if (str.size() >= 2 && (str[0] == '0' || (str[0] == '-' && str[1] == '0')));
 			else
@@ -83,7 +83,7 @@ namespace myredis
 			}
 			
 		}
-		else if (boost::conversion::try_lexical_convert(str, db))
+		else if (try_lexical_convert(str, db))
 		{
 			fmt::format_to(back_inserter(temp), FMT_COMPILE("{}"), db);
 			if (temp == str) return db;

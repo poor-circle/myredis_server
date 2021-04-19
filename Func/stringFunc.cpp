@@ -29,7 +29,7 @@ namespace myredis::func
 			if (args.size() != 3)
 				return code::args_count_error;
 			getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
-			return code::succeed;
+			return code::succees_reply;
 		}
 		catch (const exception& e)
 		{
@@ -48,7 +48,7 @@ namespace myredis::func
 			auto iter = getObjectMap().find(args[1]);
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
-				return code::key_search_error;
+				return code::nil;
 			}
 			else
 			{
@@ -92,17 +92,18 @@ namespace myredis::func
 			}
 			else
 			{
-				// 找到key取出 
-				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
+				//将对象编码强制转化为字符串
+				auto ret = visit([iter](auto& e)
+				{
+					return visitor::changeCodetoString(e,iter->second);
+				}, iter->second);
 			
 				if (ret.first != code::status::success) {
 					return code::getErrorReply(ret.second);
 				}
 				// append操作
 				ret.second.append(args[2]);
-				int64_t len = ret.second.size();
-				iter->second = stringToObject(std::move(ret.second));
-				return code::getIntegerReply(len);
+				return code::getIntegerReply(ret.second.size());
 			}
 		}
 		catch (const exception& e)
@@ -169,7 +170,7 @@ namespace myredis::func
 			if (iter == getObjectMap().end())
 			{
 				//找不到对应的key
-				return code::key_search_error;
+				return code::nil;
 			}
 			else
 			{
@@ -182,8 +183,8 @@ namespace myredis::func
 				// 不能转换会抛出invalid_argument异常
 				// 超过返回会抛出out_of_range异常
 				int64_t start, end;
-				if (boost::conversion::try_lexical_convert(args[2], start) == false || 
-					boost::conversion::try_lexical_convert(args[3], end) == false) {
+				if (try_lexical_convert(args[2], start) == false || 
+					try_lexical_convert(args[3], end) == false) {
 					return code::getErrorReply("error:invalid_arugment or integer out of range");
 				}
 				const int64_t strLen = ret.second.size();
@@ -234,7 +235,8 @@ namespace myredis::func
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			return 	code::getIntegerReply(getObjectMap().try_insert(std::move(args[1]), stringToObject(std::move(args[2]))));
+			auto iter=getObjectMap().try_insert(std::move(args[1]), stringToObject(std::move(args[2])));
+			return code::getIntegerReply(iter != getObjectMap().end()?1:0);
 		}
 		catch (const exception& e)
 		{
@@ -262,7 +264,7 @@ namespace myredis::func
 			if (iter == getObjectMap().end())//找不到对应的key
 			{
 				// 返回nil
-				return code::key_search_error;
+				return code::nil;
 			}
 			else
 			{
