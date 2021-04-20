@@ -33,7 +33,11 @@ namespace myredis
 			add(keys),
 			add(rename),
 			add(renamenx),
-			add(object)
+			add(object),
+			add(incrby),
+			add(incrbyfloat),
+			add(decr),
+			add(decrby)
 			//regist func at here
 			//{"name",func::name}
 		};
