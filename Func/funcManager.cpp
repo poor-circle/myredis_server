@@ -24,11 +24,7 @@ namespace myredis
 			add(setrange),
 			add(msetnx),
 			add(exists),
-			add(incr),
-			add(quit),
-			add(echo),
-			add(auth),
-			add(select)
+			add(incr)
 			//regist func at here
 			//{"name",func::name}
 		};

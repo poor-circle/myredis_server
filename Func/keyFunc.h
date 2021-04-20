@@ -8,5 +8,5 @@ namespace myredis::func
 	//这个文件负责各种和key有关的函数
 
 	//	exists		created by tigerwang	date:2021/4/19
-	std::optional<string> exists(context&& ctx) noexcept;
+	std::optional<string> exists(std::vector<string>&& args) noexcept;
 }

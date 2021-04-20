@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "BaseSession.h"
 #include "Func/funcManager.h"
-#include "code.h"
 namespace myredis
 {
 
@@ -83,15 +82,11 @@ do{\
     }\
 }while(false)
 
-    BaseSession::BaseSession(asio::io_context& ioc, tcp::socket socket):
-        ioc(ioc), socket(move(socket)),dataBaseID(0),closed(false),logined(false)
-    {
-        if (myredis_password == "") logined = true;
-    }
+    BaseSession::BaseSession(asio::io_context& ioc, tcp::socket socket) :ioc(ioc), socket(move(socket)) {}
 
     constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为4000个字节
 
-    awaitable<void> BaseSession::run(unique_ptr<BaseSession> self)
+    awaitable<void> BaseSession::Run(unique_ptr<BaseSession> self)
     {
         assert((fmt::print("session at thread:{}\n", std::this_thread::get_id()),1));
         assert((fmt::print
@@ -154,29 +149,17 @@ do{\
                 if (args.size() == 0) continue;
                 boost::algorithm::to_lower(args[0]);
                 auto iter = getfuncManager().find(args[0]);
-                //函数不存在，返回错误信息
+                //函数不存在，返回错误信息（当前为了客户端调试方便，返回一个用于测试的回复
                 if (iter == getfuncManager().end())
                 {
                     co_await asio::async_write(self->socket, asio::buffer(errorReply.data(),errorReply.size()), use_awaitable);
-                    assert((fmt::print("{}", errorReply), 1));
-                }
-                //检验是否拥有权限
-                else if (args[0]!="auth"&&self->isLogined() == false)
-                {
-                    co_await asio::async_write(self->socket, asio::buffer(code::auth_error.data(),code::auth_error.size()), use_awaitable);
-                    assert((fmt::print("客户端无权限!\n"), 1));
+                    assert((fmt::print("test reply:{}\n", errorReply), 1));
                 }
                 //函数存在，运行该函数，并将结果返回给客户端
                 else
                 {
                     //iter->second是一个函数（通过args[0]查找而得）
-                    auto reply = iter->second(func::context(std::move(args),*self.get()));
-                    //如果自身被设定为关闭，则关掉连接
-                    if (self->closed)
-                    {
-                        self->socket.shutdown(self->socket.shutdown_both);
-                        co_return;
-                    }
+                    auto reply = iter->second(std::move(args));
                     //如果reply不为空
                     if (reply.has_value())
                     {
@@ -214,32 +197,6 @@ do{\
             ), 1));
         };
         co_return;
-    }
-
-    void BaseSession::setDataBaseID(int64_t ID) noexcept
-    {
-        dataBaseID = ID;
-    }
-
-    objectMap& BaseSession::getObjectMap() noexcept
-    {
-        return objectMap::getObjectMap(dataBaseID);
-    }
-
-
-    void BaseSession::setClosed() noexcept
-    {
-        closed = true;
-    }
-
-    bool BaseSession::isLogined() noexcept
-    {
-        return logined;
-    }
-
-    void BaseSession::setLogined(bool logined) noexcept
-    {
-        this->logined = logined;
     }
 
 }

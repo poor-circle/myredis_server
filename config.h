@@ -9,10 +9,6 @@
 
 constexpr bool allKeyLRU = 1;
 
-inline const char *myredis_password = "123456";
-
-inline size_t data_base_count = 16;
-
 //variant support
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;

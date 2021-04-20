@@ -141,9 +141,6 @@
     <ClInclude Include="ObjectVisitor\stringVisitor\incr.h">
       <Filter>头文件\ObjectVisitor\StringVisitor</Filter>
     </ClInclude>
-    <ClInclude Include="Func\connectFunc.h">
-      <Filter>头文件\Func</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -181,9 +178,6 @@
     </ClCompile>
     <ClCompile Include="ObjectVisitor\stringVisitor\incr.cpp">
       <Filter>源文件\ObjectVisitor\stringVisitor</Filter>
-    </ClCompile>
-    <ClCompile Include="Func\connectFunc.cpp">
-      <Filter>源文件\Func</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

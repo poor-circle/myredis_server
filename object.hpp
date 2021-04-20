@@ -62,13 +62,19 @@ namespace myredis
 	private:
 		std::list<string> keylist;
 		hash_map<keyIter, object> map;
-		//不要直接创建这个对象！(通过getObjectMap来获取）
+		objectMap() = default;
+		~objectMap() = default;
 	public:
+		static objectMap& Singleton();
+		//判断是否包括某个一个key
+		bool contains(const string& str);
 		//插入(更新)一个key
 		void update(string&& str,object&& obj);
 		hash_map<keyIter, object>::iterator try_insert(string&& str, object&& obj);
 		hash_map<keyIter, object>::iterator find(string& str);
 		hash_map<keyIter, object>::iterator end();
-		static objectMap& getObjectMap(size_t index);
 	};
+
+	//通过key获取对象类型
+	objectMap& getObjectMap();
 }

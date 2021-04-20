@@ -22,16 +22,14 @@ namespace myredis::func
 
 	//noexcept:每一个函数都保证自身不抛出任何异常。即使有一个操作崩溃，也能保证不影响其他操作
 
-	optional<string> set(context&& ctx) noexcept
+	optional<string> set(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			objectMap.update(std::move(args[1]), stringToObject(std::move(args[2])));
-			return code::ok;
+			getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
+			return code::succees_reply;
 		}
 		catch (const exception& e)
 		{
@@ -41,16 +39,14 @@ namespace myredis::func
 	}
 
 	//获取一个字符串
-	optional<string> get(context&& ctx) noexcept
+	optional<string> get(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 2)
 				return code::args_count_error;
-			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())//找不到对应的key
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())//找不到对应的key
 			{
 				return code::nil;
 			}
@@ -59,7 +55,7 @@ namespace myredis::func
 				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
 				if (ret.first != code::status::success)
 				{
-					return code::getErrorReply(ret.first);
+					return code::getErrorReply(ret.second);
 				}
 				return code::getBulkReply(ret.second);
 			}
@@ -79,20 +75,18 @@ namespace myredis::func
 	* 如果 key 不存在，那么它将首先创建一个空字符串的key，再执行追加操作，这种情况 APPEND 将类似于 SET 操作。
 	* created by tigerwang  2021/4/17 20:00
 	*/
-	std::optional<string> append(context&& ctx) noexcept
+	std::optional<string> append(std::vector<string>&& args) noexcept 
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())//找不到对应的key
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())//找不到对应的key
 			{
 				auto len = args[2].size();
 				// 调用set函数
-				objectMap.update(std::move(args[1]), stringToObject(std::move(args[2])));
+				getObjectMap().update(std::move(args[1]), stringToObject(std::move(args[2])));
 				//set以后要返回长度
 				return code::getIntegerReply(len);
 			}
@@ -105,7 +99,7 @@ namespace myredis::func
 				}, iter->second);
 			
 				if (ret.first != code::status::success) {
-					return code::getErrorReply(ret.first);
+					return code::getErrorReply(ret.second);
 				}
 				// append操作
 				ret.second.append(args[2]);
@@ -127,16 +121,14 @@ namespace myredis::func
 	* 如果key对应的非string类型，就返回错误。
 	* 如果key不存在返回0
 	*/
-	std::optional<string> strlen(context&& ctx) noexcept
+	std::optional<string> strlen(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 2)
 				return code::args_count_error;
-			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())
 			{
 				//找不到对应的key 返回0
 				return code::getIntegerReply(0);
@@ -146,7 +138,7 @@ namespace myredis::func
 				// 找到key取出
 				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
 				if (ret.first != code::status::success) {
-					return code::getErrorReply(ret.first);
+					return code::getErrorReply(ret.second);
 				}
 				return code::getIntegerReply(ret.second.size());
 			}
@@ -168,16 +160,14 @@ namespace myredis::func
 	* 这个函数处理超出范围的请求时，都把结果限制在string内。
 	* 返回值 bulk-reply
 	*/
-	std::optional<string> getrange(context&& ctx) noexcept
+	std::optional<string> getrange(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 4)
 				return code::args_count_error;
-			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())
 			{
 				//找不到对应的key
 				return code::nil;
@@ -187,7 +177,7 @@ namespace myredis::func
 				// 找到key取出string
 				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
 				if (ret.first != code::status::success) {
-					return code::getErrorReply(ret.first);
+					return std::move(code::getErrorReply(ret.second));
 				}
 				// 使用stoi将start和end转换为Int
 				// 不能转换会抛出invalid_argument异常
@@ -195,7 +185,7 @@ namespace myredis::func
 				int64_t start, end;
 				if (try_lexical_convert(args[2], start) == false || 
 					try_lexical_convert(args[3], end) == false) {
-					return code::getErrorReply(code::status::invaild_argument);
+					return code::getErrorReply("error:invalid_arugment or integer out of range");
 				}
 				const int64_t strLen = ret.second.size();
 				// 如果小于零 + strLen ，还小于0说明超过长度了，直接置0
@@ -239,16 +229,14 @@ namespace myredis::func
 	* 1 如果key被设置了
 	* 0 如果key没有被设置
 	*/
-	std::optional<string> setnx(context&& ctx) noexcept
+	std::optional<string> setnx(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			auto iter= objectMap.try_insert(std::move(args[1]), stringToObject(std::move(args[2])));
-			return code::getIntegerReply(iter != objectMap.end()?1:0);
+			auto iter=getObjectMap().try_insert(std::move(args[1]), stringToObject(std::move(args[2])));
+			return code::getIntegerReply(iter != getObjectMap().end()?1:0);
 		}
 		catch (const exception& e)
 		{
@@ -266,16 +254,14 @@ namespace myredis::func
 	* 返回之前的旧值，如果之前Key不存在将返回nil。
 	* created by tigerwang	date:2021/4/18
 	*/
-	std::optional<string> getset(context&& ctx) noexcept
+	std::optional<string> getset(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())//找不到对应的key
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end())//找不到对应的key
 			{
 				// 返回nil
 				return code::nil;
@@ -285,7 +271,7 @@ namespace myredis::func
 				auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
 				if (ret.first != code::status::success)
 				{
-					return code::getErrorReply(ret.first);
+					return code::getErrorReply(ret.second);
 				}
 				// 获取之前的值
 				auto retstr = code::getBulkReply(ret.second);
@@ -319,25 +305,24 @@ namespace myredis::func
 	* 1 如果所有的key被set
 	* 0 如果没有key被set(至少其中有一个key是存在的)
 	*/
-	std::optional<string> msetnx(context&& ctx) noexcept
+	std::optional<string> msetnx(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() > 1 && args.size() % 2 == 0)
 				return code::args_count_error;
 			for (auto arg = args.begin() + 1; arg < args.end(); arg += 2) 
 			{
-				auto iter = objectMap.find(*arg);
-				if (iter != objectMap.end())
+				auto iter = getObjectMap().find(*arg);
+				if (iter != getObjectMap().end()) 
 				{
 					return code::getIntegerReply(0);
 				}
 			}
 			for (auto arg = args.begin() + 1; arg < args.end(); arg += 2)
 			{
-				objectMap.update(std::move(*arg), stringToObject(std::move(*(arg + 1))));
+
+				getObjectMap().update(std::move(*arg), stringToObject(std::move(*(arg + 1))));
 			}
 			return code::getIntegerReply(1);
 		}
@@ -363,17 +348,15 @@ namespace myredis::func
 	* 返回值
 	* integer-reply:执行递增操作后key对应的值。
 	*/
-	std::optional<string> incr(context&& ctx) noexcept
+	std::optional<string> incr(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 2)
 				return code::args_count_error;
-			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end()) {
-				objectMap.update(std::move(args[1]), (int64_t)1);
+			auto iter = getObjectMap().find(args[1]);
+			if (iter == getObjectMap().end()) {
+				getObjectMap().update(std::move(args[1]), stringToObject("1"));
 				return code::getIntegerReply(1);
 			}
 			else {
@@ -384,12 +367,15 @@ namespace myredis::func
 				}, iter->second);
 
 				if (ret.first != code::status::success) {
-					return code::getErrorReply(ret.first);
+					if (ret.second == INT64_MAX) {
+						return code::getErrorReply("error: increment would overflow");
+					}
+					return code::getErrorReply("error:value is not an integer or out of range");
 				}
 
 				return code::getIntegerReply(ret.second);
 			}
-			return code::ok;
+			return code::succees_reply;
 		}
 		catch (const exception& e)
 		{
@@ -405,19 +391,17 @@ namespace myredis::func
 	* date:2021/04/18
 	* 
 	*/
-	std::optional<string> mset(context&& ctx) noexcept
+	std::optional<string> mset(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size()>1 && args.size()%2==0)
 				return code::args_count_error;
 			for (auto arg = args.begin() + 1; arg < args.end(); arg += 2)
 			{
-				objectMap.update(std::move(*arg), stringToObject(std::move(*(arg+1))));
+				getObjectMap().update(std::move(*arg), stringToObject(std::move(*(arg+1))));
 			}
-			return code::ok;
+			return code::succees_reply;
 		}
 		catch (const exception& e)
 		{
@@ -433,20 +417,18 @@ namespace myredis::func
 	* date:2021/04/18
 	*
 	*/
-	std::optional<string> mget(context&& ctx) noexcept
+	std::optional<string> mget(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
 		try
 		{
 			if (args.size() <= 1)
 				return code::args_count_error;
 			else
 				return code::getMultiReply(args.begin() + 1, args.end(),
-				[&ctx](vector<string>::iterator &arg)
+				[](vector<string>::iterator &arg)
 				{
-					auto&& objectMap = ctx.session.getObjectMap();
-					auto iter = objectMap.find(*arg);
-					if (iter == objectMap.end())
+					auto iter = getObjectMap().find(*arg);
+					if (iter == getObjectMap().end())
 					{
 						return code::nil;
 					}
@@ -474,22 +456,20 @@ namespace myredis::func
 	* 当字符串没有那么长（或不存在）时，在前面补0
 	* date:2021/04/18
 	*/
-	std::optional<string> setrange(context&& ctx) noexcept
+	std::optional<string> setrange(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() != 4)
 				return code::args_count_error;
 			int64_t offset;
-			if (!try_lexical_convert<int64_t>(args[2], offset) || offset < 0)
-				return code::getErrorReply(code::status::invaild_argument);
+			if (!try_lexical_convert<int64_t>(args[2], offset)||offset<0)
+				return code::getErrorReply("invalid argument");
 			else
 			{
-				auto iter = objectMap.find(args[1]);
+				auto iter = getObjectMap().find(args[1]);
 				size_t retlength;
-				if (iter != objectMap.end())
+				if (iter != getObjectMap().end())
 				{
 					//将对象编码设置为字符串（setrange以后，对象一定变成字符串）
 					auto ret = visit([&iter](auto& e)
@@ -498,13 +478,13 @@ namespace myredis::func
 					}, iter->second);
 					if (ret.first != code::status::success)
 					{
-						return code::getErrorReply(ret.first);
+						return code::getErrorReply(ret.second);
 					}
 					else
 					{
 						string& str = ret.second;
 						str.reserve(offset + args[3].size());//预申请空间
-						if (str.length() >= (size_t)offset)//如果字符串比offset长
+						if (str.length() >= offset)//如果字符串比offset长
 						{
 							if (str.length() < offset + args[3].size())//如果字符串不够长
 							{
@@ -525,7 +505,7 @@ namespace myredis::func
 					auto ptr = make_unique<string>();
 					string& str = *ptr;//获取指针所指的字符串
 					//插入一个字符串对象
-					auto iter= objectMap.try_insert(std::move(args[1]), std::move(ptr));
+					auto iter=getObjectMap().try_insert(std::move(args[1]), std::move(ptr));
 					str.reserve(offset + args[3].size());//预申请空间
 					str.append(offset, '\0');//补零
 					str.append(args[3]);//插入字符串
@@ -542,7 +522,22 @@ namespace myredis::func
 	}
 
 
-
+	std::optional<string> ping(std::vector<string>&& args) noexcept
+	{
+		try
+		{
+			if (args.size() == 1)
+				return code::pong;
+			else if (args.size() == 2)
+				return code::getSingleReply(args[1]);
+			return code::args_count_error;
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
 
 
 }

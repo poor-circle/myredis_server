@@ -5,10 +5,15 @@ namespace myredis
 #include"namespace.i"
 
 
-	objectMap& objectMap::getObjectMap(size_t index)
+	objectMap& getObjectMap()
 	{
-		static vector<objectMap> map(data_base_count);
-		return map[index];
+		return objectMap::Singleton();
+	}
+
+	objectMap& objectMap::Singleton()
+	{
+		static objectMap map;
+		return map;
 	}
 	//TODO::插入需要检查是否需要淘汰某个缓存
 	void objectMap::update(string&& str, object&& obj)

@@ -28,24 +28,26 @@ namespace myredis::func
 	* 1 如果key存在
 	* 0 如果key不存在
 	*/
-	std::optional<string> exists(context&& ctx) noexcept
+	std::optional<string> exists(std::vector<string>&& args) noexcept
 	{
-		auto&& args = ctx.args;
-		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
 			if (args.size() <= 1)
 				return code::args_count_error;
 			else
+				return code::getMultiReply(args.begin() + 1, args.end(),
+					[](vector<string>::iterator& arg)
 			{
-				for (auto&& e : args)
+				auto iter = getObjectMap().find(*arg);
+				if (iter == getObjectMap().end())
 				{
-					auto iter = objectMap.find(e);
-					if (iter != objectMap.end())
-						return code::getIntegerReply(0);
+					return code::getIntegerReply(0);
 				}
-				return code::getIntegerReply(1);
-			}
+				else
+				{
+					return code::getIntegerReply(1);
+				}
+			});
 		}
 		catch (const exception& e)
 		{
@@ -53,6 +55,4 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
-
-
 }
