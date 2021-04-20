@@ -13,4 +13,8 @@ namespace myredis::func
 	std::optional<string> del(context&& ctx) noexcept;
 	//	keys	created by lizezheng	date:2021/4/20
 	std::optional<string> keys(context&& ctx) noexcept;
+	//	rename	created by lizezheng	date:2021/4/20
+	std::optional<string> rename(context&& ctx) noexcept;
+	//	renamenx	created by lizezheng	date:2021/4/20
+	std::optional<string> renamenx(context&& ctx) noexcept;
 }

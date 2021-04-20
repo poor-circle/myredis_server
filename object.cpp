@@ -84,6 +84,12 @@ namespace myredis
 			return 0;
 	}
 
+	hash_map<keyIter, object>::iterator objectMap::erase(hash_map<keyIter, object>::const_iterator iter)
+	{
+		keylist.erase(iter->first.iter);
+		return map.erase(iter);
+	}
+
 
 	object stringToObject(string&& str)
 	{

@@ -28,13 +28,14 @@ namespace myredis::code
 
 	const string ok = "+OK\r\n";
 	const string pong = "+PONG\r\n";
-	const string args_count_error = "-wrong args count\r\n";
+	const string args_count_error = "-Wrong args count\r\n";
 	const string nil = "$-1\r\n";
 	const string no_password_error = "-Client sent AUTH, but no password is set\r\n";
 	const string password_wrong_error = "-Password is wrong. Please try again\r\n";
-	const string database_index_error = "-invalid DB index\r\n";
+	const string database_index_error = "-Invalid DB index\r\n";
 	const string auth_error = "-Please login first.\r\n";
-	const string regex_error = "-illegel regex.\r\n";
+	const string regex_error = "-Illegel regex.\r\n";
+	const string key_error = "-No such key.\r\n";
 
 	static void getReplyTo(const std::string_view str, std::back_insert_iterator<string> s)
 	{
@@ -137,7 +138,7 @@ namespace myredis::code
 	* getMultiReply:用于格式化多批量回复
 	* date:2021/04/18
 	* begin,end:一对迭代器
-	* lambda:一个函数，接收一个插入迭代器和一个Iter迭代器，无返回值
+	* lambda:一个函数，接收一个插入迭代器和一个Iter迭代器，返回一个整数值，代表插入的回复数量
 	*/
 	template<class Iter,typename func>
 	static string getMultiReply(Iter begin, Iter end,func lambda) //多批量回复
