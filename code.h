@@ -36,6 +36,8 @@ namespace myredis::code
 	const string auth_error = "-Please login first.\r\n";
 	const string regex_error = "-Illegel regex.\r\n";
 	const string key_error = "-No such key.\r\n";
+	const string command_error = { "-no such command\r\n" };
+	const string subcommand_error = { "-no such subcommand\r\n" };
 
 	static void getReplyTo(const std::string_view str, std::back_insert_iterator<string> s)
 	{

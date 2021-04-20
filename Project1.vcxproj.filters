@@ -123,7 +123,7 @@
     <ClInclude Include="Func\allFunc.h">
       <Filter>头文件\Func</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.hpp">
+    <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.h">
       <Filter>头文件\ObjectVisitor\keyVisitor</Filter>
     </ClInclude>
     <ClInclude Include="ObjectVisitor\keyVisitor\type.hpp">
@@ -184,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="Func\connectFunc.cpp">
       <Filter>源文件\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectVisitor\keyVisitor\object_encode.cpp">
+      <Filter>源文件\ObjectVisitor\keyVisitor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

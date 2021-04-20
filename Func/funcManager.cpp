@@ -32,7 +32,8 @@ namespace myredis
 			add(del),
 			add(keys),
 			add(rename),
-			add(renamenx)
+			add(renamenx),
+			add(object)
 			//regist func at here
 			//{"name",func::name}
 		};

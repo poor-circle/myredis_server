@@ -111,7 +111,6 @@ do{\
             //iterBegin:应该从哪里开始读
             //iterEnd:读到哪里算结束
             
-            string errorReply={"-error:no such command\r\n"};//用于测试的回复
             while (true)
             {
                 //读取*号后面的正整数（一共有多少行）
@@ -157,8 +156,8 @@ do{\
                 //函数不存在，返回错误信息
                 if (iter == getfuncManager().end())
                 {
-                    co_await asio::async_write(self->socket, asio::buffer(errorReply.data(),errorReply.size()), use_awaitable);
-                    assert((fmt::print("{}", errorReply), 1));
+                    co_await asio::async_write(self->socket, asio::buffer(code::command_error.data(), code::command_error.size()), use_awaitable);
+                    assert((fmt::print("{}", code::command_error), 1));
                 }
                 //检验是否拥有权限
                 else if (args[0]!="auth"&&self->isLogined() == false)

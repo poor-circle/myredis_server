@@ -17,4 +17,6 @@ namespace myredis::func
 	std::optional<string> rename(context&& ctx) noexcept;
 	//	renamenx	created by lizezheng	date:2021/4/20
 	std::optional<string> renamenx(context&& ctx) noexcept;
+	//	object	created by lizezheng	date:2021/4/20
+	std::optional<string> object(context&& ctx) noexcept;
 }
