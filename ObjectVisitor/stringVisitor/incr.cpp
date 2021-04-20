@@ -6,6 +6,7 @@
 
 namespace myredis::visitor
 {
+    // incr
     std::pair<code::status, int64_t>  incr(int64_t& object)
     {
         if (object == INT64_MAX) {
@@ -16,7 +17,7 @@ namespace myredis::visitor
     }
     std::pair<code::status, int64_t> incr(double& object)
     {
-        return { code::status::object_type_error,(int64_t)0 };
+        return { code::status::object_type_error,0 };
     }
     std::pair<code::status, int64_t> incr(std::unique_ptr<string>& object)
     {
@@ -35,6 +36,43 @@ namespace myredis::visitor
         return { code::status::object_type_error,0 };
     }
     std::pair<code::status, int64_t> incr(std::unique_ptr<deque<string>>& object)
+    {
+        return { code::status::object_type_error,0 };
+    }
+
+    // incrby
+    std::pair<code::status, int64_t> incrby(int64_t& object, int64_t increment)
+    {
+        
+        if((object  > INT64_MAX - increment && increment >0)||
+            (object < INT64_MIN - increment && increment <0))
+        {
+            return { code::status::value_overflow,object };
+        }
+        object += increment;
+        return myredis_succeed(object);
+    }
+    std::pair<code::status, int64_t> incrby(double& object, int64_t increment)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<string>& object, int64_t increment)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<hash_set<string>>& object, int64_t increment)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<hash_map<string, string>>& object, int64_t increment)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<key_ordered_map<double, string>>& object, int64_t increment)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<deque<string>>& object, int64_t increment)
     {
         return { code::status::object_type_error,0 };
     }

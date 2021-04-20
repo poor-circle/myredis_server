@@ -28,7 +28,8 @@ namespace myredis
 			add(quit),
 			add(echo),
 			add(auth),
-			add(select)
+			add(select),
+			add(incrby)
 			//regist func at here
 			//{"name",func::name}
 		};

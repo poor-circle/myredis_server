@@ -17,7 +17,7 @@ namespace myredis::func
 	std::optional<string> mset(context&& ctx) noexcept;
 	//	mget		created by lizezheng	date:2021/4/18
 	std::optional<string> mget(context&& ctx) noexcept;
-	//	append		created by tigerwang	date:2021/4/18
+	//	created by tigerwang	date:2021/4/18
 	std::optional<string> append(context&& ctx) noexcept;
 	//	strlen		created by tigerwang	date:2021/4/18
 	std::optional<string> strlen(context&& ctx) noexcept;
@@ -29,7 +29,8 @@ namespace myredis::func
 	std::optional<string> getset(context&& ctx) noexcept;
 	//	msetnx		created by tigerwang	date:2021/4/19
 	std::optional<string> msetnx(context&& ctx) noexcept;
-	//	incre		created by tigerwang	date:2021/4/19
+	//	incr		created by tigerwang	date:2021/4/19
 	std::optional<string> incr(context&& ctx) noexcept;
-
+	//	incrby		created by tigerwang	date:2021/4/20
+	std::optional<string> incrby(context&& ctx) noexcept;
 }

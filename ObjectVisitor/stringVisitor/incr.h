@@ -18,4 +18,15 @@ namespace myredis::visitor
     std::pair<code::status, int64_t> incr(std::unique_ptr<hash_map<string, string>>& object);
     std::pair<code::status, int64_t> incr(std::unique_ptr<key_ordered_map<double, string>>& object);
     std::pair<code::status, int64_t> incr(std::unique_ptr<deque<string>>& object);
+
+    //incrby函数：只适用于int64_t对象，不能用于其他类型的对象
+    std::pair<code::status, int64_t> incrby(int64_t& object,int64_t increment);
+    std::pair<code::status, int64_t> incrby(double& object, int64_t increment);
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<string>& object, int64_t increment);
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<hash_set<string>>& object, int64_t increment);
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<hash_map<string, string>>& object, int64_t increment);
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<key_ordered_map<double, string>>& object, int64_t increment);
+    std::pair<code::status, int64_t> incrby(std::unique_ptr<deque<string>>& object, int64_t increment);
+
+
 }

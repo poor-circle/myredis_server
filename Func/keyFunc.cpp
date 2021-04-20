@@ -42,9 +42,9 @@ namespace myredis::func
 				{
 					auto iter = objectMap.find(e);
 					if (iter != objectMap.end())
-						return code::getIntegerReply(0);
+						return code::getIntegerReply(1);
 				}
-				return code::getIntegerReply(1);
+				return code::getIntegerReply(0);
 			}
 		}
 		catch (const exception& e)

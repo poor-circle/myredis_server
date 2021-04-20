@@ -399,6 +399,59 @@ namespace myredis::func
 	}
 
 	/*
+	* @author: tigerwang 
+	* date:2021/4/20
+	* 将key对应的数字加decrement。
+	* 如果key不存在，操作之前，key就会被置为0。
+	* 如果key的value类型错误或者是个不能表示成数字的字符串，就返回错误。
+	* 这个操作最多支持64位有符号的正型数字。
+	* 
+	* 返回值
+	* integer-reply： 增加之后的value值。
+	* 
+	*/
+	std::optional<string> incrby(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end()) {
+				objectMap.update(std::move(args[1]), (int64_t)1);
+				return code::getIntegerReply(1);
+			}
+			else {
+
+				int64_t increment;
+				if (!try_lexical_convert<int64_t>(args[2], increment)) {
+					return code::getErrorReply(code::status::invaild_argument);
+				}
+				// 在visit层+increment
+				auto ret = visit([increment](auto& e )
+				{
+					return visitor::incrby(e,increment);
+				}, iter->second);
+
+				if (ret.first != code::status::success) {
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getIntegerReply(ret.second);
+			}
+			return code::ok;
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+
+	}
+
+	/*
 	* 
 	* @author: Lizezheng
 	* mset:用于一次性设置多个键值
