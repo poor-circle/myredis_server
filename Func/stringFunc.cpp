@@ -5,6 +5,7 @@
 #include "../ObjectVisitor/StringVisitor/get.h"
 #include "../ObjectVisitor/StringVisitor/changeCodetoString.h"
 #include "../ObjectVisitor/StringVisitor/incr.h"
+#include "../ObjectVisitor/StringVisitor/decr.h"
 
 
 //func层相当于spring boot的controller层
@@ -450,6 +451,93 @@ namespace myredis::func
 		}
 
 	}
+
+	/*
+	* decr
+	* @author: tigerewang
+	* date:2021/4/19
+	*/
+	std::optional<string> decr(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end()) {
+				objectMap.update(std::move(args[1]), (int64_t)-1);
+				return code::getIntegerReply(-1);
+			}
+			else {
+				// 在visit层+1
+				auto ret = visit([](auto& e)
+				{
+					return visitor::decr(e);
+				}, iter->second);
+
+				if (ret.first != code::status::success) {
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getIntegerReply(ret.second);
+			}
+			return code::ok;
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* decrby
+	* @author: tigerwang
+	* date:2021/4/20
+	*/
+	std::optional<string> decrby(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			int64_t decrement;
+			if (!try_lexical_convert<int64_t>(args[2], decrement)) {
+				return code::getErrorReply(code::status::invaild_argument);
+			}
+
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end()) {
+				objectMap.update(std::move(args[1]), decrement);
+				return code::getIntegerReply(decrement);
+			}
+			else {
+				// 在visit层-increment
+				auto ret = visit([decrement](auto& e)
+				{
+					return visitor::decrby(e, decrement);
+				}, iter->second);
+
+				if (ret.first != code::status::success) {
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getIntegerReply(ret.second);
+			}
+			return code::ok;
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+
+	}
+
 
 	/*
 	* 

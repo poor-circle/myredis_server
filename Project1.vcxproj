@@ -209,6 +209,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\changeCodetoString.cpp" />
+    <ClCompile Include="ObjectVisitor\stringVisitor\decr.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\get.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\incr.cpp" />
     <ClCompile Include="stdafx.cpp">
