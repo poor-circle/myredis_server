@@ -29,6 +29,9 @@ namespace myredis
 			add(echo),
 			add(auth),
 			add(select),
+			add(del),
+			add(keys)
+			add(select),
 			add(incrby),
 			add(incrbyfloat),
 			add(decr),

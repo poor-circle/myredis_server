@@ -68,7 +68,11 @@ namespace myredis
 		void update(string&& str,object&& obj);
 		hash_map<keyIter, object>::iterator try_insert(string&& str, object&& obj);
 		hash_map<keyIter, object>::iterator find(string& str);
+		hash_map<keyIter, object>::iterator find(string&& str);
+		hash_map<keyIter, object>::iterator begin();
 		hash_map<keyIter, object>::iterator end();
+		size_t erase(string&& str);
 		static objectMap& getObjectMap(size_t index);
+		size_t size() const;
 	};
 }

@@ -11,7 +11,9 @@ constexpr bool allKeyLRU = 1;
 
 inline const char *myredis_password = "123456";
 
-inline size_t data_base_count = 16;
+inline long long data_base_count = 16;
+
+inline size_t regexOpLowerBound = 1000;
 
 //variant support
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };

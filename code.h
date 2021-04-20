@@ -34,6 +34,12 @@ namespace myredis::code
 	const string password_wrong_error = "-Password is wrong. Please try again\r\n";
 	const string database_index_error = "-invalid DB index\r\n";
 	const string auth_error = "-Please login first.\r\n";
+	const string regex_error = "-illegel regex.\r\n";
+
+	static void getReplyTo(const std::string_view str, std::back_insert_iterator<string> s)
+	{
+		copy(str.begin(), str.end(), s);
+	}
 
 	static string getBulkReply(const std::string_view str)  //批量回复
 	{
@@ -48,6 +54,17 @@ namespace myredis::code
 		return s;
 	}
 
+	static void getBulkReplyTo(std::string_view str,std::back_insert_iterator<string> s)  //批量回复
+	{
+		fmt::format_to
+		(
+			s,
+			FMT_COMPILE("${}\r\n{}\r\n"),
+			str.size(),
+			str
+		);
+	}
+
 	static string getSingleReply(const std::string_view str) //状态回复
 	{
 		string s;
@@ -58,6 +75,16 @@ namespace myredis::code
 			str
 		);
 		return s;
+	}
+
+	static void getSingleReplyTo(const std::string_view str , std::back_insert_iterator<string> s) //状态回复
+	{
+		fmt::format_to
+		(
+			s,
+			FMT_COMPILE("+{}\r\n"),
+			str
+		);
 	}
 
 	static string getErrorReply(status errorInfo) //错误回复
@@ -72,6 +99,16 @@ namespace myredis::code
 		return s;
 	}
 
+	static void getErrorReplyTo( status errorInfo, std::back_insert_iterator<string> s) //错误回复
+	{
+		fmt::format_to
+		(
+			s,
+			FMT_COMPILE("-{}\r\n"),
+			getMessage(errorInfo)
+		);
+	}
+
 	static string getIntegerReply(int64_t number) //整数回复
 	{
 		string s;
@@ -83,37 +120,49 @@ namespace myredis::code
 		);
 		return s;
 	}
+
+	static void getIntegerReplyTo(int64_t number,std::back_insert_iterator<string> s) //整数回复
+	{
+		fmt::format_to
+		(
+			s,
+			FMT_COMPILE(":{}\r\n"),
+			number
+		);
+	}
+
 	/*
 	*
 	* @author: Lizezheng
 	* getMultiReply:用于格式化多批量回复
 	* date:2021/04/18
 	* begin,end:一对迭代器
-	* lambda:一个函数，接收一个迭代器，返回一个string&
+	* lambda:一个函数，接收一个插入迭代器和一个Iter迭代器，无返回值
 	*/
 	template<class Iter,typename func>
 	static string getMultiReply(Iter begin, Iter end,func lambda) //多批量回复
 	{
-		string s;
-		auto dis = std::distance(begin, end);
-		fmt::format_to
-		(
-			back_inserter(s),
-			FMT_COMPILE("*{}\r\n"),
-			dis
-		);
+		string s="*00000000000000\r\n";
+		auto index = s.size() - 3;
+		int64_t cnt = 0;
 		for (; begin != end; begin = std::next(begin))
+			if (lambda(begin, back_inserter(s))) ++cnt;
+		while (cnt)
 		{
-			fmt::format_to
-			(
-				back_inserter(s),
-				FMT_COMPILE("{}"),
-				lambda(begin)
-			);
+			s[index--] = '0'+cnt % 10;
+			cnt /= 10;
 		}
 		return s;
 	}
 
+#define printlog(e)\
+		fmt::print\
+		(\
+			stderr,\
+			"myredis error at function \"{}\"\nexception info:{}\n",\
+			__func__,\
+			e.what()\
+		);
 	//add error info here;
 
 
