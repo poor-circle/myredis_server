@@ -72,6 +72,7 @@ namespace myredis
 		hash_map<keyIter, object>::iterator begin();
 		hash_map<keyIter, object>::iterator end();
 		size_t erase(string&& str);
+		hash_map<keyIter, object>::iterator erase(hash_map<keyIter, object>::const_iterator iter);
 		static objectMap& getObjectMap(size_t index);
 		size_t size() const;
 	};

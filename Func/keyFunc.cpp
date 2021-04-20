@@ -124,4 +124,69 @@ namespace myredis::func
 	}
 
 
+	std::optional<string> rename(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			else
+			{
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					object obj;
+					swap(obj, iter->second);
+					objectMap.erase(iter);
+					objectMap.update(std::move(args[2]), std::move(obj));
+					return code::ok;
+				}
+				else
+					return code::key_error;
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	std::optional<string> renamenx(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			else
+			{
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					auto iter2 = objectMap.find(args[2]);
+					int flag = iter2 == objectMap.end();
+					if (flag)
+					{
+						object obj;
+						swap(obj, iter->second);
+						objectMap.erase(iter);
+						objectMap.try_insert(std::move(args[2]), std::move(obj));
+					}
+					return code::getIntegerReply(flag);
+				}
+				else
+					return code::key_error;
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
 }

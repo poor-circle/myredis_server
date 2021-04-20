@@ -31,6 +31,9 @@ namespace myredis
 			add(select),
 			add(del),
 			add(keys),
+			add(rename),
+			add(renamenx)
+			add(keys),
 			add(select),
 			add(incrby),
 			add(incrbyfloat),

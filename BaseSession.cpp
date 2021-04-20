@@ -186,7 +186,7 @@ do{\
                     //reply为空，函数运行时崩溃，返回错误信息
                     else
                     {
-                        co_await asio::async_write(self->socket, asio::buffer("-error:server exception\r\n"), use_awaitable);
+                        co_await asio::async_write(self->socket, asio::buffer("-server exception\r\n"), use_awaitable);
                         assert((fmt::print("服务器内部错误\n", reply.value()), 1));
                     }
                 }
