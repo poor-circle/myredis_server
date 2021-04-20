@@ -9,25 +9,31 @@ namespace myredis::code
 	{
 		success,
 		object_type_error,	//对象类型错误
-		value_overflow		//数值溢出
+		value_overflow,		//数值溢出
+		invaild_argument,
 		//add other error here
 	};
-	static string& getErrorMessage(status i)			// 从错误码获取错误信息
+	static string& getMessage(status i)			// 从错误码获取错误信息
 	{
 		static string error_message[] = // 必须保证message顺序和code相同!
 		{
 			"success",
 			"object type error",
-			"value overflow" // 为了对齐errMsg和status ,这个在incr中没有使用 ---tigerwang
+			"value overflow",
+			"invalid argument or integer out of range"
 			//add other message here
 		};
 		return error_message[static_cast<std::size_t>(i)];
 	}
 
-	const string succees_reply = "+OK\r\n";
+	const string ok = "+OK\r\n";
 	const string pong = "+PONG\r\n";
-	const string args_count_error = "-error:wrong args count\r\n";
+	const string args_count_error = "-wrong args count\r\n";
 	const string nil = "$-1\r\n";
+	const string no_password_error = "-Client sent AUTH, but no password is set\r\n";
+	const string password_wrong_error = "-Password is wrong. Please try again\r\n";
+	const string database_index_error = "-invalid DB index\r\n";
+	const string auth_error = "-Please login first.\r\n";
 
 	static string getBulkReply(const std::string_view str)  //批量回复
 	{
@@ -54,14 +60,14 @@ namespace myredis::code
 		return s;
 	}
 
-	static string getErrorReply(const std::string_view errorInfo) //错误回复
+	static string getErrorReply(status errorInfo) //错误回复
 	{
 		string s;
 		fmt::format_to
 		(
 			back_inserter(s),
 			FMT_COMPILE("-{}\r\n"),
-			errorInfo
+			getMessage(errorInfo)
 		);
 		return s;
 	}
@@ -112,5 +118,5 @@ namespace myredis::code
 
 
 #define myredis_succeed(X) {myredis::code::status::success,X}
-#define myredis_failed(X)  {myredis::code::status::##X,myredis::code::getErrorMessage(myredis::code::status::##X)}
+#define myredis_failed(X)  {myredis::code::status::##X,myredis::code::getMessage(myredis::code::status::##X)}
 }
