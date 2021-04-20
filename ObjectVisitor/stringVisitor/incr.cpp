@@ -81,10 +81,9 @@ namespace myredis::visitor
     //incrbyfloat函数:只适用于double和int64_t对象,
     std::pair<code::status, string&> incrbyfloat(int64_t& value, object& obj, double increment)
     {
-        static double temp = static_cast<double>(value) + increment;
-        obj = temp;
         static string tempStr;
-        tempStr = boost::lexical_cast<string>(temp);
+        obj = value + increment;
+        tempStr = boost::lexical_cast<string>(std::get<double>(obj));
         return myredis_succeed(tempStr);
     }
 
