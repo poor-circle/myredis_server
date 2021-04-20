@@ -30,7 +30,7 @@ namespace myredis
 			add(auth),
 			add(select),
 			add(del),
-			add(keys)
+			add(keys),
 			add(select),
 			add(incrby),
 			add(incrbyfloat),
