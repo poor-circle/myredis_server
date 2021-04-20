@@ -1,6 +1,7 @@
 #pragma once
 #include "../../stdafx.h"
 #include "../../code.h"
+#include "../../object.hpp"
 //每一个visitor都要实现所有类型的操作
 //visitor层函数，对value对象执行具体的操作
 //value对象可能有多种编码和类型，对于不同的编码需要不同的实现方式，这就是多态性：
@@ -28,5 +29,12 @@ namespace myredis::visitor
     std::pair<code::status, int64_t> incrby(std::unique_ptr<key_ordered_map<double, string>>& object, int64_t increment);
     std::pair<code::status, int64_t> incrby(std::unique_ptr<deque<string>>& object, int64_t increment);
 
-
+    //incrbyfloat函数:只适用于double对象,
+    std::pair<code::status, string&> incrbyfloat(int64_t& value,object& obj,double increment);
+    std::pair<code::status, string&> incrbyfloat(double& value, object& obj, double increment);
+    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<string>& value, object& obj, double increment);
+    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<hash_set<string>>& value, object& obj, double increment);
+    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<hash_map<string, string>>& value, object& obj, double increment);
+    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<key_ordered_map<double, string>>& value, object& obj, double increment);
+    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<deque<string>>& value, object& obj, double increment);
 }

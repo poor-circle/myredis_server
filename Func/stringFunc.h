@@ -33,4 +33,6 @@ namespace myredis::func
 	std::optional<string> incr(context&& ctx) noexcept;
 	//	incrby		created by tigerwang	date:2021/4/20
 	std::optional<string> incrby(context&& ctx) noexcept;
+	//	incrbyfloat	created by tigerwang	date:2021/4/20
+	std::optional<string> incrbyfloat(context&& ctx) noexcept;
 }

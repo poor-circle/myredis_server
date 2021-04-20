@@ -72,12 +72,9 @@ namespace myredis::func
 	}
 
 	/*
+	* append
 	* @author:tigerwang
 	* date:2021/4/18
-	* append 针对string对象
-	* 如果 key 已经存在，并且值为字符串，那么这个命令会把 value 追加到原来值（value）的结尾，并返回string的长度。 
-	* 如果 key 不存在，那么它将首先创建一个空字符串的key，再执行追加操作，这种情况 APPEND 将类似于 SET 操作。
-	* created by tigerwang  2021/4/17 20:00
 	*/
 	std::optional<string> append(context&& ctx) noexcept
 	{
@@ -120,12 +117,9 @@ namespace myredis::func
 	}
 
 	/* 
+	* strlen
 	* @author:tigerwang
 	* date:2021/4/18
-	* strlen 针对string类型的对象
-	* 返回key的string类型value的长度。
-	* 如果key对应的非string类型，就返回错误。
-	* 如果key不存在返回0
 	*/
 	std::optional<string> strlen(context&& ctx) noexcept
 	{
@@ -159,14 +153,9 @@ namespace myredis::func
 	}
 
 	/*
+	* usage: GETRANGE key start end
 	* @author:tigerwang
 	* date:2021/4/18
-	* usage: GETRANGE key start end
-	* 警告：这个命令是被改成GETRANGE的，在小于2.0的Redis版本中叫SUBSTR。
-	* 返回key对应的字符串value的子串，这个子串是由start和end位移决定的（两者都在string内）
-	* 可以用负的位移来表示从string尾部开始数的下标。所以-1就是最后一个字符，-2就是倒数第二个，以此类推。
-	* 这个函数处理超出范围的请求时，都把结果限制在string内。
-	* 返回值 bulk-reply
 	*/
 	std::optional<string> getrange(context&& ctx) noexcept
 	{
@@ -228,16 +217,9 @@ namespace myredis::func
 	}
 
 	/*
+	* setnx 
 	* @author:tigerwang
 	* date:2021/4/18
-	* 将key设置值为value，
-	* 如果key不存在，这种情况下等同SET命令。 
-	* 当key存在时，什么也不做。
-	* SETNX是”SET if Not eXists”的简写。
-	* 
-	* 返回值： Integer Reply
-	* 1 如果key被设置了
-	* 0 如果key没有被设置
 	*/
 	std::optional<string> setnx(context&& ctx) noexcept
 	{
@@ -258,13 +240,9 @@ namespace myredis::func
 	}
 
 	/*
+	* getset 
 	* @author:tigerwang
 	* date:2021/4/18
-	* 自动将key对应到value并且返回原来key对应的value。
-	* 如果key存在但是对应的value不是字符串，就返回错误。
-	* 返回值： bulk-string-reply
-	* 返回之前的旧值，如果之前Key不存在将返回nil。
-	* created by tigerwang	date:2021/4/18
 	*/
 	std::optional<string> getset(context&& ctx) noexcept
 	{
@@ -305,19 +283,9 @@ namespace myredis::func
 	}
 	
 	/*
+	* msetnx
 	* @author: tigerwang 
 	* date:2021/4/19
-	* msetnx 
-	* 对应给定的keys到他们相应的values上。只要有一个key已经存在，MSETNX一个操作都不会执行。
-	* 由于这种特性，MSETNX可以实现要么所有的操作都成功，要么一个都不执行，
-	* 这样可以用来设置不同的key，来表示一个唯一的对象的不同字段。
-	* MSETNX是原子的，所以所有给定的keys是一次性set的。
-	* 客户端不可能看到这种一部分keys被更新而另外的没有改变的情况。
-	* 
-	* 返回值
-	* integer-reply，只有以下两种值：
-	* 1 如果所有的key被set
-	* 0 如果没有key被set(至少其中有一个key是存在的)
 	*/
 	std::optional<string> msetnx(context&& ctx) noexcept
 	{
@@ -349,19 +317,9 @@ namespace myredis::func
 	}
 
 	/*
+	* incr
 	* @author: tigerewang
 	* date:2021/4/19
-	* incr
-	* 对存储在指定key的数值执行原子的加1操作。
-	* 如果指定的key不存在，那么在执行incr操作之前，会先将它的值设定为0。
-	* 如果指定的key中存储的值不是字符串类型或者存储的字符串类型不能表示为一个整数，
-	* 那么执行这个命令时服务器会返回一个错误( ERR value is not an integer or out of range)。
-	* 这个操作仅限于64位的有符号整型数据。
-	* 注意: 由于redis并没有一个明确的类型来表示整型数据，所以这个操作是一个字符串操作。
-	* 执行这个操作的时候，key对应存储的字符串被解析为10进制的64位有符号整型数据。
-	* 
-	* 返回值
-	* integer-reply:执行递增操作后key对应的值。
 	*/
 	std::optional<string> incr(context&& ctx) noexcept
 	{
@@ -399,15 +357,9 @@ namespace myredis::func
 	}
 
 	/*
+	* incrby
 	* @author: tigerwang 
 	* date:2021/4/20
-	* 将key对应的数字加decrement。
-	* 如果key不存在，操作之前，key就会被置为0。
-	* 如果key的value类型错误或者是个不能表示成数字的字符串，就返回错误。
-	* 这个操作最多支持64位有符号的正型数字。
-	* 
-	* 返回值
-	* integer-reply： 增加之后的value值。
 	* 
 	*/
 	std::optional<string> incrby(context&& ctx) noexcept
@@ -418,17 +370,17 @@ namespace myredis::func
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
+			int64_t increment;
+			if (!try_lexical_convert<int64_t>(args[2], increment)) {
+				return code::getErrorReply(code::status::invaild_argument);
+			}
+
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.end()) {
-				objectMap.update(std::move(args[1]), (int64_t)1);
-				return code::getIntegerReply(1);
+				objectMap.update(std::move(args[1]), increment);
+				return code::getIntegerReply(increment);
 			}
 			else {
-
-				int64_t increment;
-				if (!try_lexical_convert<int64_t>(args[2], increment)) {
-					return code::getErrorReply(code::status::invaild_argument);
-				}
 				// 在visit层+increment
 				auto ret = visit([increment](auto& e )
 				{
@@ -440,6 +392,54 @@ namespace myredis::func
 				}
 
 				return code::getIntegerReply(ret.second);
+			}
+			return code::ok;
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+
+	}
+
+	/*
+	* incrbyfloat
+	* @author: tigerwang
+	* date:2021/4/20
+	* TODO: 对int64_t+float的处理 
+	*/
+	std::optional<string> incrbyfloat(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			double increment;
+			if (!try_lexical_convert<double>(args[2], increment)) {
+				return code::getErrorReply(code::status::invaild_argument);
+			}
+
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end()) {
+				objectMap.update(std::move(args[1]), increment);
+				return code::getBulkReply(to_string(increment));
+			}
+			else {
+
+				auto ret = visit([iter,increment](auto& e)
+				{
+					return visitor::incrbyfloat(e, iter->second,increment);
+				}, iter->second);
+
+
+				if (ret.first != code::status::success) {
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getBulkReply(ret.second);
 			}
 			return code::ok;
 		}
