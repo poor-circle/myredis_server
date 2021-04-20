@@ -442,22 +442,21 @@ namespace myredis::func
 				return code::args_count_error;
 			else
 				return code::getMultiReply(args.begin() + 1, args.end(),
-				[&ctx](vector<string>::iterator &arg)
+				[&ctx](vector<string>::iterator arg,std::back_insert_iterator<string> s)
 				{
 					auto&& objectMap = ctx.session.getObjectMap();
 					auto iter = objectMap.find(*arg);
-					if (iter == objectMap.end())
-					{
-						return code::nil;
-					}
-					else
+					if (iter != objectMap.end())
 					{
 						auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
-						if (ret.first != code::status::success)
-							return code::nil;
-						else
-							return code::getBulkReply(ret.second);
+						if (ret.first == code::status::success)
+						{
+							code::getBulkReplyTo(ret.second,s);
+							return 1;
+						}
 					}
+					code::getReplyTo(code::nil, s);
+					return 1;
 				});
 		}
 		catch (const exception& e)

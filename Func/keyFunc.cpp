@@ -38,10 +38,10 @@ namespace myredis::func
 				return code::args_count_error;
 			else
 			{
-				for (auto&& e : args)
+				for (auto iter=args.begin()+1;iter!=args.end();++iter)
 				{
-					auto iter = objectMap.find(e);
-					if (iter != objectMap.end())
+					auto ans = objectMap.find(*iter);
+					if (ans == objectMap.end())
 						return code::getIntegerReply(0);
 				}
 				return code::getIntegerReply(1);
@@ -49,7 +49,76 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	std::optional<string> del(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() <= 1)
+				return code::args_count_error;
+			else
+			{
+				int64_t cnt = 0;
+				while (args.size()>1)
+				{
+					auto ans = objectMap.erase(std::move(args.back()));
+					args.pop_back();
+					if (ans) ++cnt;
+				}
+				return code::getIntegerReply(cnt);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	std::optional<string> keys(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			else
+			{
+				std::regex rx;
+				try
+				{
+					auto flag = regex_constants::ECMAScript ;
+					if (objectMap.size() >= regexOpLowerBound)
+						flag |= regex_constants::syntax_option_type::optimize;
+					rx=regex(args[1].c_str(), flag);
+				}
+				catch (const exception &e)
+				{
+					return code::regex_error;
+				}
+				return code::getMultiReply(objectMap.begin(), objectMap.end(),
+					[&rx](hash_map<keyIter, object>::iterator iter, auto s)
+					{
+						if (std::regex_match((*iter->first.iter).c_str(), rx))
+						{
+							code::getBulkReplyTo(*iter->first.iter, s);
+							return 1;
+						}
+						else 
+							return 0;
+					});
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}

@@ -10,6 +10,10 @@ namespace myredis
 		static vector<objectMap> map(data_base_count);
 		return map[index];
 	}
+	size_t objectMap::size() const
+	{
+		return map.size();
+	}
 	//TODO::插入需要检查是否需要淘汰某个缓存
 	void objectMap::update(string&& str, object&& obj)
 	{
@@ -43,18 +47,41 @@ namespace myredis
 		auto ans = map.find(keylist.begin());
 		str = std::move(keylist.front());
 		keylist.pop_front();
-		if (allKeyLRU&&ans!=map.end())
-		{
-			keylist.push_front(std::move(*(ans->first.iter)));
-			keylist.erase(ans->first.iter);
-			ans->first.iter = keylist.begin();
-		}
 		return ans;
+	}
+
+	//每次查找都需要更新缓存优先级
+	hash_map<keyIter, object>::iterator objectMap::find(string&& str)
+	{
+		keylist.push_front(std::move(str));
+		auto ans = map.find(keylist.begin());
+		keylist.pop_front();
+		return ans;
+	}
+
+	hash_map<keyIter, object>::iterator objectMap::begin()
+	{
+		return map.begin();
 	}
 
 	hash_map<keyIter, object>::iterator objectMap::end()
 	{
 		return map.end();
+	}
+
+	size_t objectMap::erase(string&& str)
+	{
+		keylist.push_front(std::move(str));
+		hash_map<keyIter, object>::const_iterator ans = map.find(keylist.begin());
+		keylist.pop_front();
+		if (ans != map.end())
+		{
+			keylist.erase(ans->first.iter);
+			map.erase(ans);
+			return 1;
+		}
+		else 
+			return 0;
 	}
 
 
