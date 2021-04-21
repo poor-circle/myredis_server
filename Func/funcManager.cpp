@@ -38,8 +38,10 @@ namespace myredis
 			add(incrbyfloat),
 			add(decr),
 			add(decrby),
-			add(type),
-			add(scan)
+			add(lpush),
+			add(lpushx),
+			add(llen),
+			add(lrange)
 			//regist func at here
 			//{"name",func::name}
 		};
