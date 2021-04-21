@@ -11,11 +11,29 @@
 namespace myredis::visitor
 {
     //get函数：只适用于字符串对象，不能用于其他类型的对象
-    std::pair<code::status, string&> get(int64_t& object);
-    std::pair<code::status, string&> get(double& object);
-    std::pair<code::status, string&> get(std::unique_ptr<string>& object);
-    std::pair<code::status, string&> get(std::unique_ptr<hash_set<string>>& object);
-    std::pair<code::status, string&> get(std::unique_ptr<hash_map<string, string>>& object);
-    std::pair<code::status, string&> get(std::unique_ptr<key_ordered_map<double, string>>& object);
-    std::pair<code::status, string&> get(std::unique_ptr<deque<string>>& object);
+    template<typename T>
+    std::pair<code::status, string&> get(T& object)
+    {
+        return myredis_failed(object_type_error);
+    }
+    template<> inline
+    std::pair<code::status, string&> get(int64_t& object)
+    {
+        static string temp;
+        temp = boost::lexical_cast<string>(object);
+        return myredis_succeed(temp);
+    }
+    template<> inline 
+    std::pair<code::status, string&> get(double& object)
+    {
+        static string temp;
+        temp = string();
+        fmt::format_to(std::back_inserter(temp), FMT_COMPILE("{}"), object);
+        return myredis_succeed(temp);
+    }
+    template<> inline 
+    std::pair<code::status, string&> get(std::unique_ptr<string>& object)
+    {
+        return myredis_succeed(*object);
+    }
 }

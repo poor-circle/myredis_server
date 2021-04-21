@@ -12,11 +12,32 @@
 namespace myredis::visitor
 {
     //get函数：只适用于字符串对象，不能用于其他类型的对象
-    std::pair<code::status, string&>  changeCodetoString(int64_t& value,object& obj);
-    std::pair<code::status, string&>  changeCodetoString(double& value, object& obj);
-    std::pair<code::status, string&>  changeCodetoString(std::unique_ptr<string>& value, object& obj);
-    std::pair<code::status, string&>  changeCodetoString(std::unique_ptr<hash_set<string>>& value, object& obj);
-    std::pair<code::status, string&>  changeCodetoString(std::unique_ptr<hash_map<string, string>>& value, object& obj);
-    std::pair<code::status, string&>  changeCodetoString(std::unique_ptr<key_ordered_map<double, string>>& value, object& obj);
-    std::pair<code::status, string&>  changeCodetoString(std::unique_ptr<deque<string>>& value, object& obj);
+    template<typename T>
+    std::pair<code::status, string&> changeCodetoString(T& value, object& obj)
+    {
+        return myredis_failed(object_type_error);
+    }
+    template<> inline 
+    std::pair<code::status, string&> changeCodetoString(int64_t& value, object& obj)
+    {
+        string s;
+        fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), value);
+        //将对象转换为string
+        obj = std::make_unique<string>(std::move(s));
+        return myredis_succeed(*std::get<std::unique_ptr<string>>(obj));
+    }
+    template<> inline 
+    std::pair<code::status, string&> changeCodetoString(double& value, object& obj)
+    {
+        string s;
+        fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), value);
+        
+        obj = std::make_unique<string>(std::move(s));
+        return myredis_succeed(*std::get<std::unique_ptr<string>>(obj));
+    }
+    template<> inline
+    std::pair<code::status, string&> changeCodetoString(std::unique_ptr<string>& value, object& obj)
+    {
+        return myredis_succeed(*value);
+    }
 }

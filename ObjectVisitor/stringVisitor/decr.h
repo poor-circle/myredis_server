@@ -7,21 +7,39 @@
 //value对象可能有多种编码和类型，对于不同的编码需要不同的实现方式，这就是多态性：
 namespace myredis::visitor
 {
-    //incr函数：只适用于int64_t对象，不能用于其他类型的对象
-    std::pair<code::status, int64_t> decr(int64_t& object);
-    std::pair<code::status, int64_t> decr(double& object);
-    std::pair<code::status, int64_t> decr(std::unique_ptr<string>& object);
-    std::pair<code::status, int64_t> decr(std::unique_ptr<hash_set<string>>& object);
-    std::pair<code::status, int64_t> decr(std::unique_ptr<hash_map<string, string>>& object);
-    std::pair<code::status, int64_t> decr(std::unique_ptr<key_ordered_map<double, string>>& object);
-    std::pair<code::status, int64_t> decr(std::unique_ptr<deque<string>>& object);
+    // decr:只适用于int64对象
+    template<typename T>
+    std::pair<code::status, int64_t> decr(T& object)
+    {
+        return { code::status::object_type_error,0 };
+    }
 
-    //incrby函数：只适用于int64_t对象，不能用于其他类型的对象
-    std::pair<code::status, int64_t> decrby(int64_t& object, int64_t decrment);
-    std::pair<code::status, int64_t> decrby(double& object, int64_t decrment);
-    std::pair<code::status, int64_t> decrby(std::unique_ptr<string>& object, int64_t decrment);
-    std::pair<code::status, int64_t> decrby(std::unique_ptr<hash_set<string>>& object, int64_t decrment);
-    std::pair<code::status, int64_t> decrby(std::unique_ptr<hash_map<string, string>>& object, int64_t decrment);
-    std::pair<code::status, int64_t> decrby(std::unique_ptr<key_ordered_map<double, string>>& object, int64_t decrment);
-    std::pair<code::status, int64_t> decrby(std::unique_ptr<deque<string>>& object, int64_t decrment);
+    template<> inline
+    std::pair<code::status, int64_t> decr(int64_t& object)
+    {
+        if (object == INT64_MIN) {
+            return { code::status::value_overflow,object };
+        }
+        object -= 1;
+        return myredis_succeed(object);
+    }
+
+    // decrby:只适用于int64对象
+    template<typename T>
+    std::pair<code::status, int64_t> decrby(T& object, int64_t decrement)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    template<> inline 
+    std::pair<code::status, int64_t> decrby(int64_t& object, int64_t decrement)
+    {
+
+        if ((object > INT64_MAX + decrement && decrement < 0) ||
+            (object < INT64_MIN + decrement && decrement > 0))
+        {
+            return { code::status::value_overflow,object };
+        }
+        object -= decrement;
+        return myredis_succeed(object);
+    }
 }

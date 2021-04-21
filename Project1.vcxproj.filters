@@ -43,29 +43,17 @@
     <Filter Include="头文件\ObjectVisitor">
       <UniqueIdentifier>{16703723-8f08-4b6e-9699-bf6caa77fac2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\ObjectVisitor">
-      <UniqueIdentifier>{30340874-c06a-4ac6-9006-5b520d54bac7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Func">
       <UniqueIdentifier>{7a0e1f9d-279a-4d7c-ac9a-ad3942eca6db}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\Func">
       <UniqueIdentifier>{fe1e073f-67ef-4d08-99ac-10582aa0f284}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\ObjectVisitor\keyVisitor">
-      <UniqueIdentifier>{a42743df-45a2-4d63-a615-0c9849b0b99d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\ObjectVisitor\stringVisitor">
-      <UniqueIdentifier>{8c3d6200-b529-4f1e-8170-2eb6c35545a7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\ObjectVisitor\keyVisitor">
       <UniqueIdentifier>{86c9087d-fe12-481f-8175-b92d6650ecb0}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\ObjectVisitor\StringVisitor">
       <UniqueIdentifier>{4a3d5d45-9882-4c69-81f6-d8c88ffcd2cd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\ObjectVisitor\listVisitor">
-      <UniqueIdentifier>{8efa1a3e-fea9-4c3e-9d31-abce1b2ccbb4}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\ObjectVisitor\listVisitor">
       <UniqueIdentifier>{9b314e99-2eea-4f85-901b-d27b2c469e07}</UniqueIdentifier>
@@ -191,38 +179,14 @@
     <ClCompile Include="Func\funcManager.cpp">
       <Filter>源文件\Func</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectVisitor\stringVisitor\get.cpp">
-      <Filter>源文件\ObjectVisitor\stringVisitor</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectVisitor\stringVisitor\changeCodetoString.cpp">
-      <Filter>源文件\ObjectVisitor\stringVisitor</Filter>
-    </ClCompile>
     <ClCompile Include="Func\keyFunc.cpp">
       <Filter>源文件\Func</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectVisitor\stringVisitor\incr.cpp">
-      <Filter>源文件\ObjectVisitor\stringVisitor</Filter>
     </ClCompile>
     <ClCompile Include="Func\connectFunc.cpp">
       <Filter>源文件\Func</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectVisitor\stringVisitor\decr.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectVisitor\keyVisitor\type.cpp">
-      <Filter>源文件\ObjectVisitor\keyVisitor</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectVisitor\keyVisitor\object_encode.cpp">
-      <Filter>源文件\ObjectVisitor\keyVisitor</Filter>
-    </ClCompile>
     <ClCompile Include="Func\listFunc.cpp">
       <Filter>源文件\Func</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectVisitor\listVisitor\lpush.cpp">
-      <Filter>源文件\ObjectVisitor\listVisitor</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectVisitor\listVisitor\lrange.cpp">
-      <Filter>源文件\ObjectVisitor\listVisitor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

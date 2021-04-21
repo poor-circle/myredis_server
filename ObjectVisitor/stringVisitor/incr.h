@@ -11,30 +11,59 @@
 //对于非字符串的类型，使用get是不合法的
 namespace myredis::visitor
 {
-    //incr函数：只适用于int64_t对象，不能用于其他类型的对象
-    std::pair<code::status, int64_t> incr(int64_t& object);
-    std::pair<code::status, int64_t> incr(double& object);
-    std::pair<code::status, int64_t> incr(std::unique_ptr<string>& object);
-    std::pair<code::status, int64_t> incr(std::unique_ptr<hash_set<string>>& object);
-    std::pair<code::status, int64_t> incr(std::unique_ptr<hash_map<string, string>>& object);
-    std::pair<code::status, int64_t> incr(std::unique_ptr<key_ordered_map<double, string>>& object);
-    std::pair<code::status, int64_t> incr(std::unique_ptr<deque<string>>& object);
+    // incr:只适用于int64_t对象
+    template<typename T>
+    std::pair<code::status, int64_t> incr(T& object)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    template<> inline
+        std::pair<code::status, int64_t>  incr(int64_t& object)
+    {
+        if (object == INT64_MAX) {
+            return { code::status::value_overflow,object };
+        }
+        object += 1;
+        return myredis_succeed(object);
+    }
 
-    //incrby函数：只适用于int64_t对象，不能用于其他类型的对象
-    std::pair<code::status, int64_t> incrby(int64_t& object,int64_t increment);
-    std::pair<code::status, int64_t> incrby(double& object, int64_t increment);
-    std::pair<code::status, int64_t> incrby(std::unique_ptr<string>& object, int64_t increment);
-    std::pair<code::status, int64_t> incrby(std::unique_ptr<hash_set<string>>& object, int64_t increment);
-    std::pair<code::status, int64_t> incrby(std::unique_ptr<hash_map<string, string>>& object, int64_t increment);
-    std::pair<code::status, int64_t> incrby(std::unique_ptr<key_ordered_map<double, string>>& object, int64_t increment);
-    std::pair<code::status, int64_t> incrby(std::unique_ptr<deque<string>>& object, int64_t increment);
+    template<typename T>
+    std::pair<code::status, int64_t> incrby(T& value, int64_t increment)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    std::pair<code::status, int64_t> incrby(int64_t& object, int64_t increment)
+    {
 
-    //incrbyfloat函数:只适用于double对象,
-    std::pair<code::status, string&> incrbyfloat(int64_t& value,object& obj,double increment);
-    std::pair<code::status, string&> incrbyfloat(double& value, object& obj, double increment);
-    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<string>& value, object& obj, double increment);
-    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<hash_set<string>>& value, object& obj, double increment);
-    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<hash_map<string, string>>& value, object& obj, double increment);
-    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<key_ordered_map<double, string>>& value, object& obj, double increment);
-    std::pair<code::status, string&> incrbyfloat(std::unique_ptr<deque<string>>& value, object& obj, double increment);
+        if ((object > INT64_MAX - increment && increment > 0) ||
+            (object < INT64_MIN - increment && increment < 0))
+        {
+            return { code::status::value_overflow,object };
+        }
+        object += increment;
+        return myredis_succeed(object);
+    }
+
+    //incrbyfloat函数:只适用于double和int64_t对象
+    template<typename T>
+    std::pair<code::status, string&> incrbyfloat(T& value, object& obj, double increment)
+    {
+        return myredis_failed(object_type_error);
+    }
+    template<> inline
+        std::pair<code::status, string&> incrbyfloat(int64_t& value, object& obj, double increment)
+    {
+        static string tempStr;
+        obj = value + increment;
+        tempStr = boost::lexical_cast<string>(std::get<double>(obj));
+        return myredis_succeed(tempStr);
+    }
+    template<> inline
+        std::pair<code::status, string&> incrbyfloat(double& value, object& obj, double increment)
+    {
+        value += increment;
+        static string temp;
+        temp = boost::lexical_cast<string>(value);
+        return myredis_succeed(temp);
+    }
 }

@@ -213,14 +213,6 @@
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="object.cpp" />
-    <ClCompile Include="ObjectVisitor\keyVisitor\object_encode.cpp" />
-    <ClCompile Include="ObjectVisitor\keyVisitor\type.cpp" />
-    <ClCompile Include="ObjectVisitor\listVisitor\lpush.cpp" />
-    <ClCompile Include="ObjectVisitor\listVisitor\lrange.cpp" />
-    <ClCompile Include="ObjectVisitor\stringVisitor\changeCodetoString.cpp" />
-    <ClCompile Include="ObjectVisitor\stringVisitor\decr.cpp" />
-    <ClCompile Include="ObjectVisitor\stringVisitor\get.cpp" />
-    <ClCompile Include="ObjectVisitor\stringVisitor\incr.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
