@@ -36,7 +36,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -67,7 +67,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}",e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -112,7 +112,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -148,7 +148,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -212,7 +212,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -278,7 +278,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -312,7 +312,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -352,7 +352,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -398,7 +398,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 
@@ -446,7 +446,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 
@@ -487,7 +487,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -532,7 +532,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 
@@ -562,7 +562,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -602,7 +602,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}
@@ -676,7 +676,7 @@ namespace myredis::func
 		}
 		catch (const exception& e)
 		{
-			fmt::print("exception error:{}", e.what());
+			printlog(e);
 			return nullopt;//返回空值
 		}
 	}

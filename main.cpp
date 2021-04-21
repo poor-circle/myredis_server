@@ -17,7 +17,7 @@ namespace myredis
         {
             
             asio::io_context io_context(1);
-            asio::signal_set signals(io_context,SIGINT, SIGTERM, SIGSEGV);
+            asio::signal_set signals(io_context,SIGINT, SIGTERM);
             signals.async_wait([&](auto, auto) 
             { 
                 io_context.stop();
@@ -38,8 +38,9 @@ int main()
 {
 #if defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //MSVC内存泄漏侦测，按ctrl+c关闭程序，如果有内存泄漏，则输出窗口会做提示
+    //MSVC内存泄漏侦测，按ctrl+c关闭程序(而不是直接关闭窗口)，如果有内存泄漏，则输出窗口会做提示
 #endif
+    
     myredis::run();
     return 0;
 }
