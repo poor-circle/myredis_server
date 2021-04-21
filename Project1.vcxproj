@@ -180,6 +180,7 @@
     <ClInclude Include="Func\funcManager.h" />
     <ClInclude Include="Func\keyFunc.h" />
     <ClInclude Include="Func\listFunc.h" />
+    <ClInclude Include="ObjectVisitor\listVisitor\llen.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\lpush.h" />
     <ClInclude Include="Func\stringFunc.h" />
     <ClInclude Include="Listener.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="Func\funcManager.cpp" />
     <ClCompile Include="Func\keyFunc.cpp" />
     <ClCompile Include="Func\listFunc.cpp" />
+    <ClCompile Include="ObjectVisitor\listVisitor\llen.cpp" />
     <ClCompile Include="ObjectVisitor\listVisitor\lpush.cpp" />
     <ClCompile Include="Func\stringFunc.cpp" />
     <ClCompile Include="Listener.cpp" />

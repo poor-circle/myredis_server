@@ -4,12 +4,13 @@
 #include "../object.hpp"
 #include "../code.h"
 #include "../ObjectVisitor/ListVisitor/lpush.h"
+#include "../ObjectVisitor/ListVisitor/llen.h"
 
 namespace myredis::func {
 #include"../namespace.i"
 
 	/*
-	* lpush 
+	* lpush
 	* @author:tigerwang 
 	* date:2021/4/21
 	*/
@@ -91,4 +92,45 @@ namespace myredis::func {
 			return nullopt;//返回空值
 		}
 	}
+
+	/* 
+	* llen
+	* @author:tigerwang
+	* date:2021/4/21
+	*/
+	std::optional<string> llen(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				// 如果没找到,看作是空list 返回0
+				return code::getIntegerReply(0);
+			}
+			else
+			{
+				auto ret = visit([](auto& e)
+				{
+					return visitor::llen(e);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+				return code::getIntegerReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
+
 }
