@@ -52,6 +52,7 @@ namespace myredis::func {
 			return nullopt;//返回空值
 		}
 	}
+	
 	/*
 	* lpushx
 	* @author:tigerwang 
@@ -133,4 +134,51 @@ namespace myredis::func {
 		}
 	}
 
+	/*
+	* lrange
+	* @author:tigerwang
+	* date:2021/4/21
+	*/
+	std::optional<string> lrange(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 4)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				// 找不到对应的key返回nil
+				return code::nil;
+			}
+			else
+			{
+				// start,end 到对应的lrange函数里执行
+				int64_t start, end;
+				if (try_lexical_convert(args[2], start) == false ||
+					try_lexical_convert(args[3], end) == false)
+				{
+					return code::getErrorReply(code::status::invaild_argument);
+				}
+				code::getMultiReply
+				auto ret = visit([start,end](auto& e)
+				{
+					return visitor::lrange(e,start,end);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+				return code::getIntegerReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			fmt::print("exception error:{}", e.what());
+			return nullopt;//返回空值
+		}
+	}
 }

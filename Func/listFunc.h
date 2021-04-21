@@ -12,5 +12,8 @@ namespace myredis::func
 	std::optional<string> lpushx(context&& ctx) noexcept;
 	//	llen		created by tigerwang	date:2021/4/21
 	std::optional<string> llen(context&& ctx) noexcept;
+	//	lrange		created by tigerwang	date:2021/4/21
+	std::optional<string> lrange(context&& ctx) noexcept;
+
 
 }

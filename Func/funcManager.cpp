@@ -40,7 +40,8 @@ namespace myredis
 			add(decrby),
 			add(lpush),
 			add(lpushx),
-			add(llen)
+			add(llen),
+			add(lrange)
 			//regist func at here
 			//{"name",func::name}
 		};
