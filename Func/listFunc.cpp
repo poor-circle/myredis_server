@@ -162,17 +162,8 @@ namespace myredis::func {
 				{
 					return code::getErrorReply(code::status::invaild_argument);
 				}
-				code::getMultiReply
-				auto ret = visit([start,end](auto& e)
-				{
-					return visitor::lrange(e,start,end);
-				}, iter->second);
-
-				if (ret.first != code::status::success)
-				{
-					return code::getErrorReply(ret.first);
-				}
-				return code::getIntegerReply(ret.second);
+				//TODO:完成这个函数
+				return code::getIntegerReply(0);
 			}
 		}
 		catch (const exception& e)

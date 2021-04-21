@@ -64,6 +64,12 @@
     <Filter Include="头文件\ObjectVisitor\StringVisitor">
       <UniqueIdentifier>{4a3d5d45-9882-4c69-81f6-d8c88ffcd2cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\ObjectVisitor\listVisitor">
+      <UniqueIdentifier>{8efa1a3e-fea9-4c3e-9d31-abce1b2ccbb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ObjectVisitor\listVisitor">
+      <UniqueIdentifier>{9b314e99-2eea-4f85-901b-d27b2c469e07}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -147,6 +153,18 @@
     <ClInclude Include="ObjectVisitor\stringVisitor\decr.h">
       <Filter>头文件\ObjectVisitor\StringVisitor</Filter>
     </ClInclude>
+    <ClInclude Include="Func\listFunc.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\listVisitor\lpush.h">
+      <Filter>头文件\ObjectVisitor\listVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\listVisitor\lrange.h">
+      <Filter>头文件\ObjectVisitor\listVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\listVisitor\llen.h">
+      <Filter>头文件\ObjectVisitor\listVisitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -196,6 +214,18 @@
     </ClCompile>
     <ClCompile Include="ObjectVisitor\keyVisitor\object_encode.cpp">
       <Filter>源文件\ObjectVisitor\keyVisitor</Filter>
+    </ClCompile>
+    <ClCompile Include="Func\listFunc.cpp">
+      <Filter>源文件\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectVisitor\listVisitor\llen.cpp">
+      <Filter>源文件\ObjectVisitor\listVisitor</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectVisitor\listVisitor\lpush.cpp">
+      <Filter>源文件\ObjectVisitor\listVisitor</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectVisitor\listVisitor\lrange.cpp">
+      <Filter>源文件\ObjectVisitor\listVisitor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

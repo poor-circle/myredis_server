@@ -179,6 +179,7 @@
     <ClInclude Include="Func\func.h" />
     <ClInclude Include="Func\funcManager.h" />
     <ClInclude Include="Func\keyFunc.h" />
+    <ClInclude Include="Func\listFunc.h" />
     <ClInclude Include="Func\stringFunc.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="namespace.i" />
@@ -186,6 +187,9 @@
     <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.h" />
     <ClInclude Include="ObjectVisitor\keyVisitor\type.h" />
     <ClInclude Include="ObjectVisitor\keyVisitor\typeenum.hpp" />
+    <ClInclude Include="ObjectVisitor\listVisitor\llen.h" />
+    <ClInclude Include="ObjectVisitor\listVisitor\lpush.h" />
+    <ClInclude Include="ObjectVisitor\listVisitor\lrange.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\changeCodetoString.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\decr.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\get.h" />
@@ -204,12 +208,16 @@
     <ClCompile Include="Func\connectFunc.cpp" />
     <ClCompile Include="Func\funcManager.cpp" />
     <ClCompile Include="Func\keyFunc.cpp" />
+    <ClCompile Include="Func\listFunc.cpp" />
     <ClCompile Include="Func\stringFunc.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="ObjectVisitor\keyVisitor\object_encode.cpp" />
     <ClCompile Include="ObjectVisitor\keyVisitor\type.cpp" />
+    <ClCompile Include="ObjectVisitor\listVisitor\llen.cpp" />
+    <ClCompile Include="ObjectVisitor\listVisitor\lpush.cpp" />
+    <ClCompile Include="ObjectVisitor\listVisitor\lrange.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\changeCodetoString.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\decr.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\get.cpp" />
