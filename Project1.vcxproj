@@ -184,7 +184,7 @@
     <ClInclude Include="namespace.i" />
     <ClInclude Include="object.hpp" />
     <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.h" />
-    <ClInclude Include="ObjectVisitor\keyVisitor\type.hpp" />
+    <ClInclude Include="ObjectVisitor\keyVisitor\type.h" />
     <ClInclude Include="ObjectVisitor\keyVisitor\typeenum.hpp" />
     <ClInclude Include="ObjectVisitor\stringVisitor\changeCodetoString.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\decr.h" />
@@ -209,6 +209,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="ObjectVisitor\keyVisitor\object_encode.cpp" />
+    <ClCompile Include="ObjectVisitor\keyVisitor\type.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\changeCodetoString.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\decr.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\get.cpp" />

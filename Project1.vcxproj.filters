@@ -126,7 +126,7 @@
     <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.h">
       <Filter>头文件\ObjectVisitor\keyVisitor</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectVisitor\keyVisitor\type.hpp">
+    <ClInclude Include="ObjectVisitor\keyVisitor\type.h">
       <Filter>头文件\ObjectVisitor\keyVisitor</Filter>
     </ClInclude>
     <ClInclude Include="ObjectVisitor\keyVisitor\typeenum.hpp">
@@ -143,6 +143,9 @@
     </ClInclude>
     <ClInclude Include="Func\connectFunc.h">
       <Filter>头文件\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\stringVisitor\decr.h">
+      <Filter>头文件\ObjectVisitor\StringVisitor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +187,12 @@
     </ClCompile>
     <ClCompile Include="Func\connectFunc.cpp">
       <Filter>源文件\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectVisitor\stringVisitor\decr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectVisitor\keyVisitor\type.cpp">
+      <Filter>源文件\ObjectVisitor\keyVisitor</Filter>
     </ClCompile>
     <ClCompile Include="ObjectVisitor\keyVisitor\object_encode.cpp">
       <Filter>源文件\ObjectVisitor\keyVisitor</Filter>

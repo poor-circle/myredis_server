@@ -17,7 +17,7 @@ namespace myredis
         {
             
             asio::io_context io_context(1);
-            asio::signal_set signals(io_context,SIGINT, SIGTERM);
+            asio::signal_set signals(io_context,SIGINT, SIGTERM, SIGSEGV);
             signals.async_wait([&](auto, auto) 
             { 
                 io_context.stop();

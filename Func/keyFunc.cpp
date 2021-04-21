@@ -4,6 +4,8 @@
 #include "../object.hpp"
 #include "../code.h"
 #include "../ObjectVisitor/keyVisitor/object_encode.h"
+#include "../ObjectVisitor/keyVisitor/type.h"
+#include "boost/container/list.hpp"
 
 //func层相当于spring boot的controller层
 //通过controller调用visitor层
@@ -54,7 +56,12 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
-
+	/*
+	* @author: lizezheng
+	* date:2021/4/19
+	* del key [key ...]
+	* 返回删除成功的key个数
+	*/
 	std::optional<string> del(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -81,7 +88,12 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
-
+	/*
+	* @author: lizezheng
+	* date:2021/4/19
+	* keys pattern
+	* 返回匹配正则表达式patter的所有的key
+	*/
 	std::optional<string> keys(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -124,7 +136,13 @@ namespace myredis::func
 		}
 	}
 
-
+	/*
+	* @author: lizezheng
+	* date:2021/4/19
+	* rename key newkey
+	* 给key改名，如果newkey存在则覆盖
+	* 返回值：ok
+	*/
 	std::optional<string> rename(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -154,7 +172,13 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
-
+	/*
+	* @author: lizezheng
+	* date:2021/4/19
+	* rename key newkey
+	* 给key改名，如果newkey存在则返回0，否则返回1
+	* 返回值：整数
+	*/
 	std::optional<string> renamenx(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -189,7 +213,13 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
-
+	/*
+	* @author: lizezheng
+	* date:2021/4/19
+	* object subcommand key
+	* 执行subcommand
+	* 返回值：bulk string
+	*/
 	std::optional<string> object(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -222,6 +252,147 @@ namespace myredis::func
 				else
 					return code::subcommand_error;
 			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+	/*
+	* @author: lizezheng
+	* date:2021/4/20
+	* type key
+	* 返回key的类型
+	* 返回值：bulk_string
+	*/
+	std::optional<string> type(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			else
+			{
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					return code::getBulkReply(visit([](auto& e) {return visitor::type(e); },iter->second));
+				}
+				else
+					return code::key_error;
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	string scan_subcommand_parse(vector<string>& args, size_t index,size_t& cnt,string& pattern)
+	{
+		boost::algorithm::to_lower(args[index]);
+		if (args[index] == "count")
+		{
+			if (!try_lexical_convert(args[index + 1], cnt))
+				return code::args_illegal_error;
+		}
+		else if (args[index]=="match")
+		{
+			pattern = std::move(args[index + 1]);
+		}
+		else return code::subcommand_error;
+		return "";
+	}
+	/*
+	* @author: lizezheng
+	* date:2021/4/20
+	* scan 0|iter:key [match pattern] [count number]
+	* 根据键值，扫描后面若干个key
+	* 返回值：multi_reply
+	*/
+	std::optional<string> scan(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size()!=2&&args.size()!=4&&args.size()!=6)
+				return code::args_count_error;
+			size_t count = 0,dcount=default_scan_count;
+			string pattern,ret;
+			size_t pos;
+			regex rx;
+			if (args[1] == "0")
+				pos = 0;
+			else if (args[1].length()<5||string_view(args[1].c_str(), 5) != "iter:")
+			{
+				return code::iterator_illegal_error;
+			}
+			else pos = -1;
+			if (args.size() >= 4)
+			{
+				ret=scan_subcommand_parse(args, 2, count, pattern);
+				if (!ret.empty()) return ret;
+			}
+			if (args.size() >= 6)
+			{
+				if (args[2] == args[4])
+					return code::subcommand_error;
+				scan_subcommand_parse(args, 4, count, pattern);
+				if (!ret.empty()) return ret;
+			}
+			if (count == 0) count = dcount;
+			else dcount = -1;//size_t_max
+			if (!pattern.empty())
+			{
+				try
+				{
+					rx = regex(pattern.c_str());//TODO:compile optimize
+				}
+				catch (const exception& e)
+				{
+					return code::regex_error;
+				}
+			}
+			auto ptr= objectMap.keyBegin();
+			if (pos != 0)
+			{
+				auto iter = objectMap.find(args[1].substr(5));
+				if (iter == objectMap.end())
+					return code::iterator_illegal_error;
+				else ptr = iter->first.iter;
+			}
+			return code::getScanReply(ptr, objectMap.keyEnd(),
+				[&count, &dcount, &rx, &pattern](auto iter, auto inserter)
+				{
+					if (dcount == 0 || count == 0)
+						return -1;
+					--dcount;
+					if (pattern.empty() || regex_match(iter->c_str(), rx))
+					{
+						fmt::format_to
+						(
+							inserter,
+							FMT_COMPILE("${}\r\nkey:{}\r\n"),
+							iter->size() + 4,
+							*iter
+						);
+						--count;
+						return 1;
+					}
+					return 0;
+				},
+				[&objectMap](auto iter)
+				{
+					if (iter == objectMap.keyEnd())
+						return  string("0");
+					else
+						return  "iter:"+*iter;
+				});;
 		}
 		catch (const exception& e)
 		{

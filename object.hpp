@@ -1,10 +1,11 @@
 #pragma once
 #include"stdc++.h"
+#include"boost/container/list.hpp"
 namespace myredis
 {
 	struct keyIter
 	{
-		mutable std::list<string>::iterator iter;
+		mutable boost::container::list<string>::iterator iter;
 		friend bool operator == (const keyIter& iter1, const keyIter& iter2)
 		{
 			return *iter1.iter == *iter2.iter;
@@ -25,6 +26,7 @@ namespace std
 	};
 	//添加标准库对于myredis::string的哈希支持
 }
+
 namespace myredis
 {
 
@@ -60,7 +62,7 @@ namespace myredis
 	class objectMap
 	{
 	private:
-		std::list<string> keylist;
+		boost::container::list<string> keylist;
 		hash_map<keyIter, object> map;
 		//不要直接创建这个对象！(通过getObjectMap来获取）
 	public:
@@ -71,6 +73,8 @@ namespace myredis
 		hash_map<keyIter, object>::iterator find(string&& str);
 		hash_map<keyIter, object>::iterator begin();
 		hash_map<keyIter, object>::iterator end();
+		boost::container::list<string>::iterator keyBegin();
+		boost::container::list<string>::iterator keyEnd();
 		size_t erase(string&& str);
 		hash_map<keyIter, object>::iterator erase(hash_map<keyIter, object>::const_iterator iter);
 		static objectMap& getObjectMap(size_t index);

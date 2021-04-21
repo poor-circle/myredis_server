@@ -37,7 +37,9 @@ namespace myredis
 			add(incrby),
 			add(incrbyfloat),
 			add(decr),
-			add(decrby)
+			add(decrby),
+			add(type),
+			add(scan)
 			//regist func at here
 			//{"name",func::name}
 		};

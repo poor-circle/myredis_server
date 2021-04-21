@@ -34,10 +34,12 @@ namespace myredis::code
 	const string password_wrong_error = "-Password is wrong. Please try again\r\n";
 	const string database_index_error = "-Invalid DB index\r\n";
 	const string auth_error = "-Please login first.\r\n";
-	const string regex_error = "-Illegel regex.\r\n";
+	const string regex_error = "-Illegal regex.\r\n";
 	const string key_error = "-No such key.\r\n";
-	const string command_error = { "-no such command\r\n" };
-	const string subcommand_error = { "-no such subcommand\r\n" };
+	const string command_error = "-No such command\r\n" ;
+	const string subcommand_error = "-No such subcommand\r\n" ;
+	const string args_illegal_error = "-Illegal args.\r\n";
+	const string iterator_illegal_error = "-Illegal iterator.\r\n";
 
 	static void getReplyTo(const std::string_view str, std::back_insert_iterator<string> s)
 	{
@@ -149,10 +151,37 @@ namespace myredis::code
 		auto index = s.size() - 3;
 		int64_t cnt = 0;
 		for (; begin != end; begin = std::next(begin))
-			if (lambda(begin, back_inserter(s))) ++cnt;
+		{
+			auto ans = lambda(begin, back_inserter(s));
+			if (ans < 0) break;
+			else cnt += ans;
+		}
+			
 		while (cnt)
 		{
 			s[index--] = '0'+cnt % 10;
+			cnt /= 10;
+		}
+		return s;
+	}
+
+	template<class Iter, typename func,typename func2>
+	static string getScanReply(Iter begin, Iter end, func lambda,func2 dislambda) //多批量回复
+	{
+		string s = "*00000000000000\r\n";
+		auto index = s.size() - 3;
+		size_t cnt = 1;
+		for (; begin != end; begin = std::next(begin))
+		{
+			auto ans = lambda(begin, back_inserter(s));
+			if (ans < 0)
+				break;
+			else cnt += ans;
+		}
+		getBulkReplyTo(dislambda(begin), back_inserter(s));
+		while (cnt)
+		{
+			s[index--] = '0' + cnt % 10;
 			cnt /= 10;
 		}
 		return s;

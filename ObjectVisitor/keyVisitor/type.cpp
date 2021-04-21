@@ -1,5 +1,6 @@
 #pragma once
-#include "../../stdafx.h"
+#include "stdafx.h"
+#include "type.h"
 //每一个visitor都要实现所有类型的操作
 namespace myredis::visitor
 {

@@ -17,15 +17,16 @@ namespace myredis
 	//TODO::插入需要检查是否需要淘汰某个缓存
 	void objectMap::update(string&& str, object&& obj)
 	{
-		keylist.push_front(std::move(str));
-		auto ans = map.find(keylist.begin());
+		keylist.push_back(std::move(str));
+		auto ans = map.find(prev(keylist.end()));
 		if (ans==map.end())
 		{
-			map.emplace(std::move(keylist.begin()),std::move(obj));
+			map.emplace(prev(keylist.end()),std::move(obj));
 		}
 		else
 		{
 			ans->second = std::move(obj);
+			keylist.pop_back();
 		}
 		return;
 	}
@@ -33,29 +34,29 @@ namespace myredis
 	//TODO::插入需要检查是否需要淘汰某个缓存
 	hash_map<keyIter, object>::iterator objectMap::try_insert(string&& str, object&& obj)
 	{
-		keylist.push_front(std::move(str));
-		auto ans = map.emplace(keylist.begin(), std::move(obj));
+		keylist.push_back(std::move(str));
+		auto ans = map.emplace(prev(keylist.end()), std::move(obj));
 		if (!ans.second)
-			keylist.pop_front();
+			keylist.pop_back();
 		return ans.second?ans.first:map.end();
 	}
 
 	//每次查找都需要更新缓存优先级
 	hash_map<keyIter, object>::iterator objectMap::find(string& str)
 	{
-		keylist.push_front(std::move(str));
-		auto ans = map.find(keylist.begin());
-		str = std::move(keylist.front());
-		keylist.pop_front();
+		keylist.push_back(std::move(str));
+		auto ans = map.find(prev(keylist.end()));
+		str = std::move(keylist.back());
+		keylist.pop_back();
 		return ans;
 	}
 
 	//每次查找都需要更新缓存优先级
 	hash_map<keyIter, object>::iterator objectMap::find(string&& str)
 	{
-		keylist.push_front(std::move(str));
-		auto ans = map.find(keylist.begin());
-		keylist.pop_front();
+		keylist.push_back(std::move(str));
+		auto ans = map.find(prev(keylist.end()));
+		keylist.pop_back();
 		return ans;
 	}
 
@@ -71,9 +72,9 @@ namespace myredis
 
 	size_t objectMap::erase(string&& str)
 	{
-		keylist.push_front(std::move(str));
-		hash_map<keyIter, object>::const_iterator ans = map.find(keylist.begin());
-		keylist.pop_front();
+		keylist.push_back(std::move(str));
+		hash_map<keyIter, object>::const_iterator ans = map.find(prev(keylist.end()));
+		keylist.pop_back();
 		if (ans != map.end())
 		{
 			keylist.erase(ans->first.iter);
@@ -88,6 +89,15 @@ namespace myredis
 	{
 		keylist.erase(iter->first.iter);
 		return map.erase(iter);
+	}
+
+	boost::container::list<string>::iterator objectMap::keyBegin()
+	{
+		return keylist.begin();
+	}
+	boost::container::list<string>::iterator objectMap::keyEnd()
+	{
+		return keylist.end();
 	}
 
 
