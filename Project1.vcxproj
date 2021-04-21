@@ -215,7 +215,6 @@
     <ClCompile Include="object.cpp" />
     <ClCompile Include="ObjectVisitor\keyVisitor\object_encode.cpp" />
     <ClCompile Include="ObjectVisitor\keyVisitor\type.cpp" />
-    <ClCompile Include="ObjectVisitor\listVisitor\llen.cpp" />
     <ClCompile Include="ObjectVisitor\listVisitor\lpush.cpp" />
     <ClCompile Include="ObjectVisitor\listVisitor\lrange.cpp" />
     <ClCompile Include="ObjectVisitor\stringVisitor\changeCodetoString.cpp" />

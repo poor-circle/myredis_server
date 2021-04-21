@@ -218,9 +218,6 @@
     <ClCompile Include="Func\listFunc.cpp">
       <Filter>源文件\Func</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectVisitor\listVisitor\llen.cpp">
-      <Filter>源文件\ObjectVisitor\listVisitor</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectVisitor\listVisitor\lpush.cpp">
       <Filter>源文件\ObjectVisitor\listVisitor</Filter>
     </ClCompile>

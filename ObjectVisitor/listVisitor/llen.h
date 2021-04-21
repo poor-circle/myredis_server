@@ -5,11 +5,14 @@
 
 namespace myredis::visitor
 {
-    std::pair<code::status, int64_t> llen(int64_t& value);
-    std::pair<code::status, int64_t> llen(double& value);
-    std::pair<code::status, int64_t> llen(std::unique_ptr<string>& value);
-    std::pair<code::status, int64_t> llen(std::unique_ptr<hash_set<string>>& value);
-    std::pair<code::status, int64_t> llen(std::unique_ptr<hash_map<string, string>>& value);
-    std::pair<code::status, int64_t> llen(std::unique_ptr<key_ordered_map<double, string>>& value);
-    std::pair<code::status, int64_t> llen(std::unique_ptr<deque<string>>& value);
+    template<typename T>
+    std::pair<code::status, int64_t> llen(T& value)
+    {
+        return { code::status::object_type_error,0 };
+    }
+    template<>
+    inline std::pair<code::status, int64_t> llen(std::unique_ptr<deque<string>>& value)
+    {
+        return myredis_succeed(value->size());
+    }
 }
