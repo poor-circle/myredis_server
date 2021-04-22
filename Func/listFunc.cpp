@@ -5,6 +5,7 @@
 #include "../code.h"
 #include "../ObjectVisitor/ListVisitor/lpush.h"
 #include "../ObjectVisitor/ListVisitor/llen.h"
+#include "../ObjectVisitor/ListVisitor/lrange.h"
 
 namespace myredis::func {
 #include"../namespace.i"
@@ -163,7 +164,26 @@ namespace myredis::func {
 					return code::getErrorReply(code::status::invaild_argument);
 				}
 				//TODO:完成这个函数
-				return code::getIntegerReply(0);
+				auto ret = visit([start,end](auto& e)
+				{
+					return visitor::lrange(e, start, end);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+				for (auto iter = ret.second.begin(); iter != ret.second.end(); iter++) {
+					auto str = fmt::format("{}\n", *iter);
+					printf(str.c_str());
+				}
+				auto s= code::getMultiReply(ret.second.begin(), ret.second.end(),
+					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
+				{
+					code::getBulkReplyTo(*arg,s);
+					return 1;
+				});
+				return s;
 			}
 		}
 		catch (const exception& e)

@@ -9,7 +9,7 @@
 
 constexpr bool allKeyLRU = 1;
 
-inline const char *myredis_password = "123456";
+inline const char *myredis_password = "";
 
 inline long long data_base_count = 16;
 
