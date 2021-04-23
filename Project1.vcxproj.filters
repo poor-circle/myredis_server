@@ -144,13 +144,19 @@
     <ClInclude Include="Func\listFunc.h">
       <Filter>头文件\Func</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectVisitor\listVisitor\lpush.h">
+    <ClInclude Include="ObjectVisitor\listVisitor\push.h">
       <Filter>头文件\ObjectVisitor\listVisitor</Filter>
     </ClInclude>
     <ClInclude Include="ObjectVisitor\listVisitor\lrange.h">
       <Filter>头文件\ObjectVisitor\listVisitor</Filter>
     </ClInclude>
     <ClInclude Include="ObjectVisitor\listVisitor\llen.h">
+      <Filter>头文件\ObjectVisitor\listVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\listVisitor\pop.h">
+      <Filter>头文件\ObjectVisitor\listVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\listVisitor\rpoplpush.h">
       <Filter>头文件\ObjectVisitor\listVisitor</Filter>
     </ClInclude>
   </ItemGroup>

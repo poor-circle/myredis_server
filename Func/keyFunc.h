@@ -22,11 +22,9 @@ namespace myredis::func
 	//	sort	created by lizezheng	date:2021/4/21
 	// TODO:等待实现其他几个数据结构
 	std::optional<string> sort(context&& ctx) noexcept;
-
 	//	dump	created by lizezheng	date:2021/4/21
 	// TODO:等待反序列化的实现
 	std::optional<string> dump(context&& ctx) noexcept;
-	
 	//	type	created by lizezheng	date:2021/4/21
 	std::optional<string> type(context&& ctx) noexcept;
 	//	scan	created by lizezheng	date:2021/4/21

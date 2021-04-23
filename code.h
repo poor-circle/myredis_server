@@ -11,6 +11,7 @@ namespace myredis::code
 		object_type_error,	//对象类型错误
 		value_overflow,		//数值溢出
 		invaild_argument,
+		object_is_empty		//对象为空，进行操作，产生异常
 		//add other error here
 	};
 	static string& getMessage(status i)			// 从错误码获取错误信息
@@ -21,6 +22,7 @@ namespace myredis::code
 			"object type error",
 			"value overflow",
 			"invalid argument or integer out of range"
+			"object_is_empty"								// 对齐，不使用
 			//add other message here
 		};
 		return error_message[static_cast<std::size_t>(i)];

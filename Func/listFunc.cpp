@@ -3,9 +3,14 @@
 #include "listFunc.h"
 #include "../object.hpp"
 #include "../code.h"
-#include "../ObjectVisitor/ListVisitor/lpush.h"
+#include "../ObjectVisitor/ListVisitor/push.h"
 #include "../ObjectVisitor/ListVisitor/llen.h"
 #include "../ObjectVisitor/ListVisitor/lrange.h"
+#include "../ObjectVisitor/ListVisitor/pop.h"
+#include "../ObjectVisitor/ListVisitor/rpoplpush.h"
+#include "../ObjectVisitor/keyVisitor/type.h"
+
+
 
 namespace myredis::func {
 #include"../namespace.i"
@@ -138,7 +143,7 @@ namespace myredis::func {
 	/*
 	* lrange
 	* @author:tigerwang
-	* date:2021/4/21
+	* date:2021/4/22
 	*/
 	std::optional<string> lrange(context&& ctx) noexcept
 	{
@@ -163,7 +168,7 @@ namespace myredis::func {
 				{
 					return code::getErrorReply(code::status::invaild_argument);
 				}
-				//TODO:完成这个函数
+
 				auto ret = visit([start,end](auto& e)
 				{
 					return visitor::lrange(e, start, end);
@@ -184,6 +189,231 @@ namespace myredis::func {
 					return 1;
 				});
 				return s;
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* rpush
+	* @author:tigerwang
+	* date:2021/4/23
+	*/
+	std::optional<string> rpush(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto& pushContent = args[2];
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				// 如果没找到,则新建一个空列表,并在头部插入
+				auto list = std::make_unique<deque<string>>();
+				auto ret = visitor::rpush(list, pushContent);
+				objectMap.update(std::move(args[1]), std::move(list));
+				return code::getIntegerReply(ret.second);
+			}
+			else
+			{
+				auto ret = visit([&pushContent](auto& e)
+				{
+					return visitor::rpush(e, pushContent);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+				return code::getIntegerReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* rpushx
+	* @author:tigerwang
+	* date:2021/4/23
+	*/
+	std::optional<string> rpushx(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto& pushContent = args[2];
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				// 如果没找到,什么都不做
+				return code::getIntegerReply(0);
+			}
+			else
+			{
+				auto ret = visit([&pushContent](auto& e)
+				{
+					return visitor::rpush(e, pushContent);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+				return code::getIntegerReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* lpop
+	* @author:tigerwang
+	* date:2021/4/23
+	*/
+	std::optional<string> lpop(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				return code::nil;
+			}
+			else
+			{
+				auto ret = visit([](auto& e)
+				{
+					return visitor::lpop(e);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::nil;
+				}
+				return code::getBulkReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* rpop
+	* @author:tigerwang
+	* date:2021/4/23
+	*/
+	std::optional<string> rpop(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				return code::nil;
+			}
+			else
+			{
+				auto ret = visit([](auto& e)
+				{
+					return visitor::rpop(e);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::nil;
+				}
+				return code::getBulkReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* rpoplpush source destination
+	* @author:tigerwang 
+	* date:2021/4/23
+	*/
+	std::optional<string> rpoplpush(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				// source不存在
+				return code::nil;
+			}
+			else
+			{
+				auto desIter = iter;
+				if (args[1] != args[2]) {
+					// 如果source和destination不同
+					desIter = objectMap.find(args[2]);
+					if (desIter == objectMap.end()) 
+					{
+						// destination找不到 新建一个空列表
+						object list = std::make_unique<deque<string>>();
+						auto ret = visit([&list](auto& e)
+						{
+							return visitor::rpoplpush(e, list);
+						}, iter->second);
+						objectMap.update(std::move(args[2]), std::move(list));
+						
+						if (ret.first != code::status::success)
+						{
+							return code::nil;
+						}
+						return code::getBulkReply(ret.second);
+					}
+				}
+				auto ret = visit([&desIter](auto& e)
+				{
+					return visitor::rpoplpush(e, desIter->second);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::nil;
+				}
+				return code::getBulkReply(ret.second);
+				
 			}
 		}
 		catch (const exception& e)

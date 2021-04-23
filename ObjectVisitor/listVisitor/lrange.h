@@ -13,6 +13,9 @@ namespace myredis::visitor
     template<> inline
     std::pair<code::status, std::vector<string> > lrange(std::unique_ptr<deque<string>>& value, int64_t start, int64_t end)
     {
+        if (value->empty()) {
+            return { code::status::object_is_empty, std::vector<string>() };
+        }
         auto list = std::vector<string>();
         const int64_t strLen = value->size();
         // 如果小于零 + strLen ，还小于0说明超过长度了，直接置0
