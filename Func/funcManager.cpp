@@ -11,44 +11,50 @@ namespace myredis
 		const static hash_map<string, func::funcPtr> manager
 		{
 			//在这里注册每一种func 
+
+			// 读
 			add(get),
-			add(set),
-			add(ping),
-			add(append),
 			add(strlen),
 			add(getrange),
+			add(mget),
+			add(exists),
+			add(keys),
+			add(llen),
+			add(lrange),
+
+			// 写
+			add(set),
+			add(append),
 			add(setnx),
 			add(getset),
 			add(mset),
-			add(mget),
 			add(setrange),
 			add(msetnx),
-			add(exists),
 			add(incr),
-			add(quit),
-			add(echo),
-			add(auth),
-			add(select),
 			add(del),
-			add(keys),
 			add(rename),
 			add(renamenx),
-			add(object),
 			add(incrby),
 			add(incrbyfloat),
 			add(decr),
 			add(decrby),
 			add(lpush),
 			add(lpushx),
-			add(llen),
-			add(lrange),
-			add(type),
-			add(scan),
 			add(rpush),
 			add(rpushx),
 			add(lpop),
 			add(rpop),
-			add(rpoplpush)
+			add(rpoplpush),
+			// 其他
+			add(ping),
+			add(quit),
+			add(echo),
+			add(auth),
+			add(select),
+			add(object),
+			add(type),
+			add(scan)
+			
 			//regist func at here
 			//{"name",func::name}
 		};
