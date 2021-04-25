@@ -8,8 +8,7 @@
 #include "../ObjectVisitor/ListVisitor/lrange.h"
 #include "../ObjectVisitor/ListVisitor/pop.h"
 #include "../ObjectVisitor/ListVisitor/rpoplpush.h"
-#include "../ObjectVisitor/keyVisitor/type.h"
-
+#include "../ObjectVisitor/ListVisitor/lset.h"
 
 
 namespace myredis::func {
@@ -422,4 +421,52 @@ namespace myredis::func {
 			return nullopt;//返回空值
 		}
 	}
+	
+	/*
+	* lset key index value
+	* @author:tigerwang
+	* date:2021/4/25
+	*/
+	std::optional<string> lset(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 4)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				return code::key_error;
+			}
+			else
+			{
+				// 将index转换为整数
+				int64_t index;
+				if (try_lexical_convert(args[2], index) == false
+					)
+				{
+					return code::getErrorReply(code::status::invaild_argument);
+				}
+				auto& value = args[3];
+				auto ret = visit([index,&value](auto& e)
+				{
+					return visitor::lset(e,index, value);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+				return code::ok;
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
 }
