@@ -10,6 +10,8 @@
 #include "../ObjectVisitor/ListVisitor/rpoplpush.h"
 #include "../ObjectVisitor/ListVisitor/lset.h"
 #include "../ObjectVisitor/ListVisitor/lindex.h"
+#include "../ObjectVisitor/ListVisitor/ltrim.h"
+
 
 
 namespace myredis::func {
@@ -177,10 +179,6 @@ namespace myredis::func {
 				if (ret.first != code::status::success)
 				{
 					return code::getErrorReply(ret.first);
-				}
-				for (auto iter = ret.second.begin(); iter != ret.second.end(); iter++) {
-					auto str = fmt::format("{}\n", *iter);
-					printf(str.c_str());
 				}
 				auto s= code::getMultiReply(ret.second.begin(), ret.second.end(),
 					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
@@ -518,4 +516,56 @@ namespace myredis::func {
 			return nullopt;//返回空值
 		}
 	}
+
+	/*
+	* ltrim key start stop
+	* @author:tigerwang
+	* date:2021/4/25
+	*/
+	std::optional<string> ltrim(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 4)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				// 找不到对应的key返回nil
+				return code::nil;
+			}
+			else
+			{
+				// start,end 到对应的lrange函数里执行
+				int64_t start, end;
+				if (try_lexical_convert(args[2], start) == false ||
+					try_lexical_convert(args[3], end) == false)
+				{
+					return code::getErrorReply(code::status::invaild_argument);
+				}
+
+				auto ret = visit([start, end](auto& e)
+				{
+					return visitor::ltrim(e, start, end);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::ok;
+
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+
 }

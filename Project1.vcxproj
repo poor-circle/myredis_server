@@ -190,6 +190,7 @@
     <ClInclude Include="ObjectVisitor\listVisitor\lindex.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\llen.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\lset.h" />
+    <ClInclude Include="ObjectVisitor\listVisitor\ltrim.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\push.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\lrange.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\pop.h" />
