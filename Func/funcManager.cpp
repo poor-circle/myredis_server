@@ -21,6 +21,7 @@ namespace myredis
 			add(keys),
 			add(llen),
 			add(lrange),
+			add(lindex),
 
 			// д
 			add(set),

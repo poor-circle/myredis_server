@@ -187,6 +187,7 @@
     <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.h" />
     <ClInclude Include="ObjectVisitor\keyVisitor\type.h" />
     <ClInclude Include="ObjectVisitor\keyVisitor\typeenum.hpp" />
+    <ClInclude Include="ObjectVisitor\listVisitor\lindex.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\llen.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\lset.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\push.h" />

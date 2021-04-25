@@ -26,5 +26,8 @@ namespace myredis::func
 	std::optional<string> rpoplpush(context&& ctx) noexcept;
 	//	lset		created by tigerwang	date:2021/4/25
 	std::optional<string> lset(context&& ctx) noexcept;
+	//	lindex		created by tigerwang	date:2021/4/25
+	std::optional<string> lindex(context&& ctx) noexcept;
+
 
 }
