@@ -49,6 +49,7 @@ namespace myredis
 			add(rpoplpush),
 			add(lset),
 			add(lrem),
+			add(linsert),
 
 			// ÆäËû
 			add(ping),

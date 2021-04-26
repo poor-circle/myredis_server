@@ -12,7 +12,7 @@
 #include "../ObjectVisitor/ListVisitor/lindex.h"
 #include "../ObjectVisitor/ListVisitor/ltrim.h"
 #include "../ObjectVisitor/ListVisitor/lrem.h"
-//#include "../ObjectVisitor/ListVisitor/linsert.h"
+#include "../ObjectVisitor/ListVisitor/linsert.h"
 
 
 
@@ -537,11 +537,10 @@ namespace myredis::func {
 			if (iter == objectMap.end())
 			{
 				// 找不到对应的key返回nil
-				return code::nil;
+				return code::key_error;
 			}
 			else
 			{
-				// start,end 到对应的lrange函数里执行
 				int64_t start, end;
 				if (try_lexical_convert(args[2], start) == false ||
 					try_lexical_convert(args[3], end) == false)
@@ -619,5 +618,53 @@ namespace myredis::func {
 		}
 	}
 
+	/*
+	* linsert key BEFORE|AFTER pivot value
+	* @author:tigerwang
+	* date:2021/4/26
+	*/
+	std::optional<string> linsert(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 5)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				return code::key_error;
+			}
+			else
+			{
+				auto& insertType = args[2];
+				boost::algorithm::to_lower(insertType);
+				if (insertType != "before" && insertType!="after")
+				{
+					return code::getErrorReply(code::status::invaild_argument);
+				}
+				
+				auto& pivot = args[3];
+				auto& value = args[4];
+				auto ret = visit([&insertType,&pivot, &value](auto& e)
+				{ 
+					return visitor::linsert(e, insertType, pivot, value);
+				}, iter->second);
 
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getIntegerReply(ret.second);
+
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
 }
