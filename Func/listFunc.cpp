@@ -11,6 +11,9 @@
 #include "../ObjectVisitor/ListVisitor/lset.h"
 #include "../ObjectVisitor/ListVisitor/lindex.h"
 #include "../ObjectVisitor/ListVisitor/ltrim.h"
+#include "../ObjectVisitor/ListVisitor/lrem.h"
+//#include "../ObjectVisitor/ListVisitor/linsert.h"
+
 
 
 
@@ -557,6 +560,55 @@ namespace myredis::func {
 				}
 
 				return code::ok;
+
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* lrem key count value
+	* @author:tigerwang
+	* date:2021/4/26
+	*/
+	std::optional<string> lrem(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 4)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				// 找不到对应的key返回nil
+				return code::getIntegerReply(0);
+			}
+			else
+			{
+				// start,end 到对应的lrange函数里执行
+				int64_t count;
+				if (try_lexical_convert(args[2], count) == false )
+				{
+					return code::getErrorReply(code::status::invaild_argument);
+				}
+				auto& value = args[3];
+				auto ret = visit([count, &value](auto& e)
+				{
+					return visitor::lrem(e, count, value);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getIntegerReply(ret.second);
 
 			}
 		}

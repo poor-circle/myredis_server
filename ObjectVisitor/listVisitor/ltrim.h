@@ -43,8 +43,6 @@ namespace myredis::visitor
         auto list = std::make_unique<deque<string>>();
         copy(obj->begin() + start, obj->begin() + end + 1, std::back_inserter(*list));
         obj = std::move(list);
-        //obj->erase(obj->begin(), obj->begin() + start);
-        //obj->erase(obj->end(),obj->end())
         return myredis_succeed(temp);
 
     }

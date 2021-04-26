@@ -48,6 +48,7 @@ namespace myredis
 			add(rpop),
 			add(rpoplpush),
 			add(lset),
+			add(lrem),
 
 			// ÆäËû
 			add(ping),

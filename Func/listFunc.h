@@ -30,6 +30,10 @@ namespace myredis::func
 	std::optional<string> lindex(context&& ctx) noexcept;
 	//	ltrim		created by tigerwang	date:2021/4/25
 	std::optional<string> ltrim(context&& ctx) noexcept;
-	
+	//	lrem		created by tigerwang	date:2021/4/26
+	std::optional<string> lrem(context&& ctx) noexcept;
+	//	linsert		created by tigerwang	date:2021/4/26
+	std::optional<string> linsert(context&& ctx) noexcept;
+
 
 }

@@ -168,6 +168,12 @@
     <ClInclude Include="ObjectVisitor\listVisitor\ltrim.h">
       <Filter>头文件\ObjectVisitor\listVisitor</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectVisitor\listVisitor\lrem.h">
+      <Filter>头文件\ObjectVisitor\listVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\listVisitor\linsert.h">
+      <Filter>头文件\ObjectVisitor\listVisitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
