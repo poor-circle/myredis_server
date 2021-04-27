@@ -24,7 +24,7 @@ namespace myredis
 			add(lindex),
 			add(ltrim),
 			add(scard),
-
+			add(smembers),
 			// д
 			add(set),
 			add(append),

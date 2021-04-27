@@ -4,6 +4,8 @@
 #include "../code.h"
 #include "../ObjectVisitor/setVisitor/sadd.h"
 #include "../ObjectVisitor/setVisitor/scard.h"
+#include "../ObjectVisitor/setVisitor/smembers.h"
+
 
 namespace myredis::func
 {
@@ -56,6 +58,11 @@ namespace myredis::func
 		}
 	}
 
+	/*
+	* scard key 
+	* @author:tigerwang
+	* date:2021/4/27
+	*/
 	std::optional<string> scard(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -86,7 +93,52 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;
 		}
 	}
+	/*
+	* smembers key
+	* @author:tigerwang
+	* date:2021/4/27
+	*/
+	std::optional<string> smembers(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				return code::key_error;
+			}
+			else
+			{
+				auto ret = visit([](auto& e)
+				{
+					return visitor::smembers(e);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getMultiReply(ret.second.begin(), ret.second.end(),
+					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
+				{
+					code::getBulkReplyTo(*arg, s);
+					return 1;
+				});
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;
+		}
+	}
+
 }

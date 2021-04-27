@@ -15,8 +15,6 @@
 #include "../ObjectVisitor/ListVisitor/linsert.h"
 
 
-
-
 namespace myredis::func {
 #include"../namespace.i"
 
