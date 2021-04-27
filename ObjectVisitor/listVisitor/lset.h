@@ -26,7 +26,7 @@ namespace myredis::visitor
         if (index >= 0 && index < listLen) {
             static string changeContent;
             changeContent = value;
-            obj->at(index) = changeContent;
+            (*obj)[index] = changeContent;
             return myredis_succeed(changeContent);
         }
         else 

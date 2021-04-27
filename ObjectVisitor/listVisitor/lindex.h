@@ -18,7 +18,7 @@ namespace myredis::visitor
             index += obj->size();
         }
         if (index >= 0 && index < obj->size()) {
-            return myredis_succeed(obj->at(index));
+            return myredis_succeed((*obj)[index]);
         }
         else
             return myredis_failed(index_out_of_range);

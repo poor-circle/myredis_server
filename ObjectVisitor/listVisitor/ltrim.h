@@ -40,9 +40,10 @@ namespace myredis::visitor
             obj->clear();
             return myredis_succeed(temp);
         }
-        auto list = std::make_unique<deque<string>>();
-        copy(obj->begin() + start, obj->begin() + end + 1, std::back_inserter(*list));
-        obj = std::move(list);
+        for (int64_t i = 0; i < start; ++i)
+            obj->pop_front();
+        for (int64_t sz=end+1-start; obj->size()>sz;)
+            obj->pop_back();
         return myredis_succeed(temp);
 
     }
