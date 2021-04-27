@@ -58,6 +58,9 @@
     <Filter Include="头文件\ObjectVisitor\listVisitor">
       <UniqueIdentifier>{9b314e99-2eea-4f85-901b-d27b2c469e07}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\ObjectVisitor\setVisitor">
+      <UniqueIdentifier>{6ef33ffd-6033-4c1f-bacc-f17266aa998f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -174,6 +177,15 @@
     <ClInclude Include="ObjectVisitor\listVisitor\linsert.h">
       <Filter>头文件\ObjectVisitor\listVisitor</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectVisitor\setVisitor\sadd.h">
+      <Filter>头文件\ObjectVisitor\setVisitor</Filter>
+    </ClInclude>
+    <ClInclude Include="Func\setFunc.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\setVisitor\scard.h">
+      <Filter>头文件\ObjectVisitor\setVisitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -207,6 +219,9 @@
       <Filter>源文件\Func</Filter>
     </ClCompile>
     <ClCompile Include="Func\listFunc.cpp">
+      <Filter>源文件\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="Func\setFunc.cpp">
       <Filter>源文件\Func</Filter>
     </ClCompile>
   </ItemGroup>

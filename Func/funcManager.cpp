@@ -23,6 +23,7 @@ namespace myredis
 			add(lrange),
 			add(lindex),
 			add(ltrim),
+			add(scard),
 
 			// Ğ´
 			add(set),
@@ -50,6 +51,7 @@ namespace myredis
 			add(lset),
 			add(lrem),
 			add(linsert),
+			add(sadd),
 
 			// ÆäËû
 			add(ping),

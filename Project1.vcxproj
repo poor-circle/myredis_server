@@ -180,6 +180,7 @@
     <ClInclude Include="Func\funcManager.h" />
     <ClInclude Include="Func\keyFunc.h" />
     <ClInclude Include="Func\listFunc.h" />
+    <ClInclude Include="Func\setFunc.h" />
     <ClInclude Include="Func\stringFunc.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="namespace.i" />
@@ -197,6 +198,8 @@
     <ClInclude Include="ObjectVisitor\listVisitor\lrange.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\pop.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\rpoplpush.h" />
+    <ClInclude Include="ObjectVisitor\setVisitor\sadd.h" />
+    <ClInclude Include="ObjectVisitor\setVisitor\scard.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\changeCodetoString.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\decr.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\get.h" />
@@ -216,6 +219,7 @@
     <ClCompile Include="Func\funcManager.cpp" />
     <ClCompile Include="Func\keyFunc.cpp" />
     <ClCompile Include="Func\listFunc.cpp" />
+    <ClCompile Include="Func\setFunc.cpp" />
     <ClCompile Include="Func\stringFunc.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
