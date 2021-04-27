@@ -15,12 +15,17 @@ namespace myredis
         void setClosed() noexcept;
         bool isLogined() noexcept;
         void setLogined(bool logined) noexcept;
+        asio::awaitable<std::vector<string>> block();
+        std::vector<string> args_for_block;
+        bool isBlocked() noexcept;
+        void setBlocked(std::vector<string>&& new_args);
     private:
         asio::io_context& ioc;
         asio::ip::tcp::socket socket;
+        asio::steady_timer clock;
         int64_t dataBaseID;
         bool closed;
         bool logined;
-
+        bool blocked;
     };
 }

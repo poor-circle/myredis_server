@@ -44,6 +44,7 @@ namespace myredis::code
 	const string subcommand_error = "-No such subcommand\r\n" ;
 	const string args_illegal_error = "-Illegal args.\r\n";
 	const string iterator_illegal_error = "-Illegal iterator.\r\n";
+	const string server_exception_error = "-server internal exception.\r\n";
 
 	static void getReplyTo(const std::string_view str, std::back_insert_iterator<string> s)
 	{

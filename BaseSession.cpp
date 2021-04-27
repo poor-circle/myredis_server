@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "BaseSession.h"
 #include "Func/funcManager.h"
+#include "funcController.h"
 #include "code.h"
 namespace myredis
 {
@@ -83,10 +84,11 @@ do{\
     }\
 }while(false)
 
-    BaseSession::BaseSession(asio::io_context& ioc, tcp::socket socket):
-        ioc(ioc), socket(move(socket)),dataBaseID(0),closed(false),logined(false)
+    BaseSession::BaseSession(asio::io_context& ioc, tcp::socket socket) :
+        ioc(ioc), socket(move(socket)), dataBaseID(0), closed(false),
+        logined(false), blocked(false), clock(ioc)
     {
-        if (myredis_password == "") logined = true;
+        if (strlen(myredis_password) == 0) logined = true;
     }
 
     constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为4000个字节
@@ -111,7 +113,7 @@ do{\
             //iterBegin:应该从哪里开始读
             //iterEnd:读到哪里算结束
             
-            while (true)
+            while (self->closed==false)
             {
                 //读取*号后面的正整数（一共有多少行）
                 size_t lineCount = 0;
@@ -148,47 +150,9 @@ do{\
                     ReadLine(line, buf, iterBegin, iterEnd);
                     args.emplace_back(std::move(line));
                 }
-
-                //参数的第一个字符串是函数名，查找是否有这个函数
-                if (args.size() == 0) continue;
-                boost::algorithm::to_lower(args[0]);
-                auto iter = getfuncManager().find(args[0]);
-                //函数不存在，返回错误信息
-                if (iter == getfuncManager().end())
-                {
-                    co_await asio::async_write(self->socket, asio::buffer(code::command_error.data(), code::command_error.size()), use_awaitable);
-                    assert((fmt::print("{}", code::command_error), 1));
-                }
-                //检验是否拥有权限
-                else if (args[0]!="auth"&&self->isLogined() == false)
-                {
-                    co_await asio::async_write(self->socket, asio::buffer(code::auth_error.data(),code::auth_error.size()), use_awaitable);
-                    assert((fmt::print("客户端无权限!\n"), 1));
-                }
-                //函数存在，运行该函数，并将结果返回给客户端
-                else
-                {
-                    //iter->second是一个函数（通过args[0]查找而得）
-                    auto reply = iter->second(func::context(std::move(args),*self.get()));
-                    //如果自身被设定为关闭，则关掉连接
-                    if (self->closed)
-                    {
-                        self->socket.shutdown(self->socket.shutdown_both);
-                        co_return;
-                    }
-                    //如果reply不为空
-                    if (reply.has_value())
-                    {
-                        co_await asio::async_write(self->socket, asio::buffer(reply.value().data(), reply.value().size()), use_awaitable);
-                        assert((fmt::print("reply:{}\n", reply.value()), 1));
-                    }
-                    //reply为空，函数运行时崩溃，返回错误信息
-                    else
-                    {
-                        co_await asio::async_write(self->socket, asio::buffer("-server exception\r\n"), use_awaitable);
-                        assert((fmt::print("服务器内部错误\n", reply.value()), 1));
-                    }
-                }
+                string reply;
+                co_await func::funcControll(func::context(std::move(args), *self.get()),reply);
+                co_await asio::async_write(self->socket, asio::buffer(reply.data(), reply.size()), use_awaitable);
 #ifdef QPSTEST
                 ++cnter;
                 if (cnter % 100000 == 0)
@@ -239,6 +203,25 @@ do{\
     void BaseSession::setLogined(bool logined) noexcept
     {
         this->logined = logined;
+    }
+
+    awaitable<std::vector<string>> BaseSession::block()
+    {
+        clock.expires_after(steady_clock::duration::max());
+        co_await clock.async_wait(asio::use_awaitable);
+        blocked = false;
+        co_return std::move(args_for_block);
+    }
+
+    bool BaseSession::isBlocked() noexcept
+    {
+        return blocked;
+    }
+
+    void BaseSession::setBlocked(std::vector<string>&& new_args)
+    {
+        args_for_block = std::move(new_args);
+        blocked = true;
     }
 
 }

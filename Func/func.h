@@ -11,13 +11,24 @@ namespace myredis::func
 	struct context//连接上下文
 	{
 		std::vector<string>&& args;//本次命令传递的参数
-		BaseSession& session;//指向连接的引用
+		BaseSession& session;//连接的引用
 		context(std::vector<string>&& args,BaseSession& session):
 			args(std::move(args)),session(session){}
 	};
 
 	using funcPtr = std::optional<boost::container::string>(*)(context&& ctx) noexcept;
 
+	enum funcType
+	{
+		read,
+		write,
+		connect
+	};
+	struct funcInfo
+	{
+		funcPtr func;//函数指针
+		funcType type;//函数类型
+	};
 
 
 	//命令层类似于spring boot的controller层，每一个函数对应一个myredis命令

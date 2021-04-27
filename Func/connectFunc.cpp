@@ -93,6 +93,6 @@ namespace myredis::func
 	std::optional<string> quit(context&& ctx) noexcept
 	{
 		ctx.session.setClosed();
-		return nullopt;
+		return "";
 	}
 }
