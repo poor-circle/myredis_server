@@ -19,11 +19,13 @@ namespace myredis
         );
         for (;;)
         {
-            asio::co_spawn(ioc.get_executor(), BaseSession::run(std::make_unique<BaseSession>
+            auto ptr = std::make_unique<BaseSession>
             (
                 ioc,                                                //io_context
                 co_await acceptor.async_accept(asio::use_awaitable) //socket
-            )), asio::detached);
+            );
+
+            asio::co_spawn(ioc.get_executor(), BaseSession::run(std::move(ptr)), asio::detached);
             assert((fmt::print("listen at thread:{}\n", std::this_thread::get_id()), 1));
         }
     }

@@ -89,6 +89,7 @@ do{\
         logined(false), blocked(false), clock(ioc)
     {
         if (strlen(myredis_password) == 0) logined = true;
+        getSessionSet().emplace((void *)this);
     }
 
     constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为4000个字节
@@ -222,6 +223,22 @@ do{\
     {
         args_for_block = std::move(new_args);
         blocked = true;
+    }
+
+    hash_set<void*>& BaseSession::getSessionSet()
+    {
+        static hash_set<void*> table;
+        return table;
+    }
+
+    BaseSession::~BaseSession()
+    {
+        getSessionSet().erase((void *)this);
+    }
+
+    void BaseSession::wake_up()
+    {
+        clock.cancel_one();
     }
 
 }

@@ -208,6 +208,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdc++.h" />
     <ClInclude Include="util\deque.hpp" />
+    <ClInclude Include="util\deque_helper.h" />
     <ClInclude Include="util\hash_map.hpp" />
     <ClInclude Include="util\hash_set.hpp" />
     <ClInclude Include="util\key_ordered_map.hpp" />
@@ -231,6 +232,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="util\deque_helper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

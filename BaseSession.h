@@ -6,7 +6,6 @@ namespace myredis
 {
     class BaseSession
     {
-        friend class Session;
     public:
         BaseSession(asio::io_context& ioc, asio::ip::tcp::socket socket);
         static asio::awaitable<void> run(std::unique_ptr<BaseSession> self);
@@ -19,6 +18,13 @@ namespace myredis
         std::vector<string> args_for_block;
         bool isBlocked() noexcept;
         void setBlocked(std::vector<string>&& new_args);
+        BaseSession(const BaseSession&) = delete;
+        BaseSession(BaseSession&&) = delete;
+        BaseSession& operator =(BaseSession&&) = delete;
+        BaseSession& operator =(const BaseSession&) = delete;
+        static hash_set<void*>& getSessionSet();
+        ~BaseSession();
+        void wake_up();
     private:
         asio::io_context& ioc;
         asio::ip::tcp::socket socket;

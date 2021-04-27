@@ -192,6 +192,9 @@
     <ClInclude Include="funcController.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="util\deque_helper.h">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="funcController.cpp">
       <Filter>源文件\frameworkClass</Filter>
+    </ClCompile>
+    <ClCompile Include="util\deque_helper.cpp">
+      <Filter>源文件\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
