@@ -200,7 +200,9 @@
     <ClInclude Include="ObjectVisitor\listVisitor\rpoplpush.h" />
     <ClInclude Include="ObjectVisitor\setVisitor\sadd.h" />
     <ClInclude Include="ObjectVisitor\setVisitor\scard.h" />
+    <ClInclude Include="ObjectVisitor\setVisitor\sismember.h" />
     <ClInclude Include="ObjectVisitor\setVisitor\smembers.h" />
+    <ClInclude Include="ObjectVisitor\setVisitor\srem.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\changeCodetoString.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\decr.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\get.h" />

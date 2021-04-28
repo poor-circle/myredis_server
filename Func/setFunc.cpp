@@ -5,6 +5,10 @@
 #include "../ObjectVisitor/setVisitor/sadd.h"
 #include "../ObjectVisitor/setVisitor/scard.h"
 #include "../ObjectVisitor/setVisitor/smembers.h"
+#include "../ObjectVisitor/setVisitor/sismember.h"
+#include "../ObjectVisitor/setVisitor/srem.h"
+
+
 
 
 namespace myredis::func
@@ -96,6 +100,7 @@ namespace myredis::func
 			return nullopt;
 		}
 	}
+	
 	/*
 	* smembers key
 	* @author:tigerwang
@@ -138,6 +143,91 @@ namespace myredis::func
 		{
 			printlog(e);
 			return nullopt;
+		}
+	}
+
+	/*
+	* sismember key member
+	* @author:tigerwang
+	* date:2021/4/28
+	*/
+	std::optional<string> sismember(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				return code::getIntegerReply(0);
+
+			}
+			else
+			{
+				string member = args[2];
+				auto ret = visit([&member](auto& e)
+				{
+					return visitor::sismember(e,member);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getIntegerReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;
+		}
+	}
+
+	/*
+	* srem key member [member...]
+	* @author:tigerwang
+	* date:2021/4/28
+	*/
+	std::optional<string> srem(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() < 3)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			vector<string> remContent;
+			for (int i = 2; i < args.size(); i++) {
+				remContent.push_back(args[i]);
+			}
+			if (iter == objectMap.end())
+			{
+				return code::getIntegerReply(0);
+			}
+			else
+			{
+				auto ret = visit([&remContent](auto& e)
+				{
+					return visitor::srem(e, remContent);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+				return code::getIntegerReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//·µ»Ø¿ÕÖµ
 		}
 	}
 
