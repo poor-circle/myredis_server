@@ -24,8 +24,7 @@ namespace myredis
         static hash_map<size_t,void*>& getSessionMap();
         ~BaseSession();
         bool isBlocked() noexcept;
-        void setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,
-                        std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> watch_list);
+        void setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,watcherPtr& watch_list);
         asio::awaitable<string> wait();
         static void wake_up(const string& sv, size_t dataBaseID);
         std::queue<std::pair<string, size_t>> wake_up_queue;

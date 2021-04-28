@@ -285,15 +285,13 @@ do{\
         return blocked;
     }
 
-    void BaseSession::setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,
-                                std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> watch_list)
+    void BaseSession::setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,watcherPtr& watch_list)
     {
         result = std::move(time_out_reply);
         clock.expires_from_now(time);
         blocked = true;
         this->watch_list = watch_list;
     }
-
     hash_map<size_t,void*>& BaseSession::getSessionMap()
     {
         static hash_map<size_t, void*> table;

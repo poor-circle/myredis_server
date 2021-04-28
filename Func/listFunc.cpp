@@ -706,28 +706,29 @@ namespace myredis::func {
 				}
 			}
 			//否则，准备进入阻塞态
+			auto watch_list = std::make_shared<watcher>();
 			//添加监视器，用于在合适的情况下唤醒会话
-			auto watch_list=objectMap::addWatches(args.begin() + 1, args.end() - 1,ctx.session.getDataBaseID(),ctx.session.getSessionID(),
-			[&objectMap](const string& keyName)
-			{
-				auto iter = objectMap.find(keyName);
-				optional<string> ret=nullopt;//返回空，代表失败，监视器将继续监视
-				//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
-				//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
-				if (iter != objectMap.end())
+			objectMap::addWatches(args.begin() + 1, args.end() - 1,ctx.session.getDataBaseID(),ctx.session.getSessionID(), watch_list,
+				[&objectMap](const string& keyName)
 				{
-					auto ans = visit([](auto& e)
+					auto iter = objectMap.find(keyName);
+					optional<string> ret=nullopt;//返回空，代表失败，监视器将继续监视
+					//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
+					//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
+					if (iter != objectMap.end())
 					{
-						return visitor::lpop(e);
-					}, iter->second);
-					if (ans.first == code::status::success)
-					{
-						//返回key的名字和key的值
-						ret= "*2\r\n"+code::getBulkReply(keyName)+code::getBulkReply(ans.second);
+						auto ans = visit([](auto& e)
+						{
+							return visitor::lpop(e);
+						}, iter->second);
+						if (ans.first == code::status::success)
+						{
+							//返回key的名字和key的值
+							ret= "*2\r\n"+code::getBulkReply(keyName)+code::getBulkReply(ans.second);
+						}
 					}
-				}
-				return ret;
-			});
+					return ret;
+				});
 			//将会话设为阻塞态,并设置阻塞时间
 			ctx.session.setBlocked(code::multi_nil,seconds(sec), watch_list);
 			return nullopt;

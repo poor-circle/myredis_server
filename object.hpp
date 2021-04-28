@@ -61,22 +61,23 @@ namespace myredis
 
 	struct watchInfo;
 	using watchMap = std::unordered_map<string, boost::container::list<watchInfo>>;
+	using watcher = hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>;
+	using watcherPtr = std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>>;
 
 	struct watchInfo
 	{
 		size_t sessionID;//线程ID
-		std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> nodes;
+		watcherPtr nodes;
 		//记录其他key上的监视器
 		std::shared_ptr<std::function<std::optional<string>(const string&)>> op;
 		//用户自定义的操作，返回值：bool：是否让队列中的下一个监视器继续执行，string:准备返回给客户端的string
 		//参数：const string&:被监视的object的key名
 		watchInfo(size_t sessionID,
-			std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> nodes,
+			watcherPtr nodes,
 			std::shared_ptr<std::function<std::optional<string>(const string&)>> op) :
 			sessionID(sessionID), nodes(nodes), op(op) {}
 	};
 
-	
 
 	class objectMap
 	{
@@ -100,25 +101,23 @@ namespace myredis
 		static watchMap& getWatchMap(size_t index);
 		size_t size() const;
 		template<typename Iter>
-		static auto addWatches(Iter begin, Iter end, size_t dataBaseID,size_t sessionID, std::function<std::optional<string>(const string&)>&& op)
+		static void addWatches(Iter begin, Iter end, size_t dataBaseID,size_t sessionID,watcherPtr& tab,
+							   std::function<std::optional<string>(const string&)>&& op)
 		{
 			auto &map = objectMap::getWatchMap(dataBaseID);
-			auto tab = std::make_shared
-							<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>>();
 			auto func = std::make_shared<std::function<std::optional<string>(const string&)>>(std::move(op));
-			for (; begin != end; begin = std::next(begin))
+			for (; begin != end; begin = std::next(begin))//遍历所有的key
 			{
 				auto iter = map.find(*begin);
-				if (iter == map.end())
+				if (iter == map.end())//如果监视表中不存在这个key，则添加一个
 				{
 					iter = map.emplace(*begin, boost::container::list<watchInfo>()).first;
 				}
-				iter->second.emplace_back(watchInfo(sessionID, tab, func));
-				auto temp = std::prev(iter->second.end());
-				auto temp2 = iter->second.begin();
-				tab->emplace(&iter->second, temp);
+				if (tab->find(&iter->second) != tab->end())//如果已经存在相同的key，直接跳过
+					continue;
+				iter->second.emplace_back(watchInfo(sessionID, tab, func));//向这个key的监视队列的队尾添加一个监视器
+				tab->emplace(&iter->second, std::prev(iter->second.end()));//向
 			}
-			return tab;
 		}
 	};
 
