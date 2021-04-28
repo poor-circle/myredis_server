@@ -31,6 +31,7 @@ namespace myredis
 			read(scan),
 			read(object),
 			read(type),
+			read(sismember),
 			// д
 			write(set),
 			write(append),
