@@ -288,7 +288,7 @@ do{\
     void BaseSession::setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,watcherPtr& watch_list)
     {
         result = std::move(time_out_reply);
-        clock.expires_from_now(time);
+        clock.expires_after(time);
         blocked = true;
         this->watch_list = watch_list;
     }
