@@ -5,6 +5,8 @@
 #include "../ObjectVisitor/setVisitor/sadd.h"
 #include "../ObjectVisitor/setVisitor/scard.h"
 #include "../ObjectVisitor/setVisitor/smembers.h"
+#include "../ObjectVisitor/setVisitor/sismember.h"
+
 
 
 namespace myredis::func
@@ -141,4 +143,45 @@ namespace myredis::func
 		}
 	}
 
+	/*
+	* sismember key member
+	* @author:tigerwang
+	* date:2021/4/28
+	*/
+	std::optional<string> sismember(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				return code::getIntegerReply(0);
+
+			}
+			else
+			{
+				string member = args[2];
+				auto ret = visit([&member](auto& e)
+				{
+					return visitor::sismember(e,member);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::getErrorReply(ret.first);
+				}
+
+				return code::getIntegerReply(ret.second);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;
+		}
+	}
 }

@@ -195,6 +195,9 @@
     <ClInclude Include="util\deque_helper.h">
       <Filter>头文件\util</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectVisitor\setVisitor\sismember.h">
+      <Filter>头文件\ObjectVisitor\setVisitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
