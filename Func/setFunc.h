@@ -11,7 +11,8 @@ namespace myredis::func
 	std::optional<string> smembers(context&& ctx) noexcept;
 	//	sismember	creator:tigerwang	date:2021/4/28
 	std::optional<string> sismember(context&& ctx) noexcept;
-
+	//	srem		creator:tigerwang	date:2021/4/28
+	std::optional<string> srem(context&& ctx) noexcept;
 }
 
 

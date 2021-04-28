@@ -58,7 +58,7 @@ namespace myredis
 			write(lrem),
 			write(linsert),
 			write(sadd),
-
+			write(srem),
 			// ÆäËû
 			connect(ping),
 			connect(quit),

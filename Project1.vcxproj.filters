@@ -198,6 +198,9 @@
     <ClInclude Include="ObjectVisitor\setVisitor\sismember.h">
       <Filter>头文件\ObjectVisitor\setVisitor</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectVisitor\setVisitor\srem.h">
+      <Filter>头文件\ObjectVisitor\setVisitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
