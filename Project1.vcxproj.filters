@@ -189,11 +189,8 @@
     <ClInclude Include="ObjectVisitor\setVisitor\smembers.h">
       <Filter>头文件\ObjectVisitor\setVisitor</Filter>
     </ClInclude>
-    <ClInclude Include="funcController.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="util\deque_helper.h">
-      <Filter>头文件\util</Filter>
+    <ClInclude Include="ObjectVisitor\listVisitor\watch.h">
+      <Filter>头文件\ObjectVisitor\listVisitor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -235,9 +232,6 @@
     </ClCompile>
     <ClCompile Include="funcController.cpp">
       <Filter>源文件\frameworkClass</Filter>
-    </ClCompile>
-    <ClCompile Include="util\deque_helper.cpp">
-      <Filter>源文件\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

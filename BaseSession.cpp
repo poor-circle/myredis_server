@@ -86,10 +86,11 @@ do{\
 
     BaseSession::BaseSession(asio::io_context& ioc, tcp::socket socket) :
         ioc(ioc), socket(move(socket)), dataBaseID(0), closed(false),
-        logined(false), blocked(false), clock(ioc)
+        logined(false), blocked(false), clock(ioc),watch_list(nullptr)
     {
         if (strlen(myredis_password) == 0) logined = true;
-        getSessionSet().emplace((void *)this);
+        sessionID = BaseSession::IDNow++;
+        getSessionMap().emplace(sessionID,(void *)this);
     }
 
     constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为4000个字节
@@ -152,7 +153,7 @@ do{\
                     args.emplace_back(std::move(line));
                 }
                 string reply;
-                co_await func::funcControll(func::context(std::move(args), *self.get()),reply);
+                co_await funcControll(func::context(std::move(args), *self.get()),reply);
                 co_await asio::async_write(self->socket, asio::buffer(reply.data(), reply.size()), use_awaitable);
 #ifdef QPSTEST
                 ++cnter;
@@ -185,6 +186,11 @@ do{\
         dataBaseID = ID;
     }
 
+    size_t BaseSession::getDataBaseID() noexcept
+    {
+        return dataBaseID;
+    }
+
     objectMap& BaseSession::getObjectMap() noexcept
     {
         return objectMap::getObjectMap(dataBaseID);
@@ -206,12 +212,72 @@ do{\
         this->logined = logined;
     }
 
-    awaitable<std::vector<string>> BaseSession::block()
+    awaitable<string> BaseSession::wait()
     {
-        clock.expires_after(steady_clock::duration::max());
-        co_await clock.async_wait(asio::use_awaitable);
+        try
+        {
+            co_await clock.async_wait(asio::use_awaitable);//等待超时
+            //超时，删除所有的监听器
+            for (auto&& e : *watch_list)//删除监视表上的全部节点
+            {
+                e.first->erase(e.second);
+            }
+        }
+        catch (const exception& e)//抛出异常,代表阻塞操作被事件中断
+        {
+
+        }
+        watch_list = nullptr;
         blocked = false;
-        co_return std::move(args_for_block);
+        co_return std::move(result);
+    }
+
+    void BaseSession::wake_up(const string& sv, size_t dataBaseID)
+    {
+        static auto set = BaseSession::getSessionMap();
+        auto& watchMap = objectMap::getWatchMap(dataBaseID);
+        auto iter = watchMap.find(sv);
+        if (iter == watchMap.end())
+            return;
+        auto& queue = iter->second;
+        if (queue.empty())
+        {
+            watchMap.erase(iter);
+            return;
+        }
+        while (true)
+        {
+            auto iter2=set.find(queue.front().sessionID);//查找会话是否存在
+            if (iter2 != set.end())//如果存在
+            {
+                auto ptr = (BaseSession*)(iter2->second);
+                auto ret = (*queue.front().op)(sv);
+                if (ret.has_value())
+                {
+                    ptr->wake_up(std::move(ret.value()));
+                    for (auto&& e : *queue.front().nodes)//删除监视表上的全部节点
+                    {
+                        e.first->erase(e.second);
+                    }
+                }
+                else break;
+            }
+            else
+            {
+                queue.front().nodes->erase(&queue);//key无效，删除对应的监视器
+                queue.pop_front();
+            }
+            if (queue.empty())
+            {
+                watchMap.erase(iter);//如果key的监视节点清零，清空key
+                break;
+            }
+        }
+    }
+
+    size_t BaseSession::getSessionID() noexcept
+    {
+        return sessionID;
     }
 
     bool BaseSession::isBlocked() noexcept
@@ -219,26 +285,30 @@ do{\
         return blocked;
     }
 
-    void BaseSession::setBlocked(std::vector<string>&& new_args)
+    void BaseSession::setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,
+                                std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> watch_list)
     {
-        args_for_block = std::move(new_args);
+        result = std::move(time_out_reply);
+        clock.expires_from_now(time);
         blocked = true;
+        this->watch_list = watch_list;
     }
 
-    hash_set<void*>& BaseSession::getSessionSet()
+    hash_map<size_t,void*>& BaseSession::getSessionMap()
     {
-        static hash_set<void*> table;
+        static hash_map<size_t, void*> table;
         return table;
+    }
+
+    void BaseSession::wake_up(string&& result)
+    {
+        this->result = std::move(result);
+        clock.cancel_one();
     }
 
     BaseSession::~BaseSession()
     {
-        getSessionSet().erase((void *)this);
+        getSessionMap().erase(sessionID);
     }
-
-    void BaseSession::wake_up()
-    {
-        clock.cancel_one();
-    }
-
+    atomic<size_t> BaseSession::IDNow=0;
 }

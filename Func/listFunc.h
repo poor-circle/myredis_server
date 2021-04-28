@@ -35,6 +35,8 @@ namespace myredis::func
 	std::optional<string> lrem(context&& ctx) noexcept;
 	//	linsert		created by tigerwang	date:2021/4/26
 	std::optional<string> linsert(context&& ctx) noexcept;
+	// blpop created by lizezheng date:2021/4/28
+	std::optional<string> blpop(context&& ctx) noexcept;
 
 
 }

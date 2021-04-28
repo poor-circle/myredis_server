@@ -59,6 +59,25 @@ namespace myredis
 	//将一个String转换为String类型的对象
 	object stringToObject(string&& str);
 
+	struct watchInfo;
+	using watchMap = std::unordered_map<string, boost::container::list<watchInfo>>;
+
+	struct watchInfo
+	{
+		size_t sessionID;//线程ID
+		std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> nodes;
+		//记录其他key上的监视器
+		std::shared_ptr<std::function<std::optional<string>(const string&)>> op;
+		//用户自定义的操作，返回值：bool：是否让队列中的下一个监视器继续执行，string:准备返回给客户端的string
+		//参数：const string&:被监视的object的key名
+		watchInfo(size_t sessionID,
+			std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> nodes,
+			std::shared_ptr<std::function<std::optional<string>(const string&)>> op) :
+			sessionID(sessionID), nodes(nodes), op(op) {}
+	};
+
+	
+
 	class objectMap
 	{
 	private:
@@ -69,7 +88,7 @@ namespace myredis
 		//插入(更新)一个key
 		void update(string&& str,object&& obj);
 		hash_map<keyIter, object>::iterator try_insert(string&& str, object&& obj);
-		hash_map<keyIter, object>::iterator find(string& str);
+		hash_map<keyIter, object>::iterator find(const string& str);
 		hash_map<keyIter, object>::iterator find(string&& str);
 		hash_map<keyIter, object>::iterator begin();
 		hash_map<keyIter, object>::iterator end();
@@ -78,6 +97,30 @@ namespace myredis
 		size_t erase(string&& str);
 		hash_map<keyIter, object>::iterator erase(hash_map<keyIter, object>::const_iterator iter);
 		static objectMap& getObjectMap(size_t index);
+		static watchMap& getWatchMap(size_t index);
 		size_t size() const;
+		template<typename Iter>
+		static auto addWatches(Iter begin, Iter end, size_t dataBaseID,size_t sessionID, std::function<std::optional<string>(const string&)>&& op)
+		{
+			auto &map = objectMap::getWatchMap(dataBaseID);
+			auto tab = std::make_shared
+							<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>>();
+			auto func = std::make_shared<std::function<std::optional<string>(const string&)>>(std::move(op));
+			for (; begin != end; begin = std::next(begin))
+			{
+				auto iter = map.find(*begin);
+				if (iter == map.end())
+				{
+					iter = map.emplace(*begin, boost::container::list<watchInfo>()).first;
+				}
+				iter->second.emplace_back(watchInfo(sessionID, tab, func));
+				auto temp = std::prev(iter->second.end());
+				auto temp2 = iter->second.begin();
+				tab->emplace(&iter->second, temp);
+			}
+			return tab;
+		}
 	};
+
+	
 }

@@ -39,13 +39,16 @@ namespace myredis::func
 
             if (self.isBlocked())
             {
-                auto new_args=co_await self.block();
-                string temp;
-                funcControll(context(std::move(new_args),self), temp);
-                ret = std::move(temp);
-                co_return;
+                reply=co_await self.wait();
             }
 
+            //唤醒所有被激活的监视器
+            auto& que = self.wake_up_queue;
+            while(!que.empty())
+            {
+                BaseSession::wake_up(que.front().first, que.front().second);
+                que.pop();
+            }
 
             if (reply.has_value())
             {

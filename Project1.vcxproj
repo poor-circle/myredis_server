@@ -173,7 +173,6 @@
     <ClInclude Include="benchmark.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="code.h" />
-    <ClInclude Include="funcController.h" />
     <ClInclude Include="Func\allFunc.h" />
     <ClInclude Include="Func\connectFunc.h" />
     <ClInclude Include="Func\func.h" />
@@ -188,6 +187,7 @@
     <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.h" />
     <ClInclude Include="ObjectVisitor\keyVisitor\type.h" />
     <ClInclude Include="ObjectVisitor\keyVisitor\typeenum.hpp" />
+    <ClInclude Include="ObjectVisitor\listVisitor\watch.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\lindex.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\linsert.h" />
     <ClInclude Include="ObjectVisitor\listVisitor\llen.h" />
@@ -208,7 +208,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdc++.h" />
     <ClInclude Include="util\deque.hpp" />
-    <ClInclude Include="util\deque_helper.h" />
     <ClInclude Include="util\hash_map.hpp" />
     <ClInclude Include="util\hash_set.hpp" />
     <ClInclude Include="util\key_ordered_map.hpp" />
@@ -232,7 +231,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="util\deque_helper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

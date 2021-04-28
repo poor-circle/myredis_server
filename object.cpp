@@ -1,5 +1,6 @@
 #include"stdafx.h"
 #include"object.hpp"
+#include "BaseSession.h"
 namespace myredis
 {
 #include"namespace.i"
@@ -8,6 +9,11 @@ namespace myredis
 	objectMap& objectMap::getObjectMap(size_t index)
 	{
 		static vector<objectMap> map(data_base_count);
+		return map[index];
+	}
+	watchMap& objectMap::getWatchMap(size_t index)
+	{
+		static vector<watchMap> map(data_base_count);
 		return map[index];
 	}
 	size_t objectMap::size() const
@@ -42,11 +48,11 @@ namespace myredis
 	}
 
 	//每次查找都需要更新缓存优先级
-	hash_map<keyIter, object>::iterator objectMap::find(string& str)
+	hash_map<keyIter, object>::iterator objectMap::find(const string& str)
 	{
 		keylist.push_back(std::move(str));
 		auto ans = map.find(prev(keylist.end()));
-		str = std::move(keylist.back());
+		(string &)str = std::move(keylist.back());
 		keylist.pop_back();
 		return ans;
 	}

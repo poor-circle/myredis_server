@@ -22,7 +22,8 @@ namespace myredis::func
 	{
 		read,
 		write,
-		connect
+		connect,
+		blocked
 	};
 	struct funcInfo
 	{

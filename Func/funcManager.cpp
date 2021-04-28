@@ -7,6 +7,7 @@ namespace myredis
 #define read(X) {#X,{func::##X,func::funcType::read}}
 #define write(X) {#X,{func::##X,func::funcType::write}}
 #define connect(X) {#X,{func::##X,func::funcType::connect}}
+#define blocked(X) {#X,{func::##X,func::funcType::blocked}}
 
 	const hash_map<string, func::funcInfo>& getfuncManager()
 	{
@@ -58,13 +59,16 @@ namespace myredis
 			write(linsert),
 			write(sadd),
 
-			// 其他
+			//连接状态
 			connect(ping),
 			connect(quit),
 			connect(echo),
 			connect(auth),
-			connect(select)
+			connect(select),
 			
+			//监听-阻塞函数
+			blocked(blpop)
+
 			
 			//regist func at here
 			//{"name",func::name}

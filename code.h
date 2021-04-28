@@ -34,6 +34,7 @@ namespace myredis::code
 	const string pong = "+PONG\r\n";
 	const string args_count_error = "-Wrong args count\r\n";
 	const string nil = "$-1\r\n";
+	const string multi_nil = "*1\r\n$-1\r\n";
 	const string no_password_error = "-Client sent AUTH, but no password is set\r\n";
 	const string password_wrong_error = "-Password is wrong. Please try again\r\n";
 	const string database_index_error = "-Invalid DB index\r\n";
