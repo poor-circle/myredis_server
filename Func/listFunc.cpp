@@ -261,7 +261,7 @@ namespace myredis::func {
 		auto&& objectMap = ctx.session.getObjectMap();
 		try
 		{
-			if (args.size() != 3)
+			if (args.size() < 3)
 				return code::args_count_error;
 			vector<string> pushContent;
 			for (int i = 2; i < args.size(); i++) {

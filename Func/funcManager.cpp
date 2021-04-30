@@ -69,8 +69,8 @@ namespace myredis
 			connect(select),
 			
 			//¼àÌı-×èÈûº¯Êı
-			blocked(blpop)
-
+			blocked(blpop),
+			blocked(brpop)
 			
 			//regist func at here
 			//{"name",func::name}
