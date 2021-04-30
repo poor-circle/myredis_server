@@ -3,6 +3,8 @@
 #include "../../code.h"
 #include "../../object.hpp"
 
+
+ /* 注意：该API已经弃用 */
 namespace myredis::visitor
 {
 

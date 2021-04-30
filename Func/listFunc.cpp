@@ -885,8 +885,8 @@ namespace myredis::func {
 			{
 				return code::args_illegal_error;
 			}
-			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			auto srcIter = objectMap.find(args[1]);
+			if (srcIter == objectMap.end())
 			{
 				// source不存在
 				return code::nil;
@@ -896,47 +896,66 @@ namespace myredis::func {
 			auto lenRet = visit([](auto& e)
 			{
 				return visitor::llen(e);
-			}, iter->second);
+			}, srcIter->second);
 			// source不为list
 			if (lenRet.first != code::status::success)
 			{
 				return code::getErrorReply(lenRet.first);
 			}
 
-			if(lenRet.second>0)
+			auto destnIter = srcIter;
+			if (args[1] != args[2])
 			{
-				// source是list且不为空，此时和rpoplpush一致
-				auto desIter = iter;
-				if (args[1] != args[2]) {
-					// 如果source和destination不同
-					desIter = objectMap.find(args[2]);
-					if (desIter == objectMap.end())
+				// 如果source和destination不同,找一下destination对应的value
+				destnIter = objectMap.find(args[2]);
+				if (destnIter == objectMap.end()) {
+					// 找不到destination 
+					object list = std::make_unique<deque<string>>();
+					string destnKey = args[2];
+					// 新建一个空列表
+					objectMap.update(std::move(destnKey), std::move(list));
+					// 更新destnIter
+					destnIter = objectMap.find(args[2]);
+				}
+				else
+				{
+					// 找到destination,确认是否是list
+					auto lenRet = visit([](auto& e)
 					{
-						// destination找不到 新建一个空列表
-						object list = std::make_unique<deque<string>>();
-						auto ret = visit([&list](auto& e)
-						{
-							return visitor::rpoplpush(e, list);
-						}, iter->second);
-						objectMap.update(std::move(args[2]), std::move(list));
-
-						if (ret.first != code::status::success)
-						{
-							return code::nil;
-						}
-						return code::getBulkReply(ret.second);
+						return visitor::llen(e);
+					}, destnIter->second);
+					// 不是list 返回error;
+					if (lenRet.first != code::status::success)
+					{
+						return code::getErrorReply(lenRet.first);
 					}
 				}
-				auto ret = visit([&desIter](auto& e)
-				{
-					return visitor::rpoplpush(e, desIter->second);
-				}, iter->second);
+			}
 
-				if (ret.first != code::status::success)
+			if(lenRet.second>0)
+			{
+				// destination和source均为List
+				auto popRet = visit([](auto& e)
+				{
+					return visitor::rpop(e);
+				}, srcIter->second);
+
+				// 获取pop的内容
+				std::vector<string> pushContent;
+				pushContent.emplace_back(popRet.second);
+				string destnKey = args[2];
+				// lpush 
+
+				auto pushRet = visit([&pushContent, &ctx, &destnKey](auto& e)
+				{
+					return visitor::lpush(e, pushContent, destnKey, ctx.session);
+				}, destnIter->second);
+
+				if (pushRet.first != code::status::success)
 				{
 					return code::nil;
 				}
-				return code::getBulkReply(ret.second);
+				return code::getBulkReply(popRet.second);
 			}
 
 
@@ -945,24 +964,33 @@ namespace myredis::func {
 			auto watch_list = std::make_shared<watcher>();
 			//添加监视器，用于在合适的情况下唤醒会话
 			objectMap::addWatches(args.begin() + 1, args.begin() + 2, ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
-				[&objectMap](const string& keyName)
+				[&objectMap,&ctx,&args](const string& keyName)
 			{
 				auto iter = objectMap.find(keyName);
+
 				optional<string> ret = nullopt;//返回空，代表失败，监视器将继续监视
 				//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
 				//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
 				if (iter != objectMap.end())
 				{
-					auto ans = visit([](auto& e)
+					auto popRet = visit([](auto& e)
 					{
 						return visitor::rpop(e);
 					}, iter->second);
-					if (ans.first == code::status::success)
+					if (popRet.first == code::status::success)
 					{
 						//返回key的名字和key的值
-						ret = "*2\r\n" + code::getBulkReply(keyName) + code::getBulkReply(ans.second);
+						std::vector<string> pushContent;
+						pushContent.emplace_back(popRet.second);
+						auto destnIter = objectMap.find(args[2]);
+						auto pushRet = visit([&pushContent, &ctx, &args](auto& e)
+						{
+							return visitor::lpush(e, pushContent, args[2], ctx.session);
+						}, destnIter->second);
+						ret = code::getBulkReply(popRet.second);
 					}
 				}
+
 				return ret;
 			});
 			//将会话设为阻塞态,并设置阻塞时间
