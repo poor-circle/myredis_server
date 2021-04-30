@@ -39,7 +39,8 @@ namespace myredis::func
 	// blpop		created by lizezheng	date:2021/4/28
 	std::optional<string> blpop(context&& ctx) noexcept;
 
-	// brpop		created by lizezheng	date:2021/4/30
+	// brpop		created by tigerwang	date:2021/4/30
 	std::optional<string> brpop(context&& ctx) noexcept;
-
+	// brpoplpush	created by tigerwang	date:2021/4/30
+	std::optional<string> brpoplpush(context&& ctx) noexcept;
 }

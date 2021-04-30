@@ -376,6 +376,8 @@ namespace myredis::func {
 	* rpoplpush source destination
 	* @author:tigerwang 
 	* date:2021/4/23
+	* update:
+	* 2021/4/30 将rpoplpush改为先pop后push的方式. 副作用:当source为空list,destination不存在时,会初始化destination为空列表
 	*/
 	std::optional<string> rpoplpush(context&& ctx) noexcept
 	{
@@ -385,47 +387,83 @@ namespace myredis::func {
 		{
 			if (args.size() != 3)
 				return code::args_count_error;
-			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			
+			auto srcIter = objectMap.find(args[1]);
+
+			if (srcIter == objectMap.end())
 			{
 				// source不存在
 				return code::nil;
 			}
-			else
+			// 确认source是否时list
+			auto srcLenRet = visit([](auto& e)
 			{
-				auto desIter = iter;
-				if (args[1] != args[2]) {
-					// 如果source和destination不同
-					desIter = objectMap.find(args[2]);
-					if (desIter == objectMap.end()) 
+				return visitor::llen(e);
+			}, srcIter->second);
+
+			// 不是list 返回error;
+			if (srcLenRet.first != code::status::success)
+			{
+				return code::getErrorReply(srcLenRet.first);
+			}
+
+			auto destnIter = srcIter;
+			if (args[1] != args[2])
+			{
+				// 如果source和destination不同,找一下destination对应的
+				destnIter = objectMap.find(args[2]);
+				if (destnIter == objectMap.end()) {
+					// 找不到destination 
+					object list = std::make_unique<deque<string>>();
+					string destnKey = args[2];
+					// 新建一个空列表
+					objectMap.update(std::move(destnKey), std::move(list));
+				}
+				else
+				{
+					// 找到destination,确认是否是list
+					auto lenRet = visit([](auto& e)
 					{
-						// destination找不到 新建一个空列表
-						object list = std::make_unique<deque<string>>();
-						auto ret = visit([&list](auto& e)
-						{
-							return visitor::rpoplpush(e, list);
-						}, iter->second);
-						objectMap.update(std::move(args[2]), std::move(list));
-						
-						if (ret.first != code::status::success)
-						{
-							return code::nil;
-						}
-						return code::getBulkReply(ret.second);
+						return visitor::llen(e);
+					}, destnIter->second);
+					// 不是list 返回error;
+					if (lenRet.first != code::status::success)
+					{
+						return code::getErrorReply(lenRet.first);
 					}
 				}
-				auto ret = visit([&desIter](auto& e)
-				{
-					return visitor::rpoplpush(e, desIter->second);
-				}, iter->second);
-
-				if (ret.first != code::status::success)
-				{
-					return code::nil;
-				}
-				return code::getBulkReply(ret.second);
-				
 			}
+
+			// destination和source均为List
+			auto popRet = visit([](auto& e)
+			{
+				return visitor::rpop(e);
+			}, srcIter->second);
+
+			// source为空列表
+			if (popRet.first != code::status::success)
+			{
+				return code::nil;
+			}
+
+			// 获取pop的内容
+			std::vector<string> pushContent;
+			pushContent.emplace_back(popRet.second);
+			string destnKey = args[2];
+			// lpush 
+			destnIter = objectMap.find(destnKey);
+			auto pushRet = visit([&pushContent, &ctx, &destnKey](auto& e)
+			{
+				return visitor::lpush(e, pushContent, destnKey, ctx.session);
+			}, destnIter->second);
+
+			if (pushRet.first != code::status::success)
+			{
+				return code::nil;
+			}
+			return code::getBulkReply(popRet.second);
+				
+			
 		}
 		catch (const exception& e)
 		{
@@ -679,6 +717,7 @@ namespace myredis::func {
 	}
 
 	/*
+	* blpop key [key...] timeout 
 	* block and wait if list isnt empty
 	* @author:lizezheng
 	* date:2021/4/27
@@ -753,6 +792,7 @@ namespace myredis::func {
 	}
 
 	/*
+	* brpop key [key...] timeout
 	* block and wait if list isnt empty
 	* @author:tigerwang
 	* date:2021/4/30
@@ -795,6 +835,116 @@ namespace myredis::func {
 			auto watch_list = std::make_shared<watcher>();
 			//添加监视器，用于在合适的情况下唤醒会话
 			objectMap::addWatches(args.begin() + 1, args.end() - 1, ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
+				[&objectMap](const string& keyName)
+			{
+				auto iter = objectMap.find(keyName);
+				optional<string> ret = nullopt;//返回空，代表失败，监视器将继续监视
+				//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
+				//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
+				if (iter != objectMap.end())
+				{
+					auto ans = visit([](auto& e)
+					{
+						return visitor::rpop(e);
+					}, iter->second);
+					if (ans.first == code::status::success)
+					{
+						//返回key的名字和key的值
+						ret = "*2\r\n" + code::getBulkReply(keyName) + code::getBulkReply(ans.second);
+					}
+				}
+				return ret;
+			});
+			//将会话设为阻塞态,并设置阻塞时间
+			ctx.session.setBlocked(code::multi_nil, seconds(sec), watch_list);
+			return nullopt;
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* brpoplpush source destination timeout 
+	* block and wait if list isnt empty
+	* @author:tigerwang
+	* date:2021/4/30
+	*/
+	std::optional<string> brpoplpush(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 4)
+				return code::args_count_error;
+			int64_t sec;
+			if (!try_lexical_convert(args.back(), sec) || sec < 0)//得到阻塞时间
+			{
+				return code::args_illegal_error;
+			}
+			auto iter = objectMap.find(args[1]);
+			if (iter == objectMap.end())
+			{
+				// source不存在
+				return code::nil;
+			}
+
+			// 获取source的长度,如果source包含元素，这个命令和rpoplpush一样。
+			auto lenRet = visit([](auto& e)
+			{
+				return visitor::llen(e);
+			}, iter->second);
+			// source不为list
+			if (lenRet.first != code::status::success)
+			{
+				return code::getErrorReply(lenRet.first);
+			}
+
+			if(lenRet.second>0)
+			{
+				// source是list且不为空，此时和rpoplpush一致
+				auto desIter = iter;
+				if (args[1] != args[2]) {
+					// 如果source和destination不同
+					desIter = objectMap.find(args[2]);
+					if (desIter == objectMap.end())
+					{
+						// destination找不到 新建一个空列表
+						object list = std::make_unique<deque<string>>();
+						auto ret = visit([&list](auto& e)
+						{
+							return visitor::rpoplpush(e, list);
+						}, iter->second);
+						objectMap.update(std::move(args[2]), std::move(list));
+
+						if (ret.first != code::status::success)
+						{
+							return code::nil;
+						}
+						return code::getBulkReply(ret.second);
+					}
+				}
+				auto ret = visit([&desIter](auto& e)
+				{
+					return visitor::rpoplpush(e, desIter->second);
+				}, iter->second);
+
+				if (ret.first != code::status::success)
+				{
+					return code::nil;
+				}
+				return code::getBulkReply(ret.second);
+			}
+
+
+			// brpoplpush 只需要考虑source是不是为空即可
+			//否则，准备进入阻塞态
+			auto watch_list = std::make_shared<watcher>();
+			//添加监视器，用于在合适的情况下唤醒会话
+			objectMap::addWatches(args.begin() + 1, args.begin() + 2, ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
 				[&objectMap](const string& keyName)
 			{
 				auto iter = objectMap.find(keyName);

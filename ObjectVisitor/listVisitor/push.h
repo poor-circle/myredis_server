@@ -23,8 +23,6 @@ namespace myredis::visitor
             //  省去移动复制元素的过程
             value->emplace_front(*iter);
 
-
-
         // 返回个数
         return myredis_succeed(value->size());
     }

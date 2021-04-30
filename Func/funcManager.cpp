@@ -70,7 +70,8 @@ namespace myredis
 			
 			//¼àÌı-×èÈûº¯Êı
 			blocked(blpop),
-			blocked(brpop)
+			blocked(brpop),
+			blocked(brpoplpush)
 			
 			//regist func at here
 			//{"name",func::name}
