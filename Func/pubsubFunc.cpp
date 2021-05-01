@@ -31,7 +31,6 @@ namespace myredis::func
 					session->addNewCoroToSendMessage(std::move(str));
 				}
 			}
-			//注意，这只是一个DEMO,虽然广播给所有的客户端，但是其他客户端需要随便乱输入一条错误的命令来查看结果
 
 			return code::getIntegerReply(table.size()-1);
 		}
