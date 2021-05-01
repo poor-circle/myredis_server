@@ -14,8 +14,6 @@ namespace myredis
 
 #define pubsub(X) {#X,{func::##X,func::funcType::pubsub}}
 
-#define async_pubsub(X) {#X,{func::##X,func::funcType::async_pubsub}}
-
 	const hash_map<string, func::funcInfo>& getfuncManager()
 	{
 		const static hash_map<string, func::funcInfo> manager
@@ -82,8 +80,7 @@ namespace myredis
 			//支持异步执行的订阅-发布（pubsub）函数
 
 			pubsub(wait),
-
-			async_pubsub(test),
+			pubsub(test),
 		
 			//regist func at here
 			//{"name",func::name}

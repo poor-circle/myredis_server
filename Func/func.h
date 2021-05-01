@@ -26,24 +26,18 @@ namespace myredis::func
 		connect,
 		blocked,
 		pubsub,
-		async_pubsub,
-	};
-	union funcPtr
-	{
-		syncFuncPtr syncFunc;//同步函数指针
-		asyncFuncPtr asyncFunc;//异步函数指针
 	};
 	struct funcInfo
 	{
 		syncFuncPtr syncptr;
-		asyncFuncPtr asyncptr;//这里之所以不做成union类型，是因为其似乎无法处理协程函数？奇怪
+		//asyncFuncPtr asyncptr;//这里之所以不做成union类型，是因为其似乎无法处理协程函数？奇怪
 		funcType type;//函数类型
 		bool isAsyncFunc(void) const noexcept
 		{
-			return type == funcType::async_pubsub;
+			return false;
 		}
-		funcInfo(syncFuncPtr ptr, funcType type):syncptr(ptr),asyncptr(nullptr),type(type){}
-		funcInfo(asyncFuncPtr ptr, funcType type) :syncptr(nullptr), asyncptr(ptr), type(type) {}
+		funcInfo(syncFuncPtr ptr, funcType type):syncptr(ptr),/*asyncptr(nullptr),*/type(type){}
+		//funcInfo(asyncFuncPtr ptr, funcType type) :syncptr(nullptr), asyncptr(ptr), type(type) {}
 	};
 
 
