@@ -90,7 +90,7 @@ do{\
     {
         if (strlen(myredis_password) == 0) logined = true;
         sessionID = BaseSession::IDNow++;
-        getSessionMap().emplace(sessionID,(void *)this);
+        getSessionMap().sessionMap.emplace(sessionID,this);
     }
 
     constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为4000个字节
@@ -234,7 +234,7 @@ do{\
 
     void BaseSession::wake_up(const string& sv, size_t dataBaseID)
     {
-        static auto set = BaseSession::getSessionMap();
+        static auto& set = BaseSession::getSessionMap();
         auto& watchMap = objectMap::getWatchMap(dataBaseID);
         auto iter = watchMap.find(sv);
         if (iter == watchMap.end())
@@ -250,7 +250,7 @@ do{\
             auto iter2=set.find(queue.front().sessionID);//查找会话是否存在
             if (iter2 != set.end())//如果存在
             {
-                auto ptr = (BaseSession*)(iter2->second);
+                auto ptr = iter2->second;
                 auto ret = (*queue.front().op)(sv);
                 if (ret.has_value())
                 {
@@ -280,6 +280,11 @@ do{\
         return sessionID;
     }
 
+    asio::ip::tcp::socket& BaseSession::getSocket() noexcept
+    {
+        return socket;
+    }
+
     bool BaseSession::isBlocked() noexcept
     {
         return blocked;
@@ -292,9 +297,9 @@ do{\
         blocked = true;
         this->watch_list = watch_list;
     }
-    hash_map<size_t,void*>& BaseSession::getSessionMap()
+    SessionMap& BaseSession::getSessionMap()
     {
-        static hash_map<size_t, void*> table;
+        static SessionMap table;
         return table;
     }
 
@@ -306,7 +311,7 @@ do{\
 
     BaseSession::~BaseSession()
     {
-        getSessionMap().erase(sessionID);
+        getSessionMap().sessionMap.erase(sessionID);
     }
     atomic<size_t> BaseSession::IDNow=0;
 }

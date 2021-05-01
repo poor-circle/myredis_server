@@ -5,9 +5,16 @@ namespace myredis
 {
 	
 #define read(X) {#X,{func::##X,func::funcType::read}}
+
 #define write(X) {#X,{func::##X,func::funcType::write}}
+
 #define connect(X) {#X,{func::##X,func::funcType::connect}}
+
 #define blocked(X) {#X,{func::##X,func::funcType::blocked}}
+
+#define pubsub(X) {#X,{func::##X,func::funcType::pubsub}}
+
+#define async_pubsub(X) {#X,{func::##X,func::funcType::async_pubsub}}
 
 	const hash_map<string, func::funcInfo>& getfuncManager()
 	{
@@ -67,12 +74,17 @@ namespace myredis
 			connect(echo),
 			connect(auth),
 			connect(select),
-			
+
 			//监听-阻塞函数
 			blocked(blpop),
 			blocked(brpop),
-			blocked(brpoplpush)
-			
+			blocked(brpoplpush),
+			//支持异步执行的订阅-发布（pubsub）函数
+
+			pubsub(wait),
+
+			async_pubsub(test),
+		
 			//regist func at here
 			//{"name",func::name}
 		};

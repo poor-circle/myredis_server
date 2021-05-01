@@ -33,11 +33,22 @@ namespace myredis::func
         //函数存在，运行该函数，并将结果返回给客户端
         else
         {
+            optional<string> reply;
             //iter->second是一个函数（通过args[0]查找而得）
-            
-            auto reply = iter->second.func(std::move(ctx));
 
-            if (self.isBlocked())
+            //判断是同步函数还是协程-异步函数,然后据此执行同步/异步的调用：
+
+
+            if (!iter->second.isAsyncFunc())//执行同步调用
+            {
+                reply = iter->second.syncptr(std::move(ctx));
+            }
+            else //执行异步调用
+            {
+                reply = co_await iter->second.asyncptr(std::move(ctx));
+            }
+
+            if (self.isBlocked()) //如果设置为阻塞态，则等待对应事件发生，调用用户提供的回调函数并返回结果
             {
                 reply=co_await self.wait();
             }

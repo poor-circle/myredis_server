@@ -16,19 +16,34 @@ namespace myredis::func
 			args(std::move(args)),session(session){}
 	};
 
-	using funcPtr = std::optional<boost::container::string>(*)(context&& ctx) noexcept;
+	using syncFuncPtr = std::optional<boost::container::string>(*)(context&& ctx) noexcept;//同步api的函数指针
+	using asyncFuncPtr = asio::awaitable<std::optional<boost::container::string>>(*)(context&& ctx) noexcept;//异步api的函数指针
 
-	enum funcType
+	enum class funcType
 	{
 		read,
 		write,
 		connect,
-		blocked
+		blocked,
+		pubsub,
+		async_pubsub,
+	};
+	union funcPtr
+	{
+		syncFuncPtr syncFunc;//同步函数指针
+		asyncFuncPtr asyncFunc;//异步函数指针
 	};
 	struct funcInfo
 	{
-		funcPtr func;//函数指针
+		syncFuncPtr syncptr;
+		asyncFuncPtr asyncptr;//这里之所以不做成union类型，是因为其似乎无法处理协程函数？奇怪
 		funcType type;//函数类型
+		bool isAsyncFunc(void) const noexcept
+		{
+			return type == funcType::async_pubsub;
+		}
+		funcInfo(syncFuncPtr ptr, funcType type):syncptr(ptr),asyncptr(nullptr),type(type){}
+		funcInfo(asyncFuncPtr ptr, funcType type) :syncptr(nullptr), asyncptr(ptr), type(type) {}
 	};
 
 
