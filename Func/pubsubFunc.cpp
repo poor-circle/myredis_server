@@ -7,6 +7,8 @@ namespace myredis::func
 {
 	
 #include"../namespace.i"
+
+	 
 	// test	created by lizezheng	date:2021/5/01
 	//一个测试函数，向其他所有客户端广播一条消息（事先输入wait才能正确同步显示），无参数
 	asio::awaitable<std::optional<string>> test(context&& ctx) noexcept
@@ -22,14 +24,15 @@ namespace myredis::func
 			auto myID=ctx.session.getSessionID();//获取本会话的id
 
 			auto& table = BaseSession::getSessionMap();//获取记录了所有当前会话id的hash表
-			for (auto& e : table)
+			for (auto& e : table)//遍历所有当前的会话
 			{
 				auto session = e.second;
 				auto ID = e.first;
-				if (ID != myID)
+				if (ID != myID)//如果不是本会话
 				{
 					auto str = code::getBulkReply(fmt::format("your ID is {}", ID));
-					co_await asio::async_write(session->getSocket(), asio::buffer(str.c_str(),str.size()), use_awaitable);
+					//新建一个协程，在这个协程上给对应的客户端发送消息
+					session->addNewCoroToSendMessage(std::move(str));
 				}
 			}
 			//注意，这只是一个DEMO,虽然广播给所有的客户端，但是其他客户端需要随便乱输入一条错误的命令来查看结果

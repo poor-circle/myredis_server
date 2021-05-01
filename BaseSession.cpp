@@ -279,10 +279,14 @@ do{\
     {
         return sessionID;
     }
-
-    asio::ip::tcp::socket& BaseSession::getSocket() noexcept
+    //创建一个新的协程来发送一条消息
+    void BaseSession::addNewCoroToSendMessage(string&& msg)
     {
-        return socket;
+        auto& soc = socket;
+        asio::co_spawn(ioc, [msg=std::move(msg),&soc]()-> asio::awaitable<void>
+        {
+            co_await asio::async_write(soc, asio::buffer(msg.c_str(), msg.size()), use_awaitable); 
+        }, detached);
     }
 
     bool BaseSession::isBlocked() noexcept

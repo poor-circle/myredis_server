@@ -46,7 +46,8 @@ namespace myredis
         static void wake_up(const string& sv, size_t dataBaseID);
         std::queue<std::pair<string, size_t>> wake_up_queue;
         size_t getSessionID() noexcept;
-        asio::ip::tcp::socket& getSocket() noexcept;
+        //创建一个新的协程来发送一条消息
+        void addNewCoroToSendMessage(string&& msg);
     private:
         static std::atomic<size_t> IDNow;
         void wake_up(string&& result);
