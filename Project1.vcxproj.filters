@@ -198,6 +198,9 @@
     <ClInclude Include="ObjectVisitor\setVisitor\srem.h">
       <Filter>头文件\ObjectVisitor\setVisitor</Filter>
     </ClInclude>
+    <ClInclude Include="Func\pubsubFunc.h">
+      <Filter>头文件\Func</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -238,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="funcController.cpp">
       <Filter>源文件\frameworkClass</Filter>
+    </ClCompile>
+    <ClCompile Include="Func\pubsubFunc.cpp">
+      <Filter>源文件\Func</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

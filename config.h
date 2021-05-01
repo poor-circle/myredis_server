@@ -1,6 +1,6 @@
 #define _WIN32_WINNT 0x0A00 //设置操作系统
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS //忽略弃用警告
-
+#define FMT_HEADER_ONLY
 #define Regist(sessionType,value)\
 	uint32_t sessionType::sessionTypeCode = Session::regist<sessionType, value>();
 

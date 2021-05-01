@@ -4,11 +4,28 @@
 //网络框架库，代表一个基本的连接会话
 namespace myredis
 {
-    class controller;
+
+    class BaseSession;
+
+    class SessionMap
+    {
+        friend class BaseSession;
+        hash_map<size_t, BaseSession*> sessionMap;
+        SessionMap(const SessionMap&) = delete;
+        SessionMap(SessionMap&&) = delete;
+        SessionMap& operator = (SessionMap&&) = delete;
+        SessionMap& operator = (const SessionMap&) = delete;
+        SessionMap() = default;
+    public:
+        decltype(auto) begin() { return sessionMap.begin(); }
+        decltype(auto) find(size_t sessionID) { return sessionMap.find(sessionID); }
+        decltype(auto) end() { return sessionMap.end(); }
+        decltype(auto) size() { return sessionMap.size(); }
+    };
+
     class BaseSession
     {
     public:
-        friend class controller;
         BaseSession(asio::io_context& ioc, asio::ip::tcp::socket socket);
         static asio::awaitable<void> run(std::unique_ptr<BaseSession> self);
         void setDataBaseID(int64_t ID)  noexcept;
@@ -21,7 +38,7 @@ namespace myredis
         BaseSession(BaseSession&&) = delete;
         BaseSession& operator =(BaseSession&&) = delete;
         BaseSession& operator =(const BaseSession&) = delete;
-        static hash_map<size_t,void*>& getSessionMap();
+        static SessionMap& getSessionMap();
         ~BaseSession();
         bool isBlocked() noexcept;
         void setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,watcherPtr& watch_list);
@@ -29,6 +46,8 @@ namespace myredis
         static void wake_up(const string& sv, size_t dataBaseID);
         std::queue<std::pair<string, size_t>> wake_up_queue;
         size_t getSessionID() noexcept;
+        //创建一个新的协程来发送一条消息
+        void addNewCoroToSendMessage(string&& msg);
     private:
         static std::atomic<size_t> IDNow;
         void wake_up(string&& result);
