@@ -78,6 +78,11 @@ namespace myredis
 			sessionID(sessionID), nodes(nodes), op(op) {}
 	};
 
+	struct keyInfo
+	{
+		uint64_t liveTime;
+		string str;
+	};
 
 	class objectMap
 	{

@@ -84,7 +84,7 @@ do{\
     }\
 }while(false)
 
-    BaseSession::BaseSession(asio::io_context& ioc, tcp::socket socket) :
+    BaseSession::BaseSession(asio::io_context& ioc, tcp::socket&& socket) :
         ioc(ioc), socket(move(socket)), dataBaseID(0), closed(false),
         logined(false), blocked(false), clock(ioc),watch_list(nullptr)
     {
@@ -94,6 +94,11 @@ do{\
     }
 
     constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为4000个字节
+
+    std::unique_ptr<BaseSession> BaseSession::create(asio::io_context& ioc, asio::ip::tcp::socket&& socket)
+    {
+        return unique_ptr<BaseSession>(new BaseSession(ioc,std::move(socket)));
+    }
 
     awaitable<void> BaseSession::run(unique_ptr<BaseSession> self)
     {

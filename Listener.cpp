@@ -19,8 +19,7 @@ namespace myredis
         );
         for (;;)
         {
-            auto ptr = std::make_unique<BaseSession>
-            (
+            auto ptr = BaseSession::create(
                 ioc,                                                //io_context
                 co_await acceptor.async_accept(asio::use_awaitable) //socket
             );
