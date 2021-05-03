@@ -29,4 +29,6 @@ namespace myredis::func
 	std::optional<string> type(context&& ctx) noexcept;
 	//	scan	created by lizezheng	date:2021/4/21
 	std::optional<string> scan(context&& ctx) noexcept;
+	// expire created by lizezheng data:2021/05/03
+	std::optional<string> expire(context&& ctx) noexcept;
 }

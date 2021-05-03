@@ -9,6 +9,7 @@ namespace myredis
 
     class SessionMap
     {
+        
         friend class BaseSession;
         hash_map<size_t, BaseSession*> sessionMap;
         SessionMap(const SessionMap&) = delete;
@@ -25,8 +26,16 @@ namespace myredis
 
     class BaseSession
     {
+        friend struct std::default_delete<myredis::BaseSession>;
     public:
-        BaseSession(asio::io_context& ioc, asio::ip::tcp::socket socket);
+        
+        BaseSession(const BaseSession&) = delete;
+        BaseSession(BaseSession&&) = delete;
+        BaseSession& operator =(const BaseSession&) = delete;
+        BaseSession& operator =(BaseSession&&) = delete;
+        static std::unique_ptr<BaseSession> create(asio::io_context& ioc, asio::ip::tcp::socket&& socket);
+
+
         static asio::awaitable<void> run(std::unique_ptr<BaseSession> self);
         void setDataBaseID(int64_t ID)  noexcept;
         size_t getDataBaseID() noexcept;
@@ -34,12 +43,8 @@ namespace myredis
         void setClosed() noexcept;
         bool isLogined() noexcept;
         void setLogined(bool logined) noexcept;
-        BaseSession(const BaseSession&) = delete;
-        BaseSession(BaseSession&&) = delete;
-        BaseSession& operator =(BaseSession&&) = delete;
-        BaseSession& operator =(const BaseSession&) = delete;
         static SessionMap& getSessionMap();
-        ~BaseSession();
+        
         bool isBlocked() noexcept;
         void setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,watcherPtr& watch_list);
         asio::awaitable<string> wait();
@@ -48,7 +53,11 @@ namespace myredis
         size_t getSessionID() noexcept;
         //创建一个新的协程来发送一条消息
         void addNewCoroToSendMessage(string&& msg);
+
     private:
+        ~BaseSession();
+        BaseSession(asio::io_context& ioc, asio::ip::tcp::socket&& socket);
+
         static std::atomic<size_t> IDNow;
         void wake_up(string&& result);
         string result;

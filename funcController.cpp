@@ -45,7 +45,7 @@ namespace myredis::func
             }
             else //执行异步调用
             {
-                reply = co_await iter->second.asyncptr(std::move(ctx));
+                //reply = co_await iter->second.asyncptr(std::move(ctx));
             }
 
             if (self.isBlocked()) //如果设置为阻塞态，则等待对应事件发生，调用用户提供的回调函数并返回结果

@@ -24,7 +24,8 @@ namespace myredis
             });
             myredis::Listener listener(io_context, myredis::defaultPort);
             
-            co_spawn(io_context, listener.Run(), detached);
+            co_spawn(io_context, listener.Run(), detached);//开始监听端口
+            co_spawn(io_context, objectMap::expiredKeyCollecting, detached);//运行垃圾回收
             
             io_context.run();
         }
@@ -40,7 +41,6 @@ int main()
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     //MSVC内存泄漏侦测，按ctrl+c关闭程序(而不是直接关闭窗口)，如果有内存泄漏，则输出窗口会做提示
 #endif
-    
     myredis::run();
     return 0;
 }

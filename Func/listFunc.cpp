@@ -963,7 +963,7 @@ namespace myredis::func {
 			//否则，准备进入阻塞态
 			auto watch_list = std::make_shared<watcher>();
 			//添加监视器，用于在合适的情况下唤醒会话
-			objectMap::addWatches(args.begin() + 1, args.begin() + 2, ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
+			objectMap::addWatches(args.begin() + 1, args.begin() + 2 , ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
 				[&objectMap,&ctx,&args](const string& keyName)
 			{
 				auto iter = objectMap.find(keyName);

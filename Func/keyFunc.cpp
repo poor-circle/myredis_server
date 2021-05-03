@@ -119,9 +119,9 @@ namespace myredis::func
 				return code::getMultiReply(objectMap.begin(), objectMap.end(),
 					[&rx](hash_map<keyIter, myredis::object>::iterator iter, auto s)
 					{
-						if (std::regex_match((*iter->first.iter).c_str(), rx))
+						if (std::regex_match(iter->first.iter->getStr().c_str(), rx))
 						{
-							code::getBulkReplyTo(*iter->first.iter, s);
+							code::getBulkReplyTo(iter->first.iter->getStr(), s);
 							return 1;
 						}
 						else 
@@ -157,9 +157,10 @@ namespace myredis::func
 				if (iter != objectMap.end())
 				{
 					myredis::object obj;
+					auto expireTime = iter->first.iter->getLiveTime();
 					swap(obj, iter->second);
 					objectMap.erase(iter);
-					objectMap.update(std::move(args[2]), std::move(obj));
+					objectMap.update(keyInfo(args[2],expireTime), std::move(obj));
 					return code::ok;
 				}
 				else
@@ -197,9 +198,10 @@ namespace myredis::func
 					if (flag)
 					{
 						myredis::object obj;
+						auto expireTime = iter->first.iter->getLiveTime();
 						swap(obj, iter->second);
 						objectMap.erase(iter);
-						objectMap.try_insert(std::move(args[2]), std::move(obj));
+						objectMap.try_insert(keyInfo(args[2], expireTime), std::move(obj));
 					}
 					return code::getIntegerReply(flag);
 				}
@@ -372,14 +374,14 @@ namespace myredis::func
 					if (dcount == 0 || count == 0)
 						return -1;
 					--dcount;
-					if (pattern.empty() || regex_match(iter->c_str(), rx))
+					if (pattern.empty() || regex_match(iter->getStr().c_str(), rx))
 					{
 						fmt::format_to
 						(
 							inserter,
 							FMT_COMPILE("${}\r\nkey:{}\r\n"),
-							iter->size() + 4,
-							*iter
+							iter->getStr().size() + 4,
+							iter->getStr()
 						);
 						--count;
 						return 1;
@@ -391,7 +393,7 @@ namespace myredis::func
 					if (iter == objectMap.keyEnd())
 						return  string("0");
 					else
-						return  "iter:"+*iter;
+						return  "iter:"+iter->getStr();
 				});;
 		}
 		catch (const exception& e)
@@ -401,4 +403,43 @@ namespace myredis::func
 		}
 	}
 
+
+	/*
+	* @author: lizezheng
+	* date:2021/05/03
+	* expire key timeout(seconds)
+	* 以秒为单位设置过期时间
+	* 返回值：integer
+	*/
+	std::optional<string> expire(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			else
+			{
+				int64_t sec;
+				if (!try_lexical_convert(args[2], sec) || sec < 0)
+				{
+					return code::args_illegal_error;
+				}
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					objectMap.updateExpireTime(iter->first, seconds(sec));
+					return code::getIntegerReply(1);
+				}
+				else
+					return code::getIntegerReply(0);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
 }
