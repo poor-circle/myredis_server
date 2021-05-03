@@ -35,6 +35,7 @@ namespace myredis
         BaseSession& operator =(BaseSession&&) = delete;
         static std::unique_ptr<BaseSession> create(asio::io_context& ioc, asio::ip::tcp::socket&& socket);
 
+
         static asio::awaitable<void> run(std::unique_ptr<BaseSession> self);
         void setDataBaseID(int64_t ID)  noexcept;
         size_t getDataBaseID() noexcept;

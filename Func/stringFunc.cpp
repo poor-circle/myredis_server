@@ -41,6 +41,33 @@ namespace myredis::func
 		}
 	}
 
+	/*
+	* setex key seconds value
+	* @author:zezhengli
+	* date:2021/4/18
+	*/
+	optional<string> setex(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 4)
+				return code::args_count_error;
+			int64_t sec;
+			if (!try_lexical_convert(args[2], sec) || sec < 0)
+				return code::args_illegal_error;
+			string temp = args[1];
+			objectMap.update(keyInfo(std::move(args[1]), keyInfo::getUnixMSDuration(seconds(sec))), stringToObject(std::move(args[3])));
+			return code::ok;
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
 	//获取一个字符串
 	optional<string> get(context&& ctx) noexcept
 	{

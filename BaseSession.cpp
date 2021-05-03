@@ -93,13 +93,18 @@ do{\
         getSessionMap().sessionMap.emplace(sessionID,this);
     }
 
-    constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为4000个字节
+    constexpr static int BUFSIZE = 1000;//缓冲区大小暂定为1000个字节
 
     std::unique_ptr<BaseSession> BaseSession::create(asio::io_context& ioc, asio::ip::tcp::socket&& socket)
     {
         return unique_ptr<BaseSession>(new BaseSession(ioc,std::move(socket)));
     }
 
+#ifdef QPSTEST
+    static inline int64_t cnter = 0;
+    static inline auto tp = high_resolution_clock::now();
+#endif
+    
     awaitable<void> BaseSession::run(unique_ptr<BaseSession> self)
     {
         assert((fmt::print("session at thread:{}\n", std::this_thread::get_id()),1));
@@ -116,6 +121,7 @@ do{\
         {
             array<char, BUFSIZE> buf;
             auto iterBegin = buf.begin(), iterEnd = buf.begin();
+
             //iterBegin和iterEnd是一对指针
             //iterBegin:应该从哪里开始读
             //iterEnd:读到哪里算结束

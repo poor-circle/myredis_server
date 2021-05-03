@@ -66,6 +66,9 @@ namespace myredis
 			write(sadd),
 			write(srem),
 
+			write(setex),
+			write(expire),
+
 			//Á¬½Ó×´Ì¬
 			connect(ping),
 			connect(quit),

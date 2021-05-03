@@ -39,4 +39,6 @@ namespace myredis::func
 	std::optional<string> decr(context&& ctx) noexcept;
 	//	decrby		created by tigerwang	date:2021/4/20
 	std::optional<string> decrby(context&& ctx) noexcept;
+	// setex created by zezhengli	date:2021/5/03
+	std::optional<string> setex(context&& ctx) noexcept;
 }

@@ -3,12 +3,59 @@
 #include"boost/container/list.hpp"
 namespace myredis
 {
+	struct keyIter;
+	class objectMap;
+	struct keyInfo
+	{
+		using time_duration = std::chrono::milliseconds;
+		friend struct keyIter;
+		friend class objectMap;
+	private:
+		string str;
+		time_duration liveTime;//ms from 1970/01/01 
+	public:
+		keyInfo(const string& str, time_duration liveTime = time_duration::max()) :str(str), liveTime(liveTime) {}
+		keyInfo(string&& str, time_duration liveTime = time_duration::max()) :str(std::move(str)), liveTime(liveTime) {}
+		bool isExpired()
+		{
+			return isSetExpiredTime() && liveTime <= std::chrono::steady_clock::now().time_since_epoch();
+		}
+		bool isSetExpiredTime()
+		{
+			return liveTime != time_duration::max();
+		}
+		time_duration getLiveTime() const { return liveTime; }
+		const string& getStr() const { return str; }
+		friend bool operator == (const keyInfo& key1, const keyInfo& key2)
+		{
+			return key1.str == key2.str;
+		}
+		//获取以ms为单位的unix时间戳
+		static time_duration getUnixMSDuration(std::chrono::seconds sec)
+		{
+			auto st = std::chrono::duration_cast<time_duration>(std::chrono::steady_clock::now().time_since_epoch()) + sec;
+			return st;
+		}
+		//获取以ms为单位的unix时间戳
+		static time_duration getUnixMSDuration(std::chrono::milliseconds sec)
+		{
+			return std::chrono::duration_cast<time_duration>(std::chrono::steady_clock::now().time_since_epoch() + sec);
+		}
+	};
+
 	struct keyIter
 	{
-		mutable boost::container::list<string>::iterator iter;
+		mutable boost::container::list<keyInfo>::iterator iter;
 		friend bool operator == (const keyIter& iter1, const keyIter& iter2)
 		{
 			return *iter1.iter == *iter2.iter;
+		}
+		friend bool operator < (const keyIter& iter1, const keyIter& iter2)
+		{
+			if (iter1.iter->getLiveTime() == iter2.iter->getLiveTime())
+				return iter1.iter->getStr() < iter2.iter->getStr();
+			else
+				return iter1.iter->getLiveTime() < iter2.iter->getLiveTime();
 		}
 		template<typename T>
 		keyIter(T && v):iter(std::forward<T>(v)){}
@@ -21,7 +68,7 @@ namespace std
 	{
 		std::size_t operator()(myredis::keyIter const& p) const
 		{
-			return boost::container::hash_value(*p.iter);
+			return boost::container::hash_value(p.iter->getStr());
 		}
 	};
 	//添加标准库对于myredis::string的哈希支持
@@ -78,28 +125,28 @@ namespace myredis
 			sessionID(sessionID), nodes(nodes), op(op) {}
 	};
 
-	struct keyInfo
-	{
-		uint64_t liveTime;
-		string str;
-	};
-
 	class objectMap
 	{
 	private:
-		boost::container::list<string> keylist;
+		boost::container::list<keyInfo> keylist;
 		hash_map<keyIter, object> map;
+		std::set<keyIter> expireHeap;//目前简化了实现，没有真正使用*堆*
 		//不要直接创建这个对象！(通过getObjectMap来获取）
+		void _updateExpireTime(const keyIter& iter, keyInfo::time_duration ms);
 	public:
 		//插入(更新)一个key
-		void update(string&& str,object&& obj);
-		hash_map<keyIter, object>::iterator try_insert(string&& str, object&& obj);
+		void updateExpireTime(const keyIter& iter,std::chrono::seconds sec);
+		void updateExpireTime(const keyIter& iter, std::chrono::milliseconds ms);
+		void updateExpireTime(const keyIter& iter, std::chrono::steady_clock::time_point unix_ms_tp);
+		static asio::awaitable<void> expiredKeyCollecting();
+		void update(keyInfo&& key,object&& obj);
+		hash_map<keyIter, object>::iterator try_insert(keyInfo&& key, object&& obj);
 		hash_map<keyIter, object>::iterator find(const string& str);
 		hash_map<keyIter, object>::iterator find(string&& str);
 		hash_map<keyIter, object>::iterator begin();
 		hash_map<keyIter, object>::iterator end();
-		boost::container::list<string>::iterator keyBegin();
-		boost::container::list<string>::iterator keyEnd();
+		boost::container::list<keyInfo>::iterator keyBegin();
+		boost::container::list<keyInfo>::iterator keyEnd();
 		size_t erase(string&& str);
 		hash_map<keyIter, object>::iterator erase(hash_map<keyIter, object>::const_iterator iter);
 		static objectMap& getObjectMap(size_t index);
