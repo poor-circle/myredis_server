@@ -84,7 +84,9 @@ namespace myredis
 
 			pubsub(wait),
 			pubsub(test),
-			pubsub(subscribe)
+			pubsub(subscribe),
+			pubsub(unsubscribe),
+			pubsub(pubsub)
 			//regist func at here
 			//{"name",func::name}
 		};
