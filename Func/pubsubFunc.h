@@ -11,4 +11,7 @@ namespace myredis::func
 	//一个测试函数，模拟等待一条订阅消息，无参数
 	//如果函数不需要用到网络来发送消息，那就设置成同步类型
 	std::optional<string> wait(context&& ctx) noexcept;
+
+	// SUBSCRIBE		creator:tigerwang	date:2021/5/3
+	std::optional<string> subscribe(context&& ctx) noexcept;
 }

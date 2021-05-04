@@ -88,6 +88,7 @@ do{\
         ioc(ioc), socket(move(socket)), dataBaseID(0), closed(false),
         logined(false), blocked(false), clock(ioc),watch_list(nullptr)
     {
+        subChannels = std::make_unique<hash_set<string>>();
         if (strlen(myredis_password) == 0) logined = true;
         sessionID = BaseSession::IDNow++;
         getSessionMap().sessionMap.emplace(sessionID,this);
@@ -208,6 +209,7 @@ do{\
     }
 
 
+
     void BaseSession::setClosed() noexcept
     {
         closed = true;
@@ -316,6 +318,17 @@ do{\
     {
         static SessionMap table;
         return table;
+    }
+
+    hash_map<string, hash_set<size_t>>& BaseSession::getChannelMap() noexcept
+    {
+        static hash_map<string, hash_set<size_t>> channelMap;
+        return channelMap;
+    }
+
+    std::unique_ptr<hash_set<string>>& BaseSession::getsubChannels() noexcept
+    {
+        return subChannels;
     }
 
     void BaseSession::wake_up(string&& result)
