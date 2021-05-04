@@ -125,7 +125,7 @@ do{\
             //iterBegin和iterEnd是一对指针
             //iterBegin:应该从哪里开始读
             //iterEnd:读到哪里算结束
-            
+            vector<string> args;
             while (self->closed==false)
             {
                 //读取*号后面的正整数（一共有多少行）
@@ -135,8 +135,8 @@ do{\
                     iterBegin = buf.begin();
                     iterEnd = iterBegin + co_await self->socket.async_read_some(asio::buffer(buf), use_awaitable);
                 }
-
                 vector<string> args;
+                args.reserve(5);
                 string line;
                 if (*iterBegin == '*') //bulk string
                 {

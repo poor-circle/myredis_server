@@ -196,7 +196,7 @@ namespace myredis
 		keylist.emplace_back(std::move(str));
 		hash_map<keyIter, object>::const_iterator ans = map.find(prev(keylist.end()));
 		keylist.pop_back();
-		if (ans != map.end())
+		if (ans != map.cend())
 		{
 			map.erase(ans);
 			auto iter = ans->first.iter;

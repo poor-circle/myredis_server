@@ -54,6 +54,20 @@ namespace myredis::code
 	}
 
 	template<typename T>
+	static string getBulkReply(const string& str)  //批量回复
+	{
+		string s;
+		fmt::format_to
+		(
+			back_inserter(s),
+			FMT_COMPILE("${}\r\n{}\r\n"),
+			str.size(),
+			str
+		);
+		return s;
+	}
+
+	template<typename T>
 	static string getBulkReply(const T& str)  //批量回复
 	{
 		string s;
@@ -65,6 +79,41 @@ namespace myredis::code
 			str
 		);
 		return s;
+	}
+
+	static string getBulkReply(const std::string_view str)  //批量回复
+	{
+		string s;
+		fmt::format_to
+		(
+			back_inserter(s),
+			FMT_COMPILE("${}\r\n{}\r\n"),
+			str.size(),
+			str
+		);
+		return s;
+	}
+
+	static void getBulkReplyTo(const string& str, std::back_insert_iterator<string> s)  //批量回复
+	{
+		fmt::format_to
+		(
+			s,
+			FMT_COMPILE("${}\r\n{}\r\n"),
+			str.size(),
+			str
+		);
+	}
+
+	static void getBulkReplyTo(const std::string_view str, std::back_insert_iterator<string> s)  //批量回复
+	{
+		fmt::format_to
+		(
+			s,
+			FMT_COMPILE("${}\r\n{}\r\n"),
+			str.size(),
+			str
+		);
 	}
 
 	template<typename T>

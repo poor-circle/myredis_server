@@ -4,7 +4,7 @@
 #define Regist(sessionType,value)\
 	uint32_t sessionType::sessionTypeCode = Session::regist<sessionType, value>();
 
-#define QPSTEST
+//#define QPSTEST
 
 
 constexpr bool allKeyLRU = 1;
@@ -15,7 +15,7 @@ inline long long data_base_count = 16;
 
 inline size_t regexOpLowerBound = 1000;
 
-inline size_t default_scan_count = 2;
+inline size_t default_scan_count = 200;
 
 
 //variant support
