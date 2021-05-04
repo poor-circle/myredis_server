@@ -14,4 +14,12 @@ namespace myredis::func
 
 	// SUBSCRIBE		creator:tigerwang	date:2021/5/3
 	std::optional<string> subscribe(context&& ctx) noexcept;
+
+	// UNSUBSCRIBE		creator:tigerwang	date:2021/5/4
+	std::optional<string> unsubscribe(context&& ctx) noexcept;
+
+	// pubsub			creator:tigerwang	date:2021/5/4
+	// note:目前只实现pubsub numsub
+	std::optional<string> pubsub(context&& ctx) noexcept;
+
 }
