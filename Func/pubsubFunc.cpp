@@ -186,7 +186,7 @@ namespace myredis::func
 	* pubsub numsub	[channels...] 指定信道的订阅者个数
 	* pubsub numpat 客户端订阅的所有模式的总和
 	* @author:tigerwang
-	* date:2021/5/3
+	* date:2021/5/4
 	*/
 	std::optional<string> pubsub(context&& ctx) noexcept
 	{
@@ -204,36 +204,33 @@ namespace myredis::func
 				if (args.size() < 3) {
 					return code::args_count_error;
 				}
-				return code::getMultiReply(args.begin() + 1, args.end(),
+				return code::getMultiReply(args.begin() + 2, args.end(),
 					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
 				{
+
 					auto myID = ctx.session.getSessionID();//获取本会话的id
-					// 将订阅的频道记录到订阅表里
-					auto& subChannels = ctx.session.getsubChannels();
-					subChannels->insert(*arg);
 
 					auto& channelTable = ctx.session.getChannelMap();
 					auto channelIter = channelTable.find(*arg);
 					if (channelIter == channelTable.end())
 					{
-						// 没找到新建一个频道
-						hash_set<size_t> subList;
-						subList.emplace(myID);
-						channelTable.insert(pair<string, hash_set<size_t>>(*arg, subList));
-
+						code::getBulkReplyTo(*arg, s);
+						// 返回订阅的频道数
+						code::getIntegerReplyTo(0, s);
 					}
 					else
 					{
-						// 将id号挂到对应的频道列表后
-						channelIter->second.insert(myID);
+						code::getBulkReplyTo(*arg, s);
+						// 返回订阅的频道数
+						code::getIntegerReplyTo(channelIter->second.size(), s);
 					}
 
-					code::getBulkReplyTo("subscribe", s);
-					code::getBulkReplyTo(*arg, s);
-					// 返回订阅的频道数
-					code::getIntegerReplyTo(subChannels->size(), s);
-					return 3;
+
+					return 2;
 				});
+			}
+			else {
+				return code::command_error;
 			}
 			
 		}
