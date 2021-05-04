@@ -609,7 +609,7 @@ namespace myredis::func
 			if (args.size() <= 1)
 				return code::args_count_error;
 			else
-				return code::getMultiReply(args.begin() + 1, args.end(),
+				return code::getMultiReplyByRange(args.begin() + 1, args.end(),
 				[&ctx](vector<string>::iterator arg,std::back_insert_iterator<string> s)
 				{
 					auto&& objectMap = ctx.session.getObjectMap();

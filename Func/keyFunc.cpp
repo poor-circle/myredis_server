@@ -116,7 +116,7 @@ namespace myredis::func
 				{
 					return code::regex_error;
 				}
-				return code::getMultiReply(objectMap.begin(), objectMap.end(),
+				return code::getMultiReplyByRange(objectMap.begin(), objectMap.end(),
 					[&rx](hash_map<keyIter, myredis::object>::iterator iter, auto s)
 					{
 						if (std::regex_match(iter->first.iter->getStr().c_str(), rx))
@@ -233,7 +233,7 @@ namespace myredis::func
 			else
 			{
 				boost::algorithm::to_lower(args[1]);
-				if (args[1] == "encoding")
+				if (args[1] == "encoding"sv)
 				{
 					auto iter = objectMap.find(args[2]);
 					if (iter != objectMap.end())
@@ -244,12 +244,12 @@ namespace myredis::func
 					else
 						return code::key_error;
 				}
-				else if (args[1] == "refcount")
+				else if (args[1] == "refcount"sv)
 				{
 					return code::getIntegerReply(1);
 				}
 				//TODO:subcommand idletime
-				else if (args[1] == "idletime")
+				else if (args[1] == "idletime"sv)
 					return code::nil;
 				else
 					return code::subcommand_error;
@@ -297,12 +297,12 @@ namespace myredis::func
 	string scan_subcommand_parse(vector<string>& args, size_t index,size_t& cnt,string& pattern)
 	{
 		boost::algorithm::to_lower(args[index]);
-		if (args[index] == "count")
+		if (args[index] == "count"sv)
 		{
 			if (!try_lexical_convert(args[index + 1], cnt))
 				return code::args_illegal_error;
 		}
-		else if (args[index]=="match")
+		else if (args[index]=="match"sv)
 		{
 			pattern = std::move(args[index + 1]);
 		}
@@ -328,9 +328,9 @@ namespace myredis::func
 			string pattern,ret;
 			size_t pos;
 			regex rx;
-			if (args[1] == "0")
+			if (args[1] == "0"sv)
 				pos = 0;
-			else if (args[1].length()<5||string_view(args[1].c_str(), 5) != "iter:")
+			else if (args[1].length()<5||string_view(args[1].c_str(), 5) != "iter:"sv)
 			{
 				return code::iterator_illegal_error;
 			}

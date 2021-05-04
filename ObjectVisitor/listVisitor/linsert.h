@@ -25,7 +25,7 @@ namespace myredis::visitor
         if (pivotIter == obj->end()) {
             return myredis_succeed(-1);
         }
-        if (insertType == "after") {
+        if (insertType == std::string_view("after")) {
             pivotIter++;
         }
         obj->insert(pivotIter, value);

@@ -47,36 +47,40 @@ namespace myredis::code
 	const string iterator_illegal_error = "-Illegal iterator.\r\n";
 	const string server_exception_error = "-server internal exception.\r\n";
 
-	static void getReplyTo(const std::string_view str, std::back_insert_iterator<string> s)
+	template<typename T>
+	static void getReplyTo(const T& str, std::back_insert_iterator<string> s)
 	{
-		copy(str.begin(), str.end(), s);
+		fmt::format_to(s,FMT_COMPILE("{}"),str);
 	}
 
-	static string getBulkReply(const std::string_view str)  //批量回复
+	template<typename T>
+	static string getBulkReply(const T& str)  //批量回复
 	{
 		string s;
 		fmt::format_to
 		(
 			back_inserter(s),
 			FMT_COMPILE("${}\r\n{}\r\n"),
-			str.size(),
+			fmt::formatted_size(FMT_COMPILE("{}"), str),
 			str
 		);
 		return s;
 	}
 
-	static void getBulkReplyTo(std::string_view str,std::back_insert_iterator<string> s)  //批量回复
+	template<typename T>
+	static void getBulkReplyTo(const T& str,std::back_insert_iterator<string> s)  //批量回复
 	{
 		fmt::format_to
 		(
 			s,
 			FMT_COMPILE("${}\r\n{}\r\n"),
-			str.size(),
+			fmt::formatted_size(FMT_COMPILE("{}"), str),
 			str
 		);
 	}
 
-	static string getSingleReply(const std::string_view str) //状态回复
+	template<typename T>
+	static string getSingleReply(const T& str) //状态回复
 	{
 		string s;
 		fmt::format_to
@@ -88,7 +92,8 @@ namespace myredis::code
 		return s;
 	}
 
-	static void getSingleReplyTo(const std::string_view str , std::back_insert_iterator<string> s) //状态回复
+	template<typename T>
+	static void getSingleReplyTo(const T& str, std::back_insert_iterator<string> s) //状态回复
 	{
 		fmt::format_to
 		(
@@ -151,7 +156,7 @@ namespace myredis::code
 	* lambda:一个函数，接收一个插入迭代器和一个Iter迭代器，返回一个整数值，代表插入的回复数量
 	*/
 	template<class Iter,typename func>
-	static string getMultiReply(Iter begin, Iter end,func lambda) //多批量回复
+	static string getMultiReplyByRange(Iter begin, Iter end,func lambda) //多批量回复
 	{
 		string s="*00000000000000\r\n";
 		auto index = s.size() - 3;
@@ -170,6 +175,36 @@ namespace myredis::code
 		}
 		return s;
 	}
+
+	template<typename T>
+	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const T& value) //多批量回复
+	{
+		fmt::format_to(s, FMT_COMPILE("${}\r\n{}\r\n"), fmt::formatted_size(FMT_COMPILE("{}"), value) , value);
+	}
+
+	template<typename T, class ...Args>
+	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s,const T& value, const Args&... args) //多批量回复
+	{
+		fmt::format_to(s, FMT_COMPILE("${}\r\n{}\r\n"), fmt::formatted_size(FMT_COMPILE("{}"), value) , value);
+		_getMultiReplyWithOutHead(s,args...);
+	}
+
+	template<class ...Args>
+	static void  getMultiReplyTo(std::back_insert_iterator<string> s,const Args&... args) //多批量回复
+	{
+		fmt::format_to(s, FMT_COMPILE("*{}\r\n"), sizeof...(args));
+		_getMultiReplyWithOutHead(s,args...);
+		return;
+	}
+
+	template<class ...Args>
+	static string getMultiReply(const Args&... args) //多批量回复
+	{
+		string s;
+		getMultiReplyTo(back_inserter(s),args...);
+		return s;
+	}
+
 
 	template<class Iter, typename func,typename func2>
 	static string getScanReply(Iter begin, Iter end, func lambda,func2 dislambda) //多批量回复

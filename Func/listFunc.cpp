@@ -187,7 +187,7 @@ namespace myredis::func {
 				{
 					return code::getErrorReply(ret.first);
 				}
-				auto s= code::getMultiReply(ret.second.begin(), ret.second.end(),
+				auto s= code::getMultiReplyByRange(ret.second.begin(), ret.second.end(),
 					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
 				{
 					code::getBulkReplyTo(*arg,s);
@@ -688,7 +688,7 @@ namespace myredis::func {
 			{
 				auto& insertType = args[2];
 				boost::algorithm::to_lower(insertType);
-				if (insertType != "before" && insertType!="after")
+				if (insertType != "before"sv && insertType!="after"sv)
 				{
 					return code::getErrorReply(code::status::invaild_argument);
 				}
@@ -748,7 +748,7 @@ namespace myredis::func {
 					if (ret.first == code::status::success)
 					{
 						//返回key的名字和key的值
-						return "*2\r\n" + code::getBulkReply(*arg) + code::getBulkReply(ret.second);
+						return code::getMultiReply(*arg, ret.second);
 					}
 					else if (ret.first == code::status::object_type_error)
 					{
@@ -775,7 +775,7 @@ namespace myredis::func {
 						if (ans.first == code::status::success)
 						{
 							//返回key的名字和key的值
-							ret= "*2\r\n"+code::getBulkReply(keyName)+code::getBulkReply(ans.second);
+							ret = code::getMultiReply(keyName, ans.second);
 						}
 					}
 					return ret;
@@ -823,7 +823,7 @@ namespace myredis::func {
 					if (ret.first == code::status::success)
 					{
 						//返回key的名字和key的值
-						return "*2\r\n" + code::getBulkReply(*arg) + code::getBulkReply(ret.second);
+						return code::getMultiReply(*arg, ret.second);
 					}
 					else if (ret.first == code::status::object_type_error)
 					{
@@ -850,7 +850,7 @@ namespace myredis::func {
 					if (ans.first == code::status::success)
 					{
 						//返回key的名字和key的值
-						ret = "*2\r\n" + code::getBulkReply(keyName) + code::getBulkReply(ans.second);
+						ret = code::getMultiReply(keyName,ans.second,1);
 					}
 				}
 				return ret;

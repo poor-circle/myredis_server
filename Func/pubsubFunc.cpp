@@ -61,36 +61,17 @@ namespace myredis::func
 			if (args.size() < 2) {
 				return code::args_count_error;
 			}
-			return code::getMultiReply(args.begin() + 1, args.end(),
-				[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
-			{	
+			string s;
+			for (auto arg=args.begin()+1;arg!=args.end();++arg)
+			{
 				auto myID = ctx.session.getSessionID();//获取本会话的id
 				// 将订阅的频道记录到订阅表里
 				auto& subChannels = ctx.session.getsubChannels();
-				subChannels->insert(*arg);
-
-				auto& channelTable = ctx.session.getChannelMap();
-				auto channelIter = channelTable.find(*arg);
-				if (channelIter == channelTable.end())
-				{
-					// 没找到新建一个频道
-					hash_set<size_t> subList;
-					subList.emplace(myID);
-					channelTable.insert(pair<string, hash_set<size_t>>(*arg, subList));
-
-				}
-				else
-				{
-					// 将id号挂到对应的频道列表后
-					channelIter->second.insert(myID);
-				}
-
-				code::getBulkReplyTo("subscribe", s);
-				code::getBulkReplyTo(*arg, s);
-				// 返回订阅的频道数
-				code::getIntegerReplyTo(subChannels->size(), s);
-				return 3;
-			});
+				subChannels.emplace(*arg);
+				BaseSession::getChannelMap()[*arg].emplace(myID);
+				code::getMultiReplyTo(back_inserter(s),"subscribe", *arg, subChannels.size());// 返回订阅成功的信息
+			}
+			return s;
 		}
 		catch (const exception& e)
 		{
@@ -108,69 +89,44 @@ namespace myredis::func
 	{
 		auto&& args = ctx.args;
 		auto&& objectMap = ctx.session.getObjectMap();
+		auto& subChannels = ctx.session.getsubChannels();
+		auto& channelMap = BaseSession::getChannelMap();
 		try
 		{
+			string ret;
 			// 无参数，退订所有频道 
 			if(args.size()==1)
 			{
-				auto& subChannels = ctx.session.getsubChannels();
-
-				std::vector<string> channels;
-				for (auto iter = subChannels->begin(); iter != subChannels->end(); iter++) {
-					channels.emplace_back(*iter);
-				}
-				return code::getMultiReply(channels.begin(), channels.end(),
-					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
+				while (!subChannels.empty())
 				{
-					auto myID = ctx.session.getSessionID();//获取本会话的id
-					// 在订阅列表中删去订阅频道	
-					auto& subChannels = ctx.session.getsubChannels();
-					subChannels->erase(*arg);
-
-					// 全局订阅表
-					auto& channelTable = ctx.session.getChannelMap();
-					auto channelIter = channelTable.find(*arg);
-					if (channelIter != channelTable.end()) {
-						channelIter->second.erase(myID);
-						if (channelIter->second.empty()) {
-							// 如果该频道没有订阅者就删除该频道
-							channelTable.erase(channelIter);
-						}
-					}
-
-					code::getBulkReplyTo("unsubscribe", s);
-					code::getBulkReplyTo(*arg, s);
-					// 返回订阅的频道数
-					code::getIntegerReplyTo(subChannels->size(), s);
-					return 3;
-				});
-			}
-
-			return code::getMultiReply(args.begin() + 1, args.end(),
-				[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
-			{
-				auto myID = ctx.session.getSessionID();//获取本会话的id
-				// 在订阅列表中删去订阅频道	
-				auto& subChannels = ctx.session.getsubChannels();
-				subChannels->erase(*arg);
-
-				// 全局订阅表
-				auto& channelTable = ctx.session.getChannelMap();
-				auto channelIter = channelTable.find(*arg);
-				if (channelIter != channelTable.end()) {
-					channelIter->second.erase(myID);
-					if (channelIter->second.empty()) {
-						// 如果该频道没有订阅者就删除该频道
-						channelTable.erase(channelIter);
-					}
+					//获取一条多播回复(一共三条内容）
+					code::getMultiReplyTo(back_inserter(ret),"unsubscribe",*subChannels.begin(), subChannels.size()-1);
+					auto iter = channelMap.find(*subChannels.begin());
+					auto channels = iter->second;
+					channels.erase(ctx.session.getSessionID());
+					if (channels.empty()) channelMap.erase(iter);//如果频道已经没有人订阅就删掉
+					subChannels.erase(subChannels.begin());
 				}
-				
-				code::getBulkReplyTo("unsubscribe", s);
-				code::getBulkReplyTo(*arg, s);
-				// 返回订阅的频道数
-				code::getIntegerReplyTo(subChannels->size(), s);
-				return 3;
-			});
+			}
+			else
+			{
+				for (auto channel = args.begin() + 1; channel != args.end(); ++channel)//遍历所有传入的频道名
+				{
+					auto subChannelIter = subChannels.find(*channel);
+					if (subChannelIter != subChannels.end())//如果本会话订阅了这个频道
+					{
+						
+						auto iter = channelMap.find(*channel);
+						auto channels = iter->second;
+						channels.erase(ctx.session.getSessionID());
+						if (channels.empty()) channelMap.erase(iter);//如果频道已经没有人订阅就删掉
+						subChannels.erase(subChannelIter);
+					}
+					//获取一条多播回复(一共三条内容）
+					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", *channel, subChannels.size());
+				}
+			}
+			return ret;
 		}
 		catch (const exception& e)
 		{
@@ -199,33 +155,21 @@ namespace myredis::func
 			}
 			auto subcommand = args[1];
 			boost::algorithm::to_lower(subcommand);
-			if (subcommand == "numsub") {
+			if (subcommand == "numsub"sv) {
 				// 返回指定信道的订阅者个数
 				if (args.size() < 3) {
 					return code::args_count_error;
 				}
-				return code::getMultiReply(args.begin() + 2, args.end(),
+				return code::getMultiReplyByRange(args.begin() + 2, args.end(),
 					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
 				{
-
-					auto myID = ctx.session.getSessionID();//获取本会话的id
-
 					auto& channelTable = ctx.session.getChannelMap();
 					auto channelIter = channelTable.find(*arg);
+					code::getBulkReplyTo(*arg, s);
 					if (channelIter == channelTable.end())
-					{
-						code::getBulkReplyTo(*arg, s);
-						// 返回订阅的频道数
-						code::getIntegerReplyTo(0, s);
-					}
+						code::getIntegerReplyTo(0, s);// 返回订阅的频道数
 					else
-					{
-						code::getBulkReplyTo(*arg, s);
-						// 返回订阅的频道数
-						code::getIntegerReplyTo(channelIter->second.size(), s);
-					}
-
-
+						code::getIntegerReplyTo(channelIter->second.size(), s);// 返回订阅的频道数
 					return 2;
 				});
 			}

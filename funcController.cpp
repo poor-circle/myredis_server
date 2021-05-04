@@ -24,7 +24,7 @@ namespace myredis::func
             co_return;
         }
         //检验是否拥有权限
-        else if (args[0] != "auth" && self.isLogined() == false)
+        else if (args[0] != "auth"sv && self.isLogined() == false)
         {
             assert((fmt::print("客户端无权限!\n"), 1));
             ret=code::auth_error;

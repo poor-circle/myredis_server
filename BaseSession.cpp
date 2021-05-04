@@ -88,7 +88,6 @@ do{\
         ioc(ioc), socket(move(socket)), dataBaseID(0), closed(false),
         logined(false), blocked(false), clock(ioc),watch_list(nullptr)
     {
-        subChannels = std::make_unique<hash_set<string>>();
         if (strlen(myredis_password) == 0) logined = true;
         sessionID = BaseSession::IDNow++;
         getSessionMap().sessionMap.emplace(sessionID,this);
@@ -198,7 +197,7 @@ do{\
         dataBaseID = ID;
     }
 
-    size_t BaseSession::getDataBaseID() noexcept
+    size_t BaseSession::getDataBaseID() const noexcept
     {
         return dataBaseID;
     }
@@ -215,7 +214,7 @@ do{\
         closed = true;
     }
 
-    bool BaseSession::isLogined() noexcept
+    bool BaseSession::isLogined() const noexcept
     {
         return logined;
     }
@@ -288,7 +287,7 @@ do{\
         }
     }
 
-    size_t BaseSession::getSessionID() noexcept
+    size_t BaseSession::getSessionID() const  noexcept
     {
         return sessionID;
     }
@@ -302,7 +301,7 @@ do{\
         }, detached);
     }
 
-    bool BaseSession::isBlocked() noexcept
+    bool BaseSession::isBlocked() const noexcept
     {
         return blocked;
     }
@@ -326,7 +325,7 @@ do{\
         return channelMap;
     }
 
-    std::unique_ptr<hash_set<string>>& BaseSession::getsubChannels() noexcept
+    hash_set<string>& BaseSession::getsubChannels() noexcept
     {
         return subChannels;
     }

@@ -131,7 +131,7 @@ namespace myredis::func
 					return code::getErrorReply(ret.first);
 				}
 
-				return code::getMultiReply(ret.second.begin(), ret.second.end(),
+				return code::getMultiReplyByRange(ret.second.begin(), ret.second.end(),
 					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
 				{
 					code::getBulkReplyTo(*arg, s);
