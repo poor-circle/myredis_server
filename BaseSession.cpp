@@ -343,8 +343,9 @@ do{\
         for(auto& e:subChannels)
         {
             auto iter = channelMap.find(e);
-            if (iter != channelMap.end()) {
-                iter->second.erase(sessionID);
+            iter->second.erase(sessionID);
+            if (iter->second.empty()) {
+                channelMap.erase(iter);
             }
         }
         getSessionMap().sessionMap.erase(sessionID);
