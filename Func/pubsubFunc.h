@@ -22,4 +22,6 @@ namespace myredis::func
 	// note:目前只实现pubsub numsub
 	std::optional<string> pubsub(context&& ctx) noexcept;
 
+	// publish			creator:tigerwang	date:2021/5/5
+	std::optional<string> publish(context&& ctx) noexcept;
 }

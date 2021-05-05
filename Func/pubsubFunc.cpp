@@ -155,7 +155,7 @@ namespace myredis::func
 			}
 			auto subcommand = args[1];
 			boost::algorithm::to_lower(subcommand);
-			if (subcommand == "numsub"sv) {
+			if (subcommand == "numsub") {
 				// 返回指定信道的订阅者个数
 				if (args.size() < 3) {
 					return code::args_count_error;
@@ -177,6 +177,56 @@ namespace myredis::func
 				return code::command_error;
 			}
 			
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* publish channel message
+	* @author:tigerwang
+	* date:2021/5/5
+	*/
+	std::optional<string> publish(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		auto& channelMap = BaseSession::getChannelMap();//全局订阅表
+		auto& table = BaseSession::getSessionMap();//获取记录了所有当前会话id的hash表
+		try
+		{
+			if (args.size() != 3) {
+				return code::args_count_error;
+			}
+			auto myID = ctx.session.getSessionID();//获取本会话的id
+			auto iter = channelMap.find(args[1]);
+			int64_t pubCnt = 0;
+			if (iter != channelMap.end())
+			{
+				auto sessionIDSet = iter->second;//获取订阅该频道的sessionID 一个hash_set
+				for (auto& e : sessionIDSet)
+				{
+					if (e != myID)//不是本会话
+					{
+						auto sessionIter = table.find(e);
+						if (sessionIter != table.end()) 
+						{
+							pubCnt++;//推送的客户端个数+1
+							//推送消息
+							string ret;
+							auto session = sessionIter->second;
+							code::getMultiReplyTo(back_inserter(ret), "message",iter->first, args[2]);
+							session->addNewCoroToSendMessage(std::move(ret));
+						}
+						// 如果找不到说明出错了
+
+					}
+				}
+			}
+			return code::getIntegerReply(pubCnt);
 		}
 		catch (const exception& e)
 		{
