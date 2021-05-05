@@ -207,23 +207,11 @@ namespace myredis::func
 			if (iter != channelMap.end())
 			{
 				auto sessionIDSet = iter->second;//获取订阅该频道的sessionID 一个hash_set
+				pubCnt = sessionIDSet.size();
 				for (auto& e : sessionIDSet)
 				{
-					if (e != myID)//不是本会话
-					{
-						auto sessionIter = table.find(e);
-						if (sessionIter != table.end()) 
-						{
-							pubCnt++;//推送的客户端个数+1
-							//推送消息
-							string ret;
-							auto session = sessionIter->second;
-							code::getMultiReplyTo(back_inserter(ret), "message",iter->first, args[2]);
-							session->addNewCoroToSendMessage(std::move(ret));
-						}
-						// 如果找不到说明出错了
-
-					}
+					auto session = table.find(e)->second;
+					session->addNewCoroToSendMessage(code::getMultiReply("message", iter->first, args[2]));
 				}
 			}
 			return code::getIntegerReply(pubCnt);
