@@ -227,7 +227,7 @@ namespace myredis::func
 					pubCnt += iter->second.size();
 					for (auto& e : iter->second) {
 						auto session = table.find(e)->second;
-						session->addNewCoroToSendMessage(code::getMultiReply("message", iter->first.getPatternStr(), args[2]));
+						session->addNewCoroToSendMessage(code::getMultiReply("message", iter->first.getPatternStr(),args[1], args[2]));
 					}
 				}
 			}
