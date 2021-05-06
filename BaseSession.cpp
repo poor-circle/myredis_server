@@ -338,6 +338,16 @@ do{\
 
     BaseSession::~BaseSession()
     {
+        auto& channelMap = getChannelMap();
+        auto& subChannels = getsubChannels();
+        for(auto& e:subChannels)
+        {
+            auto iter = channelMap.find(e);
+            iter->second.erase(sessionID);
+            if (iter->second.empty()) {
+                channelMap.erase(iter);
+            }
+        }
         getSessionMap().sessionMap.erase(sessionID);
     }
     atomic<size_t> BaseSession::IDNow=0;
