@@ -201,6 +201,9 @@
     <ClInclude Include="Func\pubsubFunc.h">
       <Filter>头文件\Func</Filter>
     </ClInclude>
+    <ClInclude Include="util\pattern.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

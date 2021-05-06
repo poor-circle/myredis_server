@@ -86,7 +86,7 @@ do{\
 
     BaseSession::BaseSession(asio::io_context& ioc, tcp::socket&& socket) :
         ioc(ioc), socket(move(socket)), dataBaseID(0), closed(false),
-        logined(false), blocked(false), clock(ioc),watch_list(nullptr)
+        logined(false), blocked(false), clock(ioc),watch_list(nullptr),pubsub(false)
     {
         if (strlen(myredis_password) == 0) logined = true;
         sessionID = BaseSession::IDNow++;
@@ -324,10 +324,19 @@ do{\
         static hash_map<string, hash_set<size_t>> channelMap;
         return channelMap;
     }
-
+    hash_map<Pattern, hash_set<size_t>>& BaseSession::getPatternTable() noexcept
+    {
+        static hash_map<Pattern, hash_set<size_t>> patternTable;
+        return patternTable;
+    }
     hash_set<string>& BaseSession::getsubChannels() noexcept
     {
         return subChannels;
+    }
+
+    hash_set<Pattern>& BaseSession::getsubPatterns() noexcept
+    {
+        return subPatterns;
     }
 
     void BaseSession::wake_up(string&& result)

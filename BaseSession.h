@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "object.hpp"
+
 //网络框架库，代表一个基本的连接会话
 namespace myredis
 {
@@ -47,9 +48,10 @@ namespace myredis
         static SessionMap& getSessionMap();
         // 获得全局的频道表
         static hash_map<string, hash_set<size_t>>& getChannelMap() noexcept;
+        static hash_map<Pattern,hash_set<size_t>>& getPatternTable() noexcept;
         // 订阅的频道
         hash_set<string>& getsubChannels() noexcept;
-
+        hash_set<Pattern>& getsubPatterns() noexcept;
         bool isBlocked() const noexcept;
         void setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,watcherPtr& watch_list);
         asio::awaitable<string> wait();
@@ -65,6 +67,8 @@ namespace myredis
 
         // 用于记录当前会话订阅了多少个频道
         hash_set<string> subChannels;
+        hash_set<Pattern> subPatterns;
+
         static std::atomic<size_t> IDNow;
         void wake_up(string&& result);
         string result;
@@ -75,6 +79,7 @@ namespace myredis
         bool closed;
         bool logined;
         bool blocked;
+        bool pubsub;
         size_t sessionID;
         std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> watch_list;
         
