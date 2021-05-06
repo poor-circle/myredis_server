@@ -93,7 +93,8 @@ namespace myredis
 			pubsub(subscribe),
 			pubsub(unsubscribe),
 			pubsub(pubsub),
-			pubsub(publish)
+			pubsub(publish),
+			pubsub(psubscribe)
 			//regist func at here
 			//{"name",func::name}
 		};

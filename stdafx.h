@@ -15,3 +15,4 @@
 #include "boost/lexical_cast.hpp"
 #include "sparsepp/spp.h"
 #include "stdc++.h"
+#include "util/pattern.hpp"

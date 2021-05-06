@@ -148,7 +148,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <EnableModules>true</EnableModules>
@@ -216,6 +216,7 @@
     <ClInclude Include="util\hash_map.hpp" />
     <ClInclude Include="util\hash_set.hpp" />
     <ClInclude Include="util\key_ordered_map.hpp" />
+    <ClInclude Include="util\pattern.hpp" />
     <ClInclude Include="util\string.hpp" />
   </ItemGroup>
   <ItemGroup>
