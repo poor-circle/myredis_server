@@ -305,7 +305,7 @@ namespace myredis::func
 				while (!subPatterns.empty())
 				{
 					//获取一条多播回复(一共三条内容）
-					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", subPatterns.begin()->getPatternStr(), (int64_t)subPatterns.size() - 1);
+					code::getMultiReplyTo(back_inserter(ret), "punsubscribe", subPatterns.begin()->getPatternStr(), (int64_t)subPatterns.size() - 1);
 					auto iter = patternTable.find(*subPatterns.begin());
 					auto patterns = iter->second;
 					patterns.erase(ctx.session.getSessionID());
