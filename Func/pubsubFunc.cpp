@@ -155,7 +155,7 @@ namespace myredis::func
 			}
 			auto subcommand = args[1];
 			boost::algorithm::to_lower(subcommand);
-			if (subcommand == "numsub") {
+			if (subcommand == "numsub"sv) {
 				// 返回指定信道的订阅者个数
 				if (args.size() < 3) {
 					return code::args_count_error;
@@ -189,6 +189,7 @@ namespace myredis::func
 	* publish channel message
 	* @author:tigerwang
 	* date:2021/5/5
+	* TODO:发送的时候也要遍历模式一起发 过期ID的pattern要删掉
 	*/
 	std::optional<string> publish(context&& ctx) noexcept
 	{
@@ -196,12 +197,13 @@ namespace myredis::func
 		auto&& objectMap = ctx.session.getObjectMap();
 		auto& channelMap = BaseSession::getChannelMap();//全局订阅表
 		auto& table = BaseSession::getSessionMap();//获取记录了所有当前会话id的hash表
+		auto& patternTable = BaseSession::getPatternTable();
+		auto& subPatterns = ctx.session.getsubPatterns();
 		try
 		{
 			if (args.size() != 3) {
 				return code::args_count_error;
 			}
-			auto myID = ctx.session.getSessionID();//获取本会话的id
 			auto iter = channelMap.find(args[1]);
 			int64_t pubCnt = 0;
 			if (iter != channelMap.end())
@@ -214,7 +216,68 @@ namespace myredis::func
 					session->addNewCoroToSendMessage(code::getMultiReply("message", iter->first, args[2]));
 				}
 			}
+
+			// 遍历模式表，向订阅匹配模式的ID发送信息
+			for (auto iter = patternTable.begin(); iter != patternTable.end(); iter++)
+			{
+				Pattern p = iter->first;
+				// 频道和regex匹配,向该regex下的所有ID发送
+				if (std::regex_match(args[1].c_str(), p.getRegex()))
+				{
+					pubCnt += iter->second.size();
+					for (auto& e : iter->second) {
+						auto session = table.find(e)->second;
+						session->addNewCoroToSendMessage(code::getMultiReply("message", iter->first, args[2]));
+					}
+				}
+			}
+
 			return code::getIntegerReply(pubCnt);
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* psubscribe pattern [pattern...]
+	* @author:tigerwang
+	* date:2021/5/5
+	*/
+	std::optional<string> psubscribe(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		auto& channelMap = BaseSession::getChannelMap();
+		auto& subChannels = ctx.session.getsubChannels();
+		auto& patternTable = BaseSession::getPatternTable();
+		auto& subPatterns = ctx.session.getsubPatterns();
+		auto myID = ctx.session.getSessionID();//获取本会话的id
+		try
+		{
+			if (args.size() < 2) {
+				return code::args_count_error;
+			}
+			string s;
+			for (auto arg = args.begin() + 1; arg != args.end(); ++arg)
+			{
+				// 构造正则表达式
+				std::regex rx;
+				auto flag = regex_constants::ECMAScript;
+				if (objectMap.size() >= regexOpLowerBound)
+					flag |= regex_constants::syntax_option_type::optimize;
+				rx = regex((*arg).c_str(), flag);
+				Pattern p = { std::move(*arg),std::move(rx) };
+				// 全局模式表
+				patternTable[p].emplace(myID);
+				// 在订阅模式中增加一个模式
+				subPatterns.emplace(p);
+				
+				code::getMultiReplyTo(back_inserter(s), "psubscribe", p.getPatternStr(), subPatterns.size());// 返回订阅成功的信息
+			}
+			return s;
 		}
 		catch (const exception& e)
 		{

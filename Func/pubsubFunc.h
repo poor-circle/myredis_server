@@ -24,4 +24,8 @@ namespace myredis::func
 
 	// publish			creator:tigerwang	date:2021/5/5
 	std::optional<string> publish(context&& ctx) noexcept;
+
+	// psubscribe		creator:tigerwang	date:2021/5/5
+	std::optional<string> psubscribe(context&& ctx) noexcept;
+
 }
