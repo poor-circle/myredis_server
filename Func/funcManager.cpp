@@ -89,8 +89,6 @@ namespace myredis
 			blocked(brpoplpush),
 			//支持异步执行的订阅-发布（pubsub）函数
 
-			pubsub(wait),
-			pubsub(test),
 			pubsub(subscribe),
 			pubsub(unsubscribe),
 			pubsub(pubsub),

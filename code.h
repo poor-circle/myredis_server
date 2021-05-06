@@ -46,6 +46,7 @@ namespace myredis::code
 	const string args_illegal_error = "-Illegal args.\r\n";
 	const string iterator_illegal_error = "-Illegal iterator.\r\n";
 	const string server_exception_error = "-server internal exception.\r\n";
+	const string illegal_command_when_subscribe = "-ERR only (P)SUBSCRIBE / (P)UNSUBSCRIBE / PING / QUIT allowed in this context\r\n";
 
 	template<typename T>
 	static void getReplyTo(const T& str, std::back_insert_iterator<string> s)
