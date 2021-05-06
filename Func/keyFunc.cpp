@@ -442,6 +442,12 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
+	/*
+	* @author: lizezheng
+	* date:2021/05/06
+	* ttl key timeout(seconds)
+	* 返回值过期时间（秒），-1代表未设置过期时间，-2代表key不存在
+	*/
 	std::optional<string> ttl(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -470,6 +476,12 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
+	/*
+	* @author: lizezheng
+	* date:2021/05/06
+	* pttl key timeout(seconds)
+	* 返回值过期时间（秒），-1代表未设置过期时间，-2代表key不存在
+	*/
 	std::optional<string> pttl(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -498,6 +510,14 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
+
+	/*
+	* @author: lizezheng
+	* date:2021/05/06
+	* expire key timeout(seconds)
+	* 以毫秒为单位设置过期时间
+	* 返回值：integer
+	*/
 	std::optional<string> pexpire(context&& ctx) noexcept
 	{
 		auto&& args = ctx.args;
@@ -517,6 +537,112 @@ namespace myredis::func
 				if (iter != objectMap.end())
 				{
 					objectMap.updateExpireTime(iter->first, milliseconds(ms));
+					return code::getIntegerReply(1);
+				}
+				else
+					return code::getIntegerReply(0);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* @author: lizezheng
+	* date:2021/05/06
+	* EXPIREAT key timestamp
+	* 以unix时间戳（秒）为单位设置过期时间
+	* 返回值：integer
+	*/
+	std::optional<string> expireat(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			else
+			{
+				int64_t timestamp;
+				steady_clock::time_point unixBeginDate;
+				if (!try_lexical_convert(args[2], timestamp) || timestamp < 0)
+				{
+					return code::args_illegal_error;
+				}
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					objectMap.updateExpireTime(iter->first, timestamp*1000);
+					return code::getIntegerReply(1);
+				}
+				else
+					return code::getIntegerReply(0);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* @author: lizezheng
+	* date:2021/05/06
+	* EXPIREAT key timestamp
+	* 以unix时间戳（毫秒）为单位设置过期时间
+	* 返回值：integer
+	*/
+	std::optional<string> pexpireat(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			else
+			{
+				int64_t timestamp;
+				steady_clock::time_point unixBeginDate;
+				if (!try_lexical_convert(args[2], timestamp) || timestamp < 0)
+				{
+					return code::args_illegal_error;
+				}
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					objectMap.updateExpireTime(iter->first, timestamp);
+					return code::getIntegerReply(1);
+				}
+				else
+					return code::getIntegerReply(0);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+	std::optional<string> persist(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			else
+			{
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end()&&iter->first.iter->isSetExpiredTime())
+				{
+					objectMap.cancelExpireTime(iter->first.iter);
 					return code::getIntegerReply(1);
 				}
 				else

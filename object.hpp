@@ -18,29 +18,30 @@ namespace myredis
 		keyInfo(string&& str, time_duration liveTime = time_duration::max()) :str(std::move(str)), liveTime(liveTime) {}
 		bool isExpired()
 		{
-			return isSetExpiredTime() && liveTime <= std::chrono::steady_clock::now().time_since_epoch();
+			return isSetExpiredTime() && liveTime <= getUnixMSDuration();
 		}
 		bool isSetExpiredTime()
 		{
 			return liveTime != time_duration::max();
 		}
 		time_duration getLiveTime() const { return liveTime; }
-		time_duration getLiveTimeFromNow() const { return liveTime - std::chrono::duration_cast<time_duration>(std::chrono::steady_clock::now().time_since_epoch()); }
+		time_duration getLiveTimeFromNow() const { return liveTime - getUnixMSDuration(); }
 		const string& getStr() const { return str; }
 		friend bool operator == (const keyInfo& key1, const keyInfo& key2)
 		{
 			return key1.str == key2.str;
 		}
-		//获取以ms为单位的unix时间戳
-		static time_duration getUnixMSDuration(std::chrono::seconds sec)
+		//获取以s为单位的unix时间戳
+		static std::chrono::seconds getUnixDuration(std::chrono::seconds sec=std::chrono::seconds(0))
 		{
-			auto st = std::chrono::duration_cast<time_duration>(std::chrono::steady_clock::now().time_since_epoch()) + sec;
-			return st;
+			return std::chrono::seconds(std::time(NULL))+sec;
 		}
 		//获取以ms为单位的unix时间戳
-		static time_duration getUnixMSDuration(std::chrono::milliseconds sec)
+		static time_duration getUnixMSDuration(std::chrono::milliseconds ms = std::chrono::milliseconds(0))
 		{
-			return std::chrono::duration_cast<time_duration>(std::chrono::steady_clock::now().time_since_epoch() + sec);
+			auto gg = std::chrono::steady_clock::now().time_since_epoch() % std::chrono::seconds(1);
+			auto g = std::chrono::milliseconds(std::chrono::seconds(std::time(NULL))) + ms + std::chrono::duration_cast<std::chrono::milliseconds>(gg);
+			return g;
 		}
 	};
 
@@ -138,7 +139,8 @@ namespace myredis
 		//插入(更新)一个key
 		void updateExpireTime(const keyIter& iter,std::chrono::seconds sec);
 		void updateExpireTime(const keyIter& iter, std::chrono::milliseconds ms);
-		void updateExpireTime(const keyIter& iter, std::chrono::steady_clock::time_point unix_ms_tp);
+		void updateExpireTime(const keyIter& iter, int64_t unix_ms_tp);
+		void cancelExpireTime(const keyIter& iter);
 		static asio::awaitable<void> expiredKeyCollecting();
 		void update(keyInfo&& key,object&& obj);
 		hash_map<keyIter, object>::iterator try_insert(keyInfo&& key, object&& obj);

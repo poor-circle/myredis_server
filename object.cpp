@@ -27,21 +27,26 @@ namespace myredis
 
 	void objectMap::updateExpireTime(const keyIter& iter, milliseconds ms)
 	{
-		_updateExpireTime(iter, duration_cast<milliseconds>((steady_clock::now() + ms).time_since_epoch()));
+		_updateExpireTime(iter, keyInfo::getUnixMSDuration(ms));
 	}
 
-	void objectMap::updateExpireTime(const keyIter& iter, steady_clock::time_point tp)
+	void objectMap::cancelExpireTime(const keyIter& iter)
 	{
-		_updateExpireTime(iter, duration_cast<milliseconds>(tp.time_since_epoch()));
+		_updateExpireTime(iter, milliseconds::duration::max());
 	}
 
+	void objectMap::updateExpireTime(const keyIter& iter, int64_t unix_ms_tp)
+	{
+		_updateExpireTime(iter, std::chrono::milliseconds(unix_ms_tp));
+	}
 
 	void objectMap::_updateExpireTime(const keyIter& iter, keyInfo::time_duration time)
 	{
 		if (iter.iter->isSetExpiredTime())
 			expireHeap.erase(iter);
 		iter.iter->liveTime = time;
-		expireHeap.emplace(iter);
+		if (iter.iter->isSetExpiredTime())
+			expireHeap.emplace(iter);
 	}
 	//过期key的主动垃圾回收
 	asio::awaitable<void> objectMap::expiredKeyCollecting()
@@ -74,7 +79,7 @@ namespace myredis
 					tp = max(minsleepTime, min(milliseconds((int)sleepTime), stdsleepTime/2));//有没回收的垃圾，睡眠时间减半（且使用快启动，如果睡眠时间过长立即恢复到标准睡眠时间）
 					clk.expires_after(tp);
 					assert((fmt::print("least element:{}\n", map.expireHeap.size()), 1));
-					assert(map.map.size() == map.expireHeap.size());
+					//assert(map.map.size() == map.expireHeap.size());
 					assert((fmt::print("stop expiredKey scan\n"), 1));
 					co_await clk.async_wait(asio::use_awaitable);//让出协程控制权
 					assert((fmt::print("start expiredKey scan\n"), 1));
@@ -82,7 +87,7 @@ namespace myredis
 				}
 			}
 			assert((fmt::print("least element:{}\n",map.expireHeap.size()),1));
-			assert(map.map.size() == map.expireHeap.size());
+			//assert(map.map.size() == map.expireHeap.size());
 			i = (i + 1) % data_base_count;
 			if (i == pre_index)//绕了一圈了，所有的垃圾都回收干净了
 			{
@@ -120,7 +125,7 @@ namespace myredis
 			ans->second = std::move(obj);
 			keylist.pop_back();
 		}
-		assert(map.size() == expireHeap.size());
+		//assert(map.size() == expireHeap.size());
 		return;
 	}
 
@@ -198,10 +203,10 @@ namespace myredis
 		keylist.pop_back();
 		if (ans != map.cend())
 		{
-			map.erase(ans);
 			auto iter = ans->first.iter;
 			if (ans->first.iter->isSetExpiredTime())
-				expireHeap.emplace(iter);
+				expireHeap.erase(iter);
+			map.erase(ans);
 			keylist.erase(iter);
 			return 1;
 		}

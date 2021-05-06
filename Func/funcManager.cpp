@@ -71,6 +71,9 @@ namespace myredis
 			write(setex),
 			write(pexpire),
 			write(expire),
+			write(expireat),
+			write(pexpireat),
+			write(persist),
 
 			//Á¬½Ó×´Ì¬
 			connect(ping),
