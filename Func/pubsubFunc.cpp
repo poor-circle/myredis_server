@@ -189,7 +189,6 @@ namespace myredis::func
 	* publish channel message
 	* @author:tigerwang
 	* date:2021/5/5
-	* TODO:发送的时候也要遍历模式一起发 过期ID的pattern要删掉
 	*/
 	std::optional<string> publish(context&& ctx) noexcept
 	{
@@ -206,6 +205,7 @@ namespace myredis::func
 			}
 			auto iter = channelMap.find(args[1]);
 			int64_t pubCnt = 0;
+			
 			if (iter != channelMap.end())
 			{
 				auto sessionIDSet = iter->second;//获取订阅该频道的sessionID 一个hash_set
@@ -250,8 +250,6 @@ namespace myredis::func
 	{
 		auto&& args = ctx.args;
 		auto&& objectMap = ctx.session.getObjectMap();
-		auto& channelMap = BaseSession::getChannelMap();
-		auto& subChannels = ctx.session.getsubChannels();
 		auto& patternTable = BaseSession::getPatternTable();
 		auto& subPatterns = ctx.session.getsubPatterns();
 		auto myID = ctx.session.getSessionID();//获取本会话的id
@@ -278,6 +276,66 @@ namespace myredis::func
 				code::getMultiReplyTo(back_inserter(s), "psubscribe", p.getPatternStr(), subPatterns.size());// 返回订阅成功的信息
 			}
 			return s;
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+
+	/*
+	* punsubscribe pattern [pattern...]
+	* @author:tigerwang
+	* date:2021/5/6
+	*/
+	std::optional<string> punsubscribe(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+
+		auto& patternTable = BaseSession::getPatternTable();
+		auto& subPatterns = ctx.session.getsubPatterns();
+		try
+		{
+			string ret;
+			// 无参数，退订所有频道 
+			if (args.size() == 1)
+			{
+				while (!subPatterns.empty())
+				{
+					//获取一条多播回复(一共三条内容）
+					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", subPatterns.begin()->getPatternStr(), subPatterns.size() - 1);
+					auto iter = patternTable.find(*subPatterns.begin());
+					auto patterns = iter->second;
+					patterns.erase(ctx.session.getSessionID());
+					if (patterns.empty()) patternTable.erase(iter);//如果频道已经没有人订阅就删掉
+					subPatterns.erase(subPatterns.begin());
+				}
+			}
+			else
+			{
+				for (auto patternIter = args.begin() + 1; patternIter != args.end(); ++patternIter)//遍历所有传入的模式名
+				{
+					std::regex rx;
+					string str = *patternIter;
+					Pattern temp = { std::move(str),std::move(rx) };
+					auto subPatternIter = subPatterns.find(temp);
+					if (subPatternIter != subPatterns.end())//如果本会话订阅了这个频道
+					{
+						// 去全局模式表中删除会话ID
+						auto iter = patternTable.find(temp);
+						auto channels = iter->second;
+						channels.erase(ctx.session.getSessionID());
+						if (channels.empty()) patternTable.erase(iter);//如果频道已经没有人订阅就删掉
+						// 删除订阅模式表中的对应模式
+						subPatterns.erase(subPatternIter);
+					}
+					//获取一条多播回复(一共三条内容）
+					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", *patternIter, subPatterns.size());
+				}
+			}
+			return ret;
 		}
 		catch (const exception& e)
 		{

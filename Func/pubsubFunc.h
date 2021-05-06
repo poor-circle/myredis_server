@@ -28,4 +28,8 @@ namespace myredis::func
 	// psubscribe		creator:tigerwang	date:2021/5/5
 	std::optional<string> psubscribe(context&& ctx) noexcept;
 
+	// punsubscribe		creator:tigerwang	date:2021/5/6
+	std::optional<string> punsubscribe(context&& ctx) noexcept;
+
+
 }
