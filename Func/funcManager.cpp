@@ -68,6 +68,7 @@ namespace myredis
 			write(sadd),
 			write(srem),
 
+			//key过期相关
 			write(setex),
 			write(pexpire),
 			write(expire),
