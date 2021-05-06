@@ -442,4 +442,91 @@ namespace myredis::func
 			return nullopt;//返回空值
 		}
 	}
+	std::optional<string> ttl(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			else
+			{
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					if (iter->first.iter->isSetExpiredTime())
+						return code::getIntegerReply(iter->first.iter->getLiveTimeFromNow()/1s);
+					else
+						return code::getIntegerReply(-1);
+				}
+				else
+					return code::getIntegerReply(-2);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+	std::optional<string> pttl(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 2)
+				return code::args_count_error;
+			else
+			{
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					if (iter->first.iter->isSetExpiredTime())
+						return code::getIntegerReply(iter->first.iter->getLiveTimeFromNow() / 1ms);
+					else
+						return code::getIntegerReply(-1);
+				}
+				else
+					return code::getIntegerReply(-2);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
+	std::optional<string> pexpire(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		try
+		{
+			if (args.size() != 3)
+				return code::args_count_error;
+			else
+			{
+				int64_t ms;
+				if (!try_lexical_convert(args[2], ms) || ms < 0)
+				{
+					return code::args_illegal_error;
+				}
+				auto iter = objectMap.find(args[1]);
+				if (iter != objectMap.end())
+				{
+					objectMap.updateExpireTime(iter->first, milliseconds(ms));
+					return code::getIntegerReply(1);
+				}
+				else
+					return code::getIntegerReply(0);
+			}
+		}
+		catch (const exception& e)
+		{
+			printlog(e);
+			return nullopt;//返回空值
+		}
+	}
 }

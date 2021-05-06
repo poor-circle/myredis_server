@@ -37,6 +37,8 @@ namespace myredis
 			read(object),
 			read(type),
 			read(sismember),
+			read(ttl),
+			read(pttl),
 			// Ð´
 			write(set),
 			write(append),
@@ -67,6 +69,7 @@ namespace myredis
 			write(srem),
 
 			write(setex),
+			write(pexpire),
 			write(expire),
 
 			//Á¬½Ó×´Ì¬
