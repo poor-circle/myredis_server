@@ -31,4 +31,10 @@ namespace myredis::func
 	std::optional<string> scan(context&& ctx) noexcept;
 	// expire created by lizezheng data:2021/05/03
 	std::optional<string> expire(context&& ctx) noexcept;
+	// ttl created by lizezheng data:2021/05/06
+	std::optional<string> ttl(context&& ctx) noexcept;
+	// pttl created by lizezheng data:2021/05/06
+	std::optional<string> pttl(context&& ctx) noexcept;
+	// pexpire created by lizezheng data:2021/05/06
+	std::optional<string> pexpire(context&& ctx) noexcept;
 }

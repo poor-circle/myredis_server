@@ -25,6 +25,7 @@ namespace myredis
 			return liveTime != time_duration::max();
 		}
 		time_duration getLiveTime() const { return liveTime; }
+		time_duration getLiveTimeFromNow() const { return liveTime - std::chrono::duration_cast<time_duration>(std::chrono::steady_clock::now().time_since_epoch()); }
 		const string& getStr() const { return str; }
 		friend bool operator == (const keyInfo& key1, const keyInfo& key2)
 		{
