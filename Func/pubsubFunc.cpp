@@ -69,7 +69,7 @@ namespace myredis::func
 				auto& subChannels = ctx.session.getsubChannels();
 				subChannels.emplace(*arg);
 				BaseSession::getChannelMap()[*arg].emplace(myID);
-				code::getMultiReplyTo(back_inserter(s),"subscribe", *arg, subChannels.size());// 返回订阅成功的信息
+				code::getMultiReplyTo(back_inserter(s),"subscribe", *arg, (int64_t)subChannels.size());// 返回订阅成功的信息
 			}
 			return s;
 		}
@@ -100,7 +100,7 @@ namespace myredis::func
 				while (!subChannels.empty())
 				{
 					//获取一条多播回复(一共三条内容）
-					code::getMultiReplyTo(back_inserter(ret),"unsubscribe",*subChannels.begin(), subChannels.size()-1);
+					code::getMultiReplyTo(back_inserter(ret),"unsubscribe",*subChannels.begin(), (int64_t)subChannels.size()-1);
 					auto iter = channelMap.find(*subChannels.begin());
 					auto channels = iter->second;
 					channels.erase(ctx.session.getSessionID());
@@ -123,7 +123,7 @@ namespace myredis::func
 						subChannels.erase(subChannelIter);
 					}
 					//获取一条多播回复(一共三条内容）
-					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", *channel, subChannels.size());
+					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", *channel, (int64_t)subChannels.size());
 				}
 			}
 			return ret;
@@ -273,7 +273,7 @@ namespace myredis::func
 				// 在订阅模式中增加一个模式
 				subPatterns.emplace(p);
 				
-				code::getMultiReplyTo(back_inserter(s), "psubscribe", p.getPatternStr(), subPatterns.size());// 返回订阅成功的信息
+				code::getMultiReplyTo(back_inserter(s), "psubscribe", p.getPatternStr(), (int64_t)subPatterns.size());// 返回订阅成功的信息
 			}
 			return s;
 		}
@@ -305,7 +305,7 @@ namespace myredis::func
 				while (!subPatterns.empty())
 				{
 					//获取一条多播回复(一共三条内容）
-					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", subPatterns.begin()->getPatternStr(), subPatterns.size() - 1);
+					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", subPatterns.begin()->getPatternStr(), (int64_t)subPatterns.size() - 1);
 					auto iter = patternTable.find(*subPatterns.begin());
 					auto patterns = iter->second;
 					patterns.erase(ctx.session.getSessionID());
@@ -332,7 +332,7 @@ namespace myredis::func
 						subPatterns.erase(subPatternIter);
 					}
 					//获取一条多播回复(一共三条内容）
-					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", *patternIter, subPatterns.size());
+					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", *patternIter, (int64_t)subPatterns.size());
 				}
 			}
 			return ret;
