@@ -10,10 +10,10 @@ namespace myredis
 
 	public :
 		Pattern(string&& str, std::regex&& rx):patternStr(std::move(str)),regex(std::move(rx)) {}
-		string getPatternStr() const{
+		const string& getPatternStr() const{
 			return patternStr;
 		}
-		std::regex getRegex() const{
+		const std::regex& getRegex() const{
 			return regex;
 		}
 		void setPatternStr(string str) {

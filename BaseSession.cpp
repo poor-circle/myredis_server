@@ -347,7 +347,8 @@ do{\
 
     BaseSession::~BaseSession()
     {
-        auto& channelMap = getChannelMap();
+        // É¾³ýÆµµÀ
+        auto& channelMap = BaseSession::getChannelMap();
         auto& subChannels = getsubChannels();
         for(auto& e:subChannels)
         {
@@ -357,6 +358,19 @@ do{\
                 channelMap.erase(iter);
             }
         }
+
+        // É¾³ýÄ£Ê½
+        auto& patternTable = BaseSession::getPatternTable();
+        auto& subPatterns = getsubPatterns();
+        for (auto& e : subPatterns)
+        {
+            auto iter = patternTable.find(e);
+            iter->second.erase(sessionID);
+            if (iter->second.empty()) {
+                patternTable.erase(iter);
+            }
+        }
+
         getSessionMap().sessionMap.erase(sessionID);
     }
     atomic<size_t> BaseSession::IDNow=0;
