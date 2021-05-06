@@ -197,12 +197,13 @@ namespace myredis::func
 		auto&& objectMap = ctx.session.getObjectMap();
 		auto& channelMap = BaseSession::getChannelMap();//全局订阅表
 		auto& table = BaseSession::getSessionMap();//获取记录了所有当前会话id的hash表
+		auto& patternTable = BaseSession::getPatternTable();
+		auto& subPatterns = ctx.session.getsubPatterns();
 		try
 		{
 			if (args.size() != 3) {
 				return code::args_count_error;
 			}
-			auto myID = ctx.session.getSessionID();//获取本会话的id
 			auto iter = channelMap.find(args[1]);
 			int64_t pubCnt = 0;
 			if (iter != channelMap.end())
@@ -215,6 +216,22 @@ namespace myredis::func
 					session->addNewCoroToSendMessage(code::getMultiReply("message", iter->first, args[2]));
 				}
 			}
+
+			// 遍历模式表，向订阅匹配模式的ID发送信息
+			for (auto iter = patternTable.begin(); iter != patternTable.end(); iter++)
+			{
+				Pattern p = iter->first;
+				// 频道和regex匹配,向该regex下的所有ID发送
+				if (std::regex_match(args[1].c_str(), p.getRegex()))
+				{
+					pubCnt += iter->second.size();
+					for (auto& e : iter->second) {
+						auto session = table.find(e)->second;
+						session->addNewCoroToSendMessage(code::getMultiReply("message", iter->first, args[2]));
+					}
+				}
+			}
+
 			return code::getIntegerReply(pubCnt);
 		}
 		catch (const exception& e)
