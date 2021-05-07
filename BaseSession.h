@@ -60,27 +60,25 @@ namespace myredis
         size_t getSessionID() const noexcept;
         //创建一个新的协程来发送一条消息
         void addNewCoroToSendMessage(string&& msg);
-
+        bool isSubscribed() const noexcept;
+        int64_t getSubscribeCount() const noexcept;
     private:
         ~BaseSession();
         BaseSession(asio::io_context& ioc, asio::ip::tcp::socket&& socket);
-
+        bool closed;
+        bool logined;
+        bool blocked;
+        int64_t dataBaseID;
+        size_t sessionID;
         // 用于记录当前会话订阅了多少个频道
         hash_set<string> subChannels;
         hash_set<Pattern> subPatterns;
-
         static std::atomic<size_t> IDNow;
         void wake_up(string&& result);
         string result;
         asio::io_context& ioc;
         asio::ip::tcp::socket socket;
         asio::steady_timer clock;
-        int64_t dataBaseID;
-        bool closed;
-        bool logined;
-        bool blocked;
-        bool pubsub;
-        size_t sessionID;
         std::shared_ptr<hash_map<boost::container::list<watchInfo>*, boost::container::list<watchInfo>::iterator>> watch_list;
         
     };

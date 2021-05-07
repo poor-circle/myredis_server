@@ -46,25 +46,12 @@ namespace myredis::code
 	const string args_illegal_error = "-Illegal args.\r\n";
 	const string iterator_illegal_error = "-Illegal iterator.\r\n";
 	const string server_exception_error = "-server internal exception.\r\n";
+	const string illegal_command_when_subscribe = "-ERR only (P)SUBSCRIBE / (P)UNSUBSCRIBE / PING / QUIT allowed in this context\r\n";
 
 	template<typename T>
 	static void getReplyTo(const T& str, std::back_insert_iterator<string> s)
 	{
 		fmt::format_to(s,FMT_COMPILE("{}"),str);
-	}
-
-	template<typename T>
-	static string getBulkReply(const string& str)  //批量回复
-	{
-		string s;
-		fmt::format_to
-		(
-			back_inserter(s),
-			FMT_COMPILE("${}\r\n{}\r\n"),
-			str.size(),
-			str
-		);
-		return s;
 	}
 
 	template<typename T>
@@ -81,7 +68,8 @@ namespace myredis::code
 		return s;
 	}
 
-	static string getBulkReply(const std::string_view str)  //批量回复
+	template<>
+	static string getBulkReply(const string& str)  //批量回复
 	{
 		string s;
 		fmt::format_to
@@ -94,6 +82,34 @@ namespace myredis::code
 		return s;
 	}
 
+	template<>
+	static string getBulkReply(const std::string_view& str)  //批量回复
+	{
+		string s;
+		fmt::format_to
+		(
+			back_inserter(s),
+			FMT_COMPILE("${}\r\n{}\r\n"),
+			str.size(),
+			str
+		);
+		return s;
+	}
+
+
+	template<typename T>
+	static void getBulkReplyTo(const T& str, std::back_insert_iterator<string> s)  //批量回复
+	{
+		fmt::format_to
+		(
+			s,
+			FMT_COMPILE("${}\r\n{}\r\n"),
+			fmt::formatted_size(FMT_COMPILE("{}"), str),
+			str
+		);
+	}
+
+	template<>
 	static void getBulkReplyTo(const string& str, std::back_insert_iterator<string> s)  //批量回复
 	{
 		fmt::format_to
@@ -105,25 +121,14 @@ namespace myredis::code
 		);
 	}
 
-	static void getBulkReplyTo(const std::string_view str, std::back_insert_iterator<string> s)  //批量回复
+	template<>
+	static void getBulkReplyTo(const std::string_view& str, std::back_insert_iterator<string> s)  //批量回复
 	{
 		fmt::format_to
 		(
 			s,
 			FMT_COMPILE("${}\r\n{}\r\n"),
 			str.size(),
-			str
-		);
-	}
-
-	template<typename T>
-	static void getBulkReplyTo(const T& str,std::back_insert_iterator<string> s)  //批量回复
-	{
-		fmt::format_to
-		(
-			s,
-			FMT_COMPILE("${}\r\n{}\r\n"),
-			fmt::formatted_size(FMT_COMPILE("{}"), str),
 			str
 		);
 	}
@@ -231,11 +236,26 @@ namespace myredis::code
 		fmt::format_to(s, FMT_COMPILE("${}\r\n{}\r\n"), fmt::formatted_size(FMT_COMPILE("{}"), value) , value);
 	}
 
+	template<>
+	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value) //多批量回复
+	{
+		getIntegerReplyTo(value,s);
+	}
+
+	
+
 	template<typename T, class ...Args>
 	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s,const T& value, const Args&... args) //多批量回复
 	{
 		fmt::format_to(s, FMT_COMPILE("${}\r\n{}\r\n"), fmt::formatted_size(FMT_COMPILE("{}"), value) , value);
 		_getMultiReplyWithOutHead(s,args...);
+	}
+
+	template<class ...Args>
+	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value, const Args&... args) //多批量回复
+	{
+		getIntegerReplyTo(value, s);
+		_getMultiReplyWithOutHead(s, args...);
 	}
 
 	template<class ...Args>
