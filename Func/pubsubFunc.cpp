@@ -276,9 +276,7 @@ namespace myredis::func
 			{
 				// 构造正则表达式
 				std::regex rx;
-				auto flag = regex_constants::ECMAScript;
-				if (patternTable.size() >= regexOpLowerBound)
-					flag |= regex_constants::syntax_option_type::optimize;
+				auto flag = regex_constants::ECMAScript | regex_constants::syntax_option_type::optimize;
 				rx = regex((*arg).c_str(), flag);
 				Pattern p = { std::move(*arg),std::move(rx) };
 				// 全局模式表
@@ -330,9 +328,7 @@ namespace myredis::func
 			{
 				for (auto patternIter = args.begin() + 1; patternIter != args.end(); ++patternIter)//遍历所有传入的模式名
 				{
-					std::regex rx;
-					string str = *patternIter;
-					Pattern temp = { std::move(str),std::move(rx) };
+					auto temp = Pattern(*patternIter);
 					auto subPatternIter = subPatterns.find(temp);
 					if (subPatternIter != subPatterns.end())//如果本会话订阅了这个频道
 					{
@@ -342,11 +338,9 @@ namespace myredis::func
 							auto& channels = iter->second;
 							channels.erase(sessionID);
 							if (channels.empty()) patternTable.erase(iter);//如果频道已经没有人订阅就删掉
-
 							// 删除订阅模式表中的对应模式
 							subPatterns.erase(subPatternIter);
 						}
-
 					}
 					//获取一条多播回复(一共三条内容）
 					code::getMultiReplyTo(back_inserter(ret), "punsubscribe", *patternIter, (int64_t)subPatterns.size());

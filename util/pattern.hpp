@@ -10,18 +10,13 @@ namespace myredis
 
 	public :
 		Pattern(string&& str, std::regex&& rx):patternStr(std::move(str)),regex(std::move(rx)) {}
+		Pattern(string&& str):patternStr(std::move(str)), regex() {}
+		Pattern(const string& str) :patternStr(str), regex() {}
 		const string& getPatternStr() const{
 			return patternStr;
 		}
 		const std::regex& getRegex() const{
 			return regex;
-		}
-		void setPatternStr(string str) {
-			patternStr = str;
-		}
-		void setRegex(std::regex rx)
-		{
-			regex = rx;
 		}
 		friend bool operator==(const Pattern& A,const Pattern& B) {
 			return B.patternStr == A.patternStr;
