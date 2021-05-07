@@ -111,6 +111,10 @@ namespace myredis::func
 	{
 		auto&& args = ctx.args;
 		auto&& objectMap = ctx.session.getObjectMap();
+		auto& channelTable = BaseSession::getChannelMap();
+		auto& subChannels = ctx.session.getsubChannels();
+		auto& patternTable = BaseSession::getPatternTable();
+		auto& subPatterns = ctx.session.getsubPatterns();
 		try
 		{
 			if (args.size() < 2) {
@@ -124,9 +128,8 @@ namespace myredis::func
 					return code::args_count_error;
 				}
 				return code::getMultiReplyByRange(args.begin() + 2, args.end(),
-					[&ctx](vector<string>::iterator arg, std::back_insert_iterator<string> s)
+					[&channelTable](vector<string>::iterator arg, std::back_insert_iterator<string> s)
 				{
-					auto& channelTable = ctx.session.getChannelMap();
 					auto channelIter = channelTable.find(*arg);
 					code::getBulkReplyTo(*arg, s);
 					if (channelIter == channelTable.end())
@@ -135,6 +138,53 @@ namespace myredis::func
 						code::getIntegerReplyTo(channelIter->second.size(), s);// 返回订阅的频道数
 					return 2;
 				});
+			}
+			else if (subcommand == "channels"sv) {
+				if (args.size() == 2)
+				{
+					// 无参数 列出所有活跃信道(订阅数大于1)
+					return code::getMultiReplyByRange(channelTable.begin(), channelTable.end(),
+						[](hash_map<string,hash_set<size_t>>::iterator arg, std::back_insert_iterator<string> s)
+					{
+						code::getBulkReplyTo(arg->first,s);
+						return 1;
+					});
+					
+				}
+				else if(args.size()==3)
+				{
+					// 返回匹配模式的频道
+					return code::getMultiReplyByRange(args.begin()+2, args.end(),
+						[&channelTable](vector<string>::iterator arg, std::back_insert_iterator<string> s)
+					{
+						int64_t cnt = 0;
+						std::regex rx;
+						auto flag = regex_constants::ECMAScript;
+						if (channelTable.size() >= regexOpLowerBound)
+							flag |= regex_constants::syntax_option_type::optimize;
+						rx = regex((*arg).c_str(), flag);
+						for (auto& e : channelTable) {
+							if (std::regex_match(e.first.c_str(), rx)) {
+								cnt++;
+								code::getBulkReplyTo(e.first, s);
+							}
+						}
+						return cnt;
+					});
+				}
+				else {
+					return code::args_count_error;
+				}
+			}
+			else if (subcommand == "numpat"sv)
+			{
+				// 返回模式表中客户端的数量
+				int64_t cnt = 0;
+				for (auto& e : patternTable)
+				{
+					cnt += e.second.size();
+				}
+				return code::getIntegerReply(cnt);
 			}
 			else {
 				return code::command_error;
@@ -227,7 +277,7 @@ namespace myredis::func
 				// 构造正则表达式
 				std::regex rx;
 				auto flag = regex_constants::ECMAScript;
-				if (objectMap.size() >= regexOpLowerBound)
+				if (patternTable.size() >= regexOpLowerBound)
 					flag |= regex_constants::syntax_option_type::optimize;
 				rx = regex((*arg).c_str(), flag);
 				Pattern p = { std::move(*arg),std::move(rx) };
@@ -256,7 +306,7 @@ namespace myredis::func
 	{
 		auto&& args = ctx.args;
 		auto&& objectMap = ctx.session.getObjectMap();
-
+		auto&& sessionID = ctx.session.getSessionID();
 		auto& patternTable = BaseSession::getPatternTable();
 		auto& subPatterns = ctx.session.getsubPatterns();
 		try
@@ -270,7 +320,7 @@ namespace myredis::func
 					//获取一条多播回复(一共三条内容）
 					code::getMultiReplyTo(back_inserter(ret), "punsubscribe", subPatterns.begin()->getPatternStr(), ctx.session.getSubscribeCount() - 1);
 					auto iter = patternTable.find(*subPatterns.begin());
-					auto patterns = iter->second;
+					auto& patterns = iter->second;
 					patterns.erase(ctx.session.getSessionID());
 					if (patterns.empty()) patternTable.erase(iter);//如果频道已经没有人订阅就删掉
 					subPatterns.erase(subPatterns.begin());
@@ -288,14 +338,18 @@ namespace myredis::func
 					{
 						// 去全局模式表中删除会话ID
 						auto iter = patternTable.find(temp);
-						auto channels = iter->second;
-						channels.erase(ctx.session.getSessionID());
-						if (channels.empty()) patternTable.erase(iter);//如果频道已经没有人订阅就删掉
-						// 删除订阅模式表中的对应模式
-						subPatterns.erase(subPatternIter);
+						if (iter != patternTable.end()) {
+							auto& channels = iter->second;
+							channels.erase(sessionID);
+							if (channels.empty()) patternTable.erase(iter);//如果频道已经没有人订阅就删掉
+
+							// 删除订阅模式表中的对应模式
+							subPatterns.erase(subPatternIter);
+						}
+
 					}
 					//获取一条多播回复(一共三条内容）
-					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", *patternIter, (int64_t)subPatterns.size());
+					code::getMultiReplyTo(back_inserter(ret), "punsubscribe", *patternIter, (int64_t)subPatterns.size());
 				}
 			}
 			return ret;
