@@ -86,7 +86,7 @@ do{\
 
     BaseSession::BaseSession(asio::io_context& ioc, tcp::socket&& socket) :
         ioc(ioc), socket(move(socket)), dataBaseID(0), closed(false),
-        logined(false), blocked(false), clock(ioc),watch_list(nullptr),pubsub(false)
+        logined(false), blocked(false), clock(ioc),watch_list(nullptr)
     {
         if (strlen(myredis_password) == 0) logined = true;
         sessionID = BaseSession::IDNow++;
@@ -299,6 +299,16 @@ do{\
         {
             co_await asio::async_write(soc, asio::buffer(msg.c_str(), msg.size()), use_awaitable); 
         }, detached);
+    }
+
+    bool BaseSession::isSubscribed() const noexcept
+    {
+        return subChannels.size()!=0||subPatterns.size()!=0;
+    }
+
+    int64_t BaseSession::getSubscribeCount() const noexcept
+    {
+        return subChannels.size()+subPatterns.size();
     }
 
     bool BaseSession::isBlocked() const noexcept
