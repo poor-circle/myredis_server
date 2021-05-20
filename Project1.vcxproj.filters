@@ -204,6 +204,9 @@
     <ClInclude Include="util\pattern.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectVisitor\serialize.h">
+      <Filter>头文件\ObjectVisitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

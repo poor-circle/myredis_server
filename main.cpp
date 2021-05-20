@@ -6,6 +6,7 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
+#include "ObjectVisitor/serialize.h"
 #endif
 namespace myredis
 {
@@ -41,6 +42,17 @@ int main()
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     //MSVC内存泄漏侦测，按ctrl+c关闭程序(而不是直接关闭窗口)，如果有内存泄漏，则输出窗口会做提示
 #endif
-    myredis::run();
+    //myredis::run();
+    // test 序列化
+    myredis::object temp= std::make_unique<myredis::deque<myredis::string>>();
+    for (int i = 0; i < 66; i++) {
+        std::get<std::unique_ptr<myredis::deque<myredis::string>>>(temp)->push_back(myredis::string()+ (char)i);
+    }
+
+
+    auto str = myredis::visitor::serialize<std::unique_ptr<myredis::deque<myredis::string>>>(temp);
+    for (auto i : str) {
+        std::cout << (unsigned int)i << std::endl;
+    }
     return 0;
 }
