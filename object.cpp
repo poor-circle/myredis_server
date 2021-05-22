@@ -5,12 +5,12 @@ namespace myredis
 {
 #include"namespace.i"
 
-	objectMap& objectMap::getObjectMap(size_t index)
+	objectMap& objectMap::getObjectMap(int64_t index)
 	{
 		static vector<objectMap> map(data_base_count);
 		return map[index];
 	}
-	watchMap& objectMap::getWatchMap(size_t index)
+	watchMap& objectMap::getWatchMap(int64_t index)
 	{
 		static vector<watchMap> map(data_base_count);
 		return map[index];
@@ -48,6 +48,7 @@ namespace myredis
 		if (iter.iter->isSetExpiredTime())
 			expireHeap.emplace(iter);
 	}
+
 	//过期key的主动垃圾回收
 	asio::awaitable<void> objectMap::expiredKeyCollecting()
 	{
@@ -67,7 +68,7 @@ namespace myredis
 				map.map.erase(map.expireHeap.begin()->iter);
 				map.keylist.erase(map.expireHeap.begin()->iter);
 				map.expireHeap.erase(map.expireHeap.begin());
-				assert(map.map.size() == map.expireHeap.size());
+				assert(map.size() == map.expireHeap.size());
 				++cnt;
 				auto now = steady_clock::now();
 				if (cnt%10==0&&now > pre_time + long_work_time)//垃圾回收上限时间
@@ -102,6 +103,7 @@ namespace myredis
 			}
 		} while (true);
 	}
+
 	//TODO::插入需要检查是否需要淘汰某个缓存
 	void objectMap::update(keyInfo&& key, object&& obj)
 	{
@@ -186,12 +188,20 @@ namespace myredis
 			return ans;
 	}
 
-	hash_map<keyIter, object>::iterator objectMap::begin()
+	//从const key的iter获取const value,不淘汰缓存
+	const object& objectMap::find(boost::container::list<keyInfo>::const_iterator iter)
 	{
-		return map.begin();
+		return map.find(*(boost::container::list<keyInfo>::iterator*)(&iter))->second;
 	}
 
-	hash_map<keyIter, object>::iterator objectMap::end()
+	//获取const key的iter，不淘汰缓存
+	hash_map<keyIter, object>::const_iterator objectMap::cbegin() const
+	{
+		return map.cbegin();
+	}
+
+	//获取const key的iter，不淘汰缓存
+	hash_map<keyIter, object>::const_iterator objectMap::cend() const
 	{
 		return map.end();
 	}
@@ -229,13 +239,13 @@ namespace myredis
 			return map.end();
 	}
 
-	boost::container::list<keyInfo>::iterator objectMap::keyBegin()
+	boost::container::list<keyInfo>::const_iterator objectMap::keyBegin() const
 	{
-		return keylist.begin();
+		return keylist.cbegin();
 	}
-	boost::container::list<keyInfo>::iterator objectMap::keyEnd()
+	boost::container::list<keyInfo>::const_iterator objectMap::keyEnd() const
 	{
-		return keylist.end();
+		return keylist.cend();
 	}
 
 
@@ -265,5 +275,12 @@ namespace myredis
 			if (temp == str) return db;
 		}
 		return make_unique<string>(std::move(str));
+	}
+
+	
+
+	void objectMap::reserve(size_t sz)
+	{
+		map.reserve(sz);
 	}
 }

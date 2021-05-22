@@ -61,6 +61,12 @@
     <Filter Include="头文件\ObjectVisitor\setVisitor">
       <UniqueIdentifier>{6ef33ffd-6033-4c1f-bacc-f17266aa998f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\util\windows">
+      <UniqueIdentifier>{b44b4e32-5eaf-444d-bbb9-3d5e79d4ecd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\windows">
+      <UniqueIdentifier>{bc3a05a7-954b-42c7-87b8-8d84aa2317af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -207,6 +213,12 @@
     <ClInclude Include="ObjectVisitor\serialize.h">
       <Filter>头文件\ObjectVisitor</Filter>
     </ClInclude>
+    <ClInclude Include="RDBSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVisitor\unserialize.h">
+      <Filter>头文件\ObjectVisitor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -250,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="Func\pubsubFunc.cpp">
       <Filter>源文件\Func</Filter>
+    </ClCompile>
+    <ClCompile Include="RDBSaver.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -197,7 +197,7 @@ do{\
         dataBaseID = ID;
     }
 
-    size_t BaseSession::getDataBaseID() const noexcept
+    int64_t BaseSession::getDataBaseID() const noexcept
     {
         return dataBaseID;
     }
@@ -244,7 +244,7 @@ do{\
         co_return std::move(result);
     }
 
-    void BaseSession::wake_up(const string& sv, size_t dataBaseID)
+    void BaseSession::wake_up(const string& sv, int64_t dataBaseID)
     {
         static auto& set = BaseSession::getSessionMap();
         auto& watchMap = objectMap::getWatchMap(dataBaseID);
@@ -287,7 +287,7 @@ do{\
         }
     }
 
-    size_t BaseSession::getSessionID() const  noexcept
+    int64_t BaseSession::getSessionID() const  noexcept
     {
         return sessionID;
     }
@@ -329,14 +329,14 @@ do{\
         return table;
     }
 
-    hash_map<string, hash_set<size_t>>& BaseSession::getChannelMap() noexcept
+    hash_map<string, hash_set<int64_t>>& BaseSession::getChannelMap() noexcept
     {
-        static hash_map<string, hash_set<size_t>> channelMap;
+        static hash_map<string, hash_set<int64_t>> channelMap;
         return channelMap;
     }
-    hash_map<Pattern, hash_set<size_t>>& BaseSession::getPatternTable() noexcept
+    hash_map<Pattern, hash_set<int64_t>>& BaseSession::getPatternTable() noexcept
     {
-        static hash_map<Pattern, hash_set<size_t>> patternTable;
+        static hash_map<Pattern, hash_set<int64_t>> patternTable;
         return patternTable;
     }
     hash_set<string>& BaseSession::getsubChannels() noexcept
@@ -383,5 +383,5 @@ do{\
 
         getSessionMap().sessionMap.erase(sessionID);
     }
-    atomic<size_t> BaseSession::IDNow=0;
+    atomic<int64_t> BaseSession::IDNow=0;
 }

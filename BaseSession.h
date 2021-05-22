@@ -11,7 +11,7 @@ namespace myredis
     class SessionMap
     {
         friend class BaseSession;
-        hash_map<size_t, BaseSession*> sessionMap;
+        hash_map<int64_t, BaseSession*> sessionMap;
 
         SessionMap(const SessionMap&) = delete;
         SessionMap(SessionMap&&) = delete;
@@ -20,7 +20,7 @@ namespace myredis
         SessionMap() = default;
     public:
         decltype(auto) begin() { return sessionMap.begin(); }
-        decltype(auto) find(size_t sessionID) { return sessionMap.find(sessionID); }
+        decltype(auto) find(int64_t sessionID) { return sessionMap.find(sessionID); }
         decltype(auto) end() { return sessionMap.end(); }
         decltype(auto) size() { return sessionMap.size(); }
     };
@@ -39,7 +39,7 @@ namespace myredis
 
         static asio::awaitable<void> run(std::unique_ptr<BaseSession> self);
         void setDataBaseID(int64_t ID)  noexcept;
-        size_t getDataBaseID() const noexcept;
+        int64_t getDataBaseID() const noexcept;
         objectMap& getObjectMap() noexcept;
 
         void setClosed() noexcept;
@@ -47,17 +47,17 @@ namespace myredis
         void setLogined(bool logined) noexcept;
         static SessionMap& getSessionMap();
         // 获得全局的频道表
-        static hash_map<string, hash_set<size_t>>& getChannelMap() noexcept;
-        static hash_map<Pattern,hash_set<size_t>>& getPatternTable() noexcept;
+        static hash_map<string, hash_set<int64_t>>& getChannelMap() noexcept;
+        static hash_map<Pattern,hash_set<int64_t>>& getPatternTable() noexcept;
         // 订阅的频道
         hash_set<string>& getsubChannels() noexcept;
         hash_set<Pattern>& getsubPatterns() noexcept;
         bool isBlocked() const noexcept;
         void setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,watcherPtr& watch_list);
         asio::awaitable<string> wait();
-        static void wake_up(const string& sv, size_t dataBaseID);
-        std::queue<std::pair<string, size_t>> wake_up_queue;
-        size_t getSessionID() const noexcept;
+        static void wake_up(const string& sv, int64_t dataBaseID);
+        std::queue<std::pair<string, int64_t>> wake_up_queue;
+        int64_t getSessionID() const noexcept;
         //创建一个新的协程来发送一条消息
         void addNewCoroToSendMessage(string&& msg);
         bool isSubscribed() const noexcept;
@@ -69,11 +69,11 @@ namespace myredis
         bool logined;
         bool blocked;
         int64_t dataBaseID;
-        size_t sessionID;
+        int64_t sessionID;
         // 用于记录当前会话订阅了多少个频道
         hash_set<string> subChannels;
         hash_set<Pattern> subPatterns;
-        static std::atomic<size_t> IDNow;
+        static std::atomic<int64_t> IDNow;
         void wake_up(string&& result);
         string result;
         asio::io_context& ioc;

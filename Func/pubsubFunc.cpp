@@ -144,7 +144,7 @@ namespace myredis::func
 				{
 					// 无参数 列出所有活跃信道(订阅数大于1)
 					return code::getMultiReplyByRange(channelTable.begin(), channelTable.end(),
-						[](hash_map<string,hash_set<size_t>>::iterator arg, std::back_insert_iterator<string> s)
+						[](hash_map<string,hash_set<int64_t>>::iterator arg, std::back_insert_iterator<string> s)
 					{
 						code::getBulkReplyTo(arg->first,s);
 						return 1;

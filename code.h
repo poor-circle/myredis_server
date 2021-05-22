@@ -280,7 +280,7 @@ namespace myredis::code
 	{
 		string s = "*00000000000000\r\n";
 		auto index = s.size() - 3;
-		size_t cnt = 1;
+		int64_t cnt = 1;
 		for (; begin != end; begin = std::next(begin))
 		{
 			auto ans = lambda(begin, back_inserter(s));
@@ -304,7 +304,15 @@ namespace myredis::code
 			"myredis error at function \"{}\"\nexception info:{}\n",\
 			__func__,\
 			e.what()\
-		);
+		)
+#define printlogByStr(e)\
+		fmt::print\
+		(\
+			stderr,\
+			"myredis error at function \"{}\"\nexception info:{}\n",\
+			__func__,\
+			e\
+		)
 	//add error info here;
 
 

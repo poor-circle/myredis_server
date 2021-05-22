@@ -33,7 +33,7 @@ namespace myredis::func
 			for (int i = 2; i < args.size(); i++) {
 				addContent.push_back(args[i]);
 			}
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				// 如果没找到,则新建一个空列表,并在头部插入
 				auto set = std::make_unique<hash_set<string>>();
@@ -76,7 +76,7 @@ namespace myredis::func
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::getIntegerReply(0);
 			}
@@ -115,7 +115,7 @@ namespace myredis::func
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::key_error;
 			}
@@ -160,7 +160,7 @@ namespace myredis::func
 			if (args.size() != 3)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::getIntegerReply(0);
 
@@ -206,7 +206,7 @@ namespace myredis::func
 			for (int i = 2; i < args.size(); i++) {
 				remContent.push_back(args[i]);
 			}
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::getIntegerReply(0);
 			}

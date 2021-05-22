@@ -44,7 +44,7 @@ namespace myredis::func
 				for (auto iter=args.begin()+1;iter!=args.end();++iter)
 				{
 					auto ans = objectMap.find(*iter);
-					if (ans == objectMap.end())
+					if (ans == objectMap.cend())
 						return code::getIntegerReply(0);
 				}
 				return code::getIntegerReply(1);
@@ -116,8 +116,8 @@ namespace myredis::func
 				{
 					return code::regex_error;
 				}
-				return code::getMultiReplyByRange(objectMap.begin(), objectMap.end(),
-					[&rx](hash_map<keyIter, myredis::object>::iterator iter, auto s)
+				return code::getMultiReplyByRange(objectMap.cbegin(), objectMap.cend(),
+					[&rx](hash_map<keyIter, myredis::object>::const_iterator iter, auto s)
 					{
 						if (std::regex_match(iter->first.iter->getStr().c_str(), rx))
 						{
@@ -154,7 +154,7 @@ namespace myredis::func
 			else
 			{
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					myredis::object obj;
 					auto expireTime = iter->first.iter->getLiveTime();
@@ -191,10 +191,10 @@ namespace myredis::func
 			else
 			{
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					auto iter2 = objectMap.find(args[2]);
-					int flag = iter2 == objectMap.end();
+					int flag = iter2 == objectMap.cend();
 					if (flag)
 					{
 						myredis::object obj;
@@ -236,7 +236,7 @@ namespace myredis::func
 				if (args[1] == "encoding"sv)
 				{
 					auto iter = objectMap.find(args[2]);
-					if (iter != objectMap.end())
+					if (iter != objectMap.cend())
 					{
 						return code::getBulkReply(
 							visit([](auto& e) {return visitor::object_encode(e); }, iter->second));
@@ -279,7 +279,7 @@ namespace myredis::func
 			else
 			{
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					return code::getBulkReply(visit([](auto& e) {return visitor::type(e); },iter->second));
 				}
@@ -364,7 +364,7 @@ namespace myredis::func
 			if (pos != 0)
 			{
 				auto iter = objectMap.find(args[1].substr(5));
-				if (iter == objectMap.end())
+				if (iter == objectMap.cend())
 					return code::iterator_illegal_error;
 				else ptr = iter->first.iter;
 			}
@@ -427,7 +427,7 @@ namespace myredis::func
 					return code::args_illegal_error;
 				}
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					objectMap.updateExpireTime(iter->first, seconds(sec));
 					return code::getIntegerReply(1);
@@ -459,7 +459,7 @@ namespace myredis::func
 			else
 			{
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					if (iter->first.iter->isSetExpiredTime())
 						return code::getIntegerReply(iter->first.iter->getLiveTimeFromNow()/1s);
@@ -493,7 +493,7 @@ namespace myredis::func
 			else
 			{
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					if (iter->first.iter->isSetExpiredTime())
 						return code::getIntegerReply(iter->first.iter->getLiveTimeFromNow() / 1ms);
@@ -534,7 +534,7 @@ namespace myredis::func
 					return code::args_illegal_error;
 				}
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					objectMap.updateExpireTime(iter->first, milliseconds(ms));
 					return code::getIntegerReply(1);
@@ -574,7 +574,7 @@ namespace myredis::func
 					return code::args_illegal_error;
 				}
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					objectMap.updateExpireTime(iter->first, timestamp*1000);
 					return code::getIntegerReply(1);
@@ -614,7 +614,7 @@ namespace myredis::func
 					return code::args_illegal_error;
 				}
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					objectMap.updateExpireTime(iter->first, timestamp);
 					return code::getIntegerReply(1);
@@ -640,7 +640,7 @@ namespace myredis::func
 			else
 			{
 				auto iter = objectMap.find(args[1]);
-				if (iter != objectMap.end()&&iter->first.iter->isSetExpiredTime())
+				if (iter != objectMap.cend()&&iter->first.iter->isSetExpiredTime())
 				{
 					objectMap.cancelExpireTime(iter->first.iter);
 					return code::getIntegerReply(1);

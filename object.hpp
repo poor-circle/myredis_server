@@ -105,6 +105,17 @@ namespace myredis
 	>;
 	
 
+	//magic constexpr to get object from index;
+	template <std::size_t I = 0>
+	object object_from_index(std::size_t index) {
+		if constexpr (I >= std::variant_size_v<object>)
+			throw std::exception();//if outrange,throw exception
+		else
+			return index == 0
+				? object{std::in_place_index<I>}
+				: object_from_index<I + 1>(index - 1);
+	}
+
 	//将一个String转换为String类型的对象
 	object stringToObject(string&& str);
 
@@ -115,48 +126,55 @@ namespace myredis
 
 	struct watchInfo
 	{
-		size_t sessionID;//线程ID
+		int64_t sessionID;//线程ID
 		watcherPtr nodes;
 		//记录其他key上的监视器
 		std::shared_ptr<std::function<std::optional<string>(const string&)>> op;
 		//用户自定义的操作，返回值：bool：是否让队列中的下一个监视器继续执行，string:准备返回给客户端的string
 		//参数：const string&:被监视的object的key名
-		watchInfo(size_t sessionID,
+		watchInfo(int64_t sessionID,
 			watcherPtr nodes,
 			std::shared_ptr<std::function<std::optional<string>(const string&)>> op) :
 			sessionID(sessionID), nodes(nodes), op(op) {}
 	};
 
-	class objectMap
+	class objectMap //不要直接创建这个对象！(通过getObjectMap来获取）
 	{
 	private:
 		boost::container::list<keyInfo> keylist;
-		hash_map<keyIter, object> map;
+		hash_map<keyIter, object> map,cowMAP;
 		std::set<keyIter> expireHeap;//目前简化了实现，没有真正使用*堆*
-		//不要直接创建这个对象！(通过getObjectMap来获取）
 		void _updateExpireTime(const keyIter& iter, keyInfo::time_duration ms);
 	public:
-		//插入(更新)一个key
 		void updateExpireTime(const keyIter& iter,std::chrono::seconds sec);
 		void updateExpireTime(const keyIter& iter, std::chrono::milliseconds ms);
 		void updateExpireTime(const keyIter& iter, int64_t unix_ms_tp);
 		void cancelExpireTime(const keyIter& iter);
 		static asio::awaitable<void> expiredKeyCollecting();
+
+		//直接修改数据库
 		void update(keyInfo&& key,object&& obj);
 		hash_map<keyIter, object>::iterator try_insert(keyInfo&& key, object&& obj);
+
 		hash_map<keyIter, object>::iterator find(const string& str);
 		hash_map<keyIter, object>::iterator find(string&& str);
-		hash_map<keyIter, object>::iterator begin();
-		hash_map<keyIter, object>::iterator end();
-		boost::container::list<keyInfo>::iterator keyBegin();
-		boost::container::list<keyInfo>::iterator keyEnd();
+		const object& find(boost::container::list<keyInfo>::const_iterator iter);
+
+
 		size_t erase(string&& str);
 		hash_map<keyIter, object>::iterator erase(hash_map<keyIter, object>::const_iterator iter);
-		static objectMap& getObjectMap(size_t index);
-		static watchMap& getWatchMap(size_t index);
+
+		
+		hash_map<keyIter, object>::const_iterator cbegin() const;
+		hash_map<keyIter, object>::const_iterator cend() const;
+		boost::container::list<keyInfo>::const_iterator keyBegin() const;
+		boost::container::list<keyInfo>::const_iterator keyEnd()  const;
+		void reserve(size_t sz);
+		static objectMap& getObjectMap(int64_t index);
+		static watchMap& getWatchMap(int64_t index);
 		size_t size() const;
 		template<typename Iter>
-		static void addWatches(Iter begin, Iter end, size_t dataBaseID,size_t sessionID,watcherPtr& tab,
+		static void addWatches(Iter begin, Iter end, int64_t dataBaseID, int64_t sessionID,watcherPtr& tab,
 							   std::function<std::optional<string>(const string&)>&& op)
 		{
 			auto &map = objectMap::getWatchMap(dataBaseID);

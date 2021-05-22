@@ -78,7 +78,7 @@ namespace myredis::func
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())//找不到对应的key
+			if (iter == objectMap.cend())//找不到对应的key
 			{
 				return code::nil;
 			}
@@ -113,7 +113,7 @@ namespace myredis::func
 			if (args.size() != 3)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())//找不到对应的key
+			if (iter == objectMap.cend())//找不到对应的key
 			{
 				auto len = args[2].size();
 				// 调用set函数
@@ -158,7 +158,7 @@ namespace myredis::func
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				//找不到对应的key 返回0
 				return code::getIntegerReply(0);
@@ -194,7 +194,7 @@ namespace myredis::func
 			if (args.size() != 4)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				//找不到对应的key
 				return code::nil;
@@ -258,7 +258,7 @@ namespace myredis::func
 			if (args.size() != 3)
 				return code::args_count_error;
 			auto iter= objectMap.try_insert(std::move(args[1]), stringToObject(std::move(args[2])));
-			return code::getIntegerReply(iter != objectMap.end()?1:0);
+			return code::getIntegerReply(iter != objectMap.cend()?1:0);
 		}
 		catch (const exception& e)
 		{
@@ -281,7 +281,7 @@ namespace myredis::func
 			if (args.size() != 3)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())//找不到对应的key
+			if (iter == objectMap.cend())//找不到对应的key
 			{
 				// 返回nil
 				return code::nil;
@@ -326,7 +326,7 @@ namespace myredis::func
 			for (auto arg = args.begin() + 1; arg < args.end(); arg += 2) 
 			{
 				auto iter = objectMap.find(*arg);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					return code::getIntegerReply(0);
 				}
@@ -358,7 +358,7 @@ namespace myredis::func
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end()) {
+			if (iter == objectMap.cend()) {
 				objectMap.update(std::move(args[1]), (int64_t)1);
 				return code::getIntegerReply(1);
 			}
@@ -404,7 +404,7 @@ namespace myredis::func
 			}
 
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end()) {
+			if (iter == objectMap.cend()) {
 				objectMap.update(std::move(args[1]), increment);
 				return code::getIntegerReply(increment);
 			}
@@ -451,7 +451,7 @@ namespace myredis::func
 			}
 
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end()) {
+			if (iter == objectMap.cend()) {
 				objectMap.update(std::move(args[1]), increment);
 				return code::getBulkReply(to_string(increment));
 			}
@@ -493,7 +493,7 @@ namespace myredis::func
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end()) {
+			if (iter == objectMap.cend()) {
 				objectMap.update(std::move(args[1]), (int64_t)-1);
 				return code::getIntegerReply(-1);
 			}
@@ -538,7 +538,7 @@ namespace myredis::func
 			}
 
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end()) {
+			if (iter == objectMap.cend()) {
 				objectMap.update(std::move(args[1]), decrement);
 				return code::getIntegerReply(decrement);
 			}
@@ -614,7 +614,7 @@ namespace myredis::func
 				{
 					auto&& objectMap = ctx.session.getObjectMap();
 					auto iter = objectMap.find(*arg);
-					if (iter != objectMap.end())
+					if (iter != objectMap.cend())
 					{
 						auto ret = visit([](auto& e) {return visitor::get(e); }, iter->second);
 						if (ret.first == code::status::success)
@@ -656,7 +656,7 @@ namespace myredis::func
 			{
 				auto iter = objectMap.find(args[1]);
 				size_t retlength;
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					//将对象编码设置为字符串（setrange以后，对象一定变成字符串）
 					auto ret = visit([&iter](auto& e)

@@ -36,7 +36,7 @@ namespace myredis::func {
 				pushContent.push_back(args[i]);
 			}
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end()) 
+			if (iter == objectMap.cend()) 
 			{
 				// 如果没找到,则新建一个空列表,并在头部插入
 				auto list = std::make_unique<deque<string>>();
@@ -83,7 +83,7 @@ namespace myredis::func {
 				pushContent.push_back(args[i]);
 			}
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				// 如果没找到,什么都不做
 				return code::getIntegerReply(0);
@@ -123,7 +123,7 @@ namespace myredis::func {
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				// 如果没找到,看作是空list 返回0
 				return code::getIntegerReply(0);
@@ -163,7 +163,7 @@ namespace myredis::func {
 			if (args.size() != 4)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				// 找不到对应的key返回nil
 				return code::nil;
@@ -222,7 +222,7 @@ namespace myredis::func {
 				pushContent.push_back(args[i]);
 			}
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				// 如果没找到,则新建一个空列表,并在头部插入
 				auto list = std::make_unique<deque<string>>();
@@ -269,7 +269,7 @@ namespace myredis::func {
 				pushContent.push_back(args[i]);
 			}
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				// 如果没找到,什么都不做
 				return code::getIntegerReply(0);
@@ -309,7 +309,7 @@ namespace myredis::func {
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::nil;
 			}
@@ -348,7 +348,7 @@ namespace myredis::func {
 			if (args.size() != 2)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::nil;
 			}
@@ -391,7 +391,7 @@ namespace myredis::func {
 			
 			auto srcIter = objectMap.find(args[1]);
 
-			if (srcIter == objectMap.end())
+			if (srcIter == objectMap.cend())
 			{
 				// source不存在
 				return code::nil;
@@ -413,7 +413,7 @@ namespace myredis::func {
 			{
 				// 如果source和destination不同,找一下destination对应的
 				destnIter = objectMap.find(args[2]);
-				if (destnIter == objectMap.end()) {
+				if (destnIter == objectMap.cend()) {
 					// 找不到destination 
 					object list = std::make_unique<deque<string>>();
 					string destnKey = args[2];
@@ -487,7 +487,7 @@ namespace myredis::func {
 			if (args.size() != 4)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::key_error;
 			}
@@ -534,7 +534,7 @@ namespace myredis::func {
 			if (args.size() != 3)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::key_error;
 			}
@@ -583,7 +583,7 @@ namespace myredis::func {
 			if (args.size() != 4)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				// 找不到对应的key返回nil
 				return code::key_error;
@@ -632,7 +632,7 @@ namespace myredis::func {
 			if (args.size() != 4)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				// 找不到对应的key返回nil
 				return code::getIntegerReply(0);
@@ -681,7 +681,7 @@ namespace myredis::func {
 			if (args.size() != 5)
 				return code::args_count_error;
 			auto iter = objectMap.find(args[1]);
-			if (iter == objectMap.end())
+			if (iter == objectMap.cend())
 			{
 				return code::key_error;
 			}
@@ -740,7 +740,7 @@ namespace myredis::func {
 			for (auto arg = args.begin() + 1, endarg = args.end() - 1; arg != endarg; ++arg)
 			{
 				auto iter = objectMap.find(*arg);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					auto ret = visit([](auto& e)
 					{
@@ -767,7 +767,7 @@ namespace myredis::func {
 					optional<string> ret=nullopt;//返回空，代表失败，监视器将继续监视
 					//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
 					//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
-					if (iter != objectMap.end())
+					if (iter != objectMap.cend())
 					{
 						auto ans = visit([](auto& e)
 						{
@@ -815,7 +815,7 @@ namespace myredis::func {
 			for (auto arg = args.begin() + 1, endarg = args.end() - 1; arg != endarg; ++arg)
 			{
 				auto iter = objectMap.find(*arg);
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					auto ret = visit([](auto& e)
 					{
@@ -842,7 +842,7 @@ namespace myredis::func {
 				optional<string> ret = nullopt;//返回空，代表失败，监视器将继续监视
 				//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
 				//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					auto ans = visit([](auto& e)
 					{
@@ -887,7 +887,7 @@ namespace myredis::func {
 				return code::args_illegal_error;
 			}
 			auto srcIter = objectMap.find(args[1]);
-			if (srcIter == objectMap.end())
+			if (srcIter == objectMap.cend())
 			{
 				// source不存在
 				return code::nil;
@@ -909,7 +909,7 @@ namespace myredis::func {
 			{
 				// 如果source和destination不同,找一下destination对应的value
 				destnIter = objectMap.find(args[2]);
-				if (destnIter == objectMap.end()) {
+				if (destnIter == objectMap.cend()) {
 					// 找不到destination 
 					object list = std::make_unique<deque<string>>();
 					string destnKey = args[2];
@@ -972,7 +972,7 @@ namespace myredis::func {
 				optional<string> ret = nullopt;//返回空，代表失败，监视器将继续监视
 				//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
 				//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
-				if (iter != objectMap.end())
+				if (iter != objectMap.cend())
 				{
 					auto popRet = visit([](auto& e)
 					{
