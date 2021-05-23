@@ -30,14 +30,12 @@ namespace myredis::func
 	struct funcInfo
 	{
 		syncFuncPtr syncptr;
-		//asyncFuncPtr asyncptr;//这里之所以不做成union类型，是因为其似乎无法处理协程函数？奇怪
 		funcType type;//函数类型
 		bool isAsyncFunc(void) const noexcept
 		{
 			return false;
 		}
-		funcInfo(syncFuncPtr ptr, funcType type):syncptr(ptr),/*asyncptr(nullptr),*/type(type){}
-		//funcInfo(asyncFuncPtr ptr, funcType type) :syncptr(nullptr), asyncptr(ptr), type(type) {}
+		funcInfo(syncFuncPtr ptr, funcType type):syncptr(ptr),type(type){}
 	};
 
 

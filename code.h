@@ -15,7 +15,7 @@ namespace myredis::code
 		index_out_of_range
 		//add other error here
 	};
-	static string& getMessage(status i)			// 从错误码获取错误信息
+	inline string& getMessage(status i)			// 从错误码获取错误信息
 	{
 		static string error_message[] = // 必须保证message顺序和code相同!
 		{
@@ -49,13 +49,13 @@ namespace myredis::code
 	const string illegal_command_when_subscribe = "-ERR only (P)SUBSCRIBE / (P)UNSUBSCRIBE / PING / QUIT allowed in this context\r\n";
 
 	template<typename T>
-	static void getReplyTo(const T& str, std::back_insert_iterator<string> s)
+	inline void getReplyTo(const T& str, std::back_insert_iterator<string> s)
 	{
 		fmt::format_to(s,FMT_COMPILE("{}"),str);
 	}
 
 	template<typename T>
-	static string getBulkReply(const T& str)  //批量回复
+	inline string getBulkReply(const T& str)  //批量回复
 	{
 		string s;
 		fmt::format_to
@@ -69,7 +69,7 @@ namespace myredis::code
 	}
 
 	template<>
-	static string getBulkReply(const string& str)  //批量回复
+	inline string getBulkReply(const string& str)  //批量回复
 	{
 		string s;
 		fmt::format_to
@@ -83,7 +83,7 @@ namespace myredis::code
 	}
 
 	template<>
-	static string getBulkReply(const std::string_view& str)  //批量回复
+	inline string getBulkReply(const std::string_view& str)  //批量回复
 	{
 		string s;
 		fmt::format_to
@@ -98,7 +98,7 @@ namespace myredis::code
 
 
 	template<typename T>
-	static void getBulkReplyTo(const T& str, std::back_insert_iterator<string> s)  //批量回复
+	inline void getBulkReplyTo(const T& str, std::back_insert_iterator<string> s)  //批量回复
 	{
 		fmt::format_to
 		(
@@ -110,7 +110,7 @@ namespace myredis::code
 	}
 
 	template<>
-	static void getBulkReplyTo(const string& str, std::back_insert_iterator<string> s)  //批量回复
+	inline void getBulkReplyTo(const string& str, std::back_insert_iterator<string> s)  //批量回复
 	{
 		fmt::format_to
 		(
@@ -122,7 +122,7 @@ namespace myredis::code
 	}
 
 	template<>
-	static void getBulkReplyTo(const std::string_view& str, std::back_insert_iterator<string> s)  //批量回复
+	inline void getBulkReplyTo(const std::string_view& str, std::back_insert_iterator<string> s)  //批量回复
 	{
 		fmt::format_to
 		(
@@ -134,7 +134,7 @@ namespace myredis::code
 	}
 
 	template<typename T>
-	static string getSingleReply(const T& str) //状态回复
+	inline string getSingleReply(const T& str) //状态回复
 	{
 		string s;
 		fmt::format_to
@@ -147,7 +147,7 @@ namespace myredis::code
 	}
 
 	template<typename T>
-	static void getSingleReplyTo(const T& str, std::back_insert_iterator<string> s) //状态回复
+	inline void getSingleReplyTo(const T& str, std::back_insert_iterator<string> s) //状态回复
 	{
 		fmt::format_to
 		(
@@ -157,7 +157,7 @@ namespace myredis::code
 		);
 	}
 
-	static string getErrorReply(status errorInfo) //错误回复
+	inline string getErrorReply(status errorInfo) //错误回复
 	{
 		string s;
 		fmt::format_to
@@ -169,7 +169,7 @@ namespace myredis::code
 		return s;
 	}
 
-	static void getErrorReplyTo( status errorInfo, std::back_insert_iterator<string> s) //错误回复
+	inline void getErrorReplyTo( status errorInfo, std::back_insert_iterator<string> s) //错误回复
 	{
 		fmt::format_to
 		(
@@ -179,7 +179,7 @@ namespace myredis::code
 		);
 	}
 
-	static string getIntegerReply(int64_t number) //整数回复
+	inline string getIntegerReply(int64_t number) //整数回复
 	{
 		string s;
 		fmt::format_to
@@ -191,7 +191,7 @@ namespace myredis::code
 		return s;
 	}
 
-	static void getIntegerReplyTo(int64_t number,std::back_insert_iterator<string> s) //整数回复
+	inline void getIntegerReplyTo(int64_t number,std::back_insert_iterator<string> s) //整数回复
 	{
 		fmt::format_to
 		(
@@ -210,7 +210,7 @@ namespace myredis::code
 	* lambda:一个函数，接收一个插入迭代器和一个Iter迭代器，返回一个整数值，代表插入的回复数量
 	*/
 	template<class Iter,typename func>
-	static string getMultiReplyByRange(Iter begin, Iter end,func lambda) //多批量回复
+	inline string getMultiReplyByRange(Iter begin, Iter end,func lambda) //多批量回复
 	{
 		string s="*00000000000000\r\n";
 		auto index = s.size() - 3;
@@ -231,13 +231,13 @@ namespace myredis::code
 	}
 
 	template<typename T>
-	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const T& value) //多批量回复
+	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const T& value) //多批量回复
 	{
 		fmt::format_to(s, FMT_COMPILE("${}\r\n{}\r\n"), fmt::formatted_size(FMT_COMPILE("{}"), value) , value);
 	}
 
 	template<>
-	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value) //多批量回复
+	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value) //多批量回复
 	{
 		getIntegerReplyTo(value,s);
 	}
@@ -245,21 +245,21 @@ namespace myredis::code
 	
 
 	template<typename T, class ...Args>
-	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s,const T& value, const Args&... args) //多批量回复
+	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s,const T& value, const Args&... args) //多批量回复
 	{
 		fmt::format_to(s, FMT_COMPILE("${}\r\n{}\r\n"), fmt::formatted_size(FMT_COMPILE("{}"), value) , value);
 		_getMultiReplyWithOutHead(s,args...);
 	}
 
 	template<class ...Args>
-	static void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value, const Args&... args) //多批量回复
+	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value, const Args&... args) //多批量回复
 	{
 		getIntegerReplyTo(value, s);
 		_getMultiReplyWithOutHead(s, args...);
 	}
 
 	template<class ...Args>
-	static void  getMultiReplyTo(std::back_insert_iterator<string> s,const Args&... args) //多批量回复
+	inline void  getMultiReplyTo(std::back_insert_iterator<string> s,const Args&... args) //多批量回复
 	{
 		fmt::format_to(s, FMT_COMPILE("*{}\r\n"), sizeof...(args));
 		_getMultiReplyWithOutHead(s,args...);
@@ -267,11 +267,16 @@ namespace myredis::code
 	}
 
 	template<class ...Args>
-	static string getMultiReply(const Args&... args) //多批量回复
+	inline string getMultiReply(const Args&... args) //多批量回复
 	{
 		string s;
 		getMultiReplyTo(back_inserter(s),args...);
 		return s;
+	}
+
+	inline bool replyIsNotError(const string& s)
+	{
+		return s.length() >= 1 && s[0] != '-';
 	}
 
 

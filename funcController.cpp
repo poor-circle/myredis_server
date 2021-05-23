@@ -2,6 +2,7 @@
 #include "funcController.h"
 #include "Func/funcManager.h"
 #include "Func/pubsubFunc.h"
+#include "AOFSaver.h"
 namespace myredis::func
 {
 #include"namespace.i"
@@ -41,10 +42,12 @@ namespace myredis::func
         //函数存在，运行该函数，并将结果返回给客户端
         else
         {
-            optional<string> reply;
-            //iter->second是一个函数（通过args[0]查找而得）
+            if (iter->second.type == func::funcType::write)
+            {
+                AOFSaver::aofwriter(ctx.args, AOFSaver::getFile(ctx.session.getDataBaseID()));
+            }
+            auto reply = iter->second.syncptr(std::move(ctx));//运行对应的函数
 
-            reply = iter->second.syncptr(std::move(ctx));
 
             if (self.isBlocked()) //如果设置为阻塞态，则等待对应事件发生，调用用户提供的回调函数并返回结果
             {

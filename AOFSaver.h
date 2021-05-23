@@ -10,12 +10,14 @@ namespace myredis
 	class AOFSaver
 	{
 	private:
-		
+		static void aofencode(std::vector<string>& command, FILE* dest);
 	public:
-		static void aofwriter(std::vector<string>&& command, FILE* fp);
-		static void aofload(FILE* fp, std::unique_ptr<BaseSession> self);
-		static void aofencode(std::vector<string>& command, string& dest);
-		static void aofdecode(FILE* fp, std::vector<string>& command);
+		static void aofwriter(std::vector<string>& command, FILE* fp);
+		static void aofload() noexcept;
+		static std::vector<string> aofdecode(FILE* fp);
+		static FILE*& getFile(size_t dBIndex);
+		static void saveToTempFile();
+		static void moveTempFile();
 	};
 
 

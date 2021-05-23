@@ -4,6 +4,7 @@
 #include "ObjectVisitor/serialize.h"
 #include "ObjectVisitor/unserialize.h"
 #include "threadPool.h"
+#include "AOFSaver.h"
 namespace myredis
 {
 #include"namespace.i"
@@ -23,8 +24,10 @@ namespace myredis
     asio::awaitable<void> RDBSaver::saveDBDetail(asio::io_context& ioc)
     {
         string tmp;
-        tmp=visitor::MultiDBSerialize();//完成数据库序列化
+     
+        AOFSaver::saveToTempFile();
         //TODO:fork on linux
+        tmp=visitor::MultiDBSerialize();//完成数据库序列化
 
         bool waiting =true;//判断是否要等待
         asio::steady_timer clk(ioc);
@@ -71,6 +74,7 @@ namespace myredis
             }
             catch (const exception& e){}
         }
+        AOFSaver::moveTempFile();
         co_return;
     }
 
@@ -89,7 +93,7 @@ namespace myredis
             }
         }, detached);
     }
-    void RDBSaver::loadDB(asio::io_context& ioc)
+    void RDBSaver::loadDB()
     {
         FILE* fp = nullptr;
         fp = fopen("backup.mrdb", "rb");

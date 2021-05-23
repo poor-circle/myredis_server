@@ -4,6 +4,7 @@
 #include "benchmark.h"
 #include "ObjectVisitor/serialize.h"
 #include "RDBSaver.h"
+#include "AOFSaver.h"
 #include "threadPool.h"
 #if defined(_MSC_VER)
 #define _CRTDBG_MAP_ALLOC
@@ -26,11 +27,11 @@ namespace myredis
                 io_context.stop();
             });
             myredis::Listener listener(io_context, myredis::defaultPort);
-            RDBSaver::loadDB(io_context);
+            RDBSaver::loadDB();//加载RDB文件
+            AOFSaver::aofload();//加载AOF文件
             co_spawn(io_context, listener.Run(), detached);//开始监听端口
             co_spawn(io_context, objectMap::expiredKeyCollecting, detached);//运行垃圾回收
-            RDBSaver::saveDB(io_context);
-            
+            RDBSaver::saveDB(io_context);//定时保存RDB文件
             io_context.run();
             getThreadPool().join();
         }

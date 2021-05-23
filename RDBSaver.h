@@ -9,7 +9,7 @@ namespace myredis
 		static std::chrono::seconds& getDurationTime();
 	public:
 		static void saveDB(asio::io_context& ioc);
-		static void loadDB(asio::io_context& ioc);
+		static void loadDB();
 		static void setDurationTime(std::chrono::seconds time_duration);
 	};
 
