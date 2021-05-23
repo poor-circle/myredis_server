@@ -12,6 +12,9 @@ namespace myredis
         for (auto &str : command) {
             fmt::print(dest,"${}\r\n{}\r\n",str.size(),str);
         }
+#ifdef FFLUSH_EACH_COMMAND
+        fflush(dest);//清空缓冲区，加强持久化等级，但是会导致写入速度下降
+#endif //  FFLUSH_EACH_COMMAND
         return ;
     }
     // 从fp中读取一条命令到command(以vector的形式)
@@ -71,7 +74,7 @@ namespace myredis
             {
                 for (size_t i = 0; i < data_base_count; ++i)
                 {
-                    fp[i] = fopen(("aof/" + to_string(i) + ".maof").c_str(), "wb");
+                    fp[i] = fopen(("aof/" + to_string(i) + ".maof").c_str(), "ab");
                 }
                 isRaw = false;
             }
@@ -143,6 +146,7 @@ namespace myredis
                     iter->second.syncptr(func::context(std::move(command), *session));
                     //we don't need return value
                 }
+               
             }
             catch (const exception& e)
             {
