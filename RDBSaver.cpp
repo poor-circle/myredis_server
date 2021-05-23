@@ -83,13 +83,14 @@ namespace myredis
         asio::co_spawn(ioc, [&ioc] ()->asio::awaitable<void>
         {
             asio::steady_timer clk(ioc);
+            clk.expires_after(1s);//间隔一段时间保存磁盘
             while (true)
             {
-                clk.expires_after(getDurationTime());//间隔一段时间保存磁盘
                 co_await clk.async_wait(asio::use_awaitable);//睡觉,等待唤醒
                 assert((fmt::print("start RDBSave\n"), 1));
                 co_await saveDBDetail(ioc);//保存数据库
                 assert((fmt::print("end RDBSave\n"), 1));
+                clk.expires_after(getDurationTime());
             }
         }, detached);
     }

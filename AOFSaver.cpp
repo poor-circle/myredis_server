@@ -101,7 +101,7 @@ namespace myredis
             remove(name.c_str());
             if (rename(name2.c_str(), name.c_str()))
                 throw exception("AOFSaver failed when rename AOF file");
-            AOFSaver::getFile(i)=fopen(name.c_str(),"wb");
+            AOFSaver::getFile(i)=fopen(name.c_str(),"ab");
         }
     }
     /* command代表已经处理过的写命令,fp是存入的文件指针 */
