@@ -4,7 +4,7 @@
 #include "benchmark.h"
 #include "ObjectVisitor/serialize.h"
 #include "RDBSaver.h"
-
+#include "threadPool.h"
 #if defined(_MSC_VER)
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
@@ -32,6 +32,7 @@ namespace myredis
             RDBSaver::saveDB(io_context);
             
             io_context.run();
+            getThreadPool().join();
         }
         catch (exception& e)
         {

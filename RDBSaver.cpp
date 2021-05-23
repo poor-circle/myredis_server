@@ -3,6 +3,7 @@
 #include "object.hpp"
 #include "ObjectVisitor/serialize.h"
 #include "ObjectVisitor/unserialize.h"
+#include "threadPool.h"
 namespace myredis
 {
 #include"namespace.i"
@@ -19,14 +20,17 @@ namespace myredis
         getDurationTime() = time_duration;
     }
 
-    asio::awaitable<void> RDBSaver::saveDBDetail(asio::steady_timer& clk, asio::io_context& ioc)
+    asio::awaitable<void> RDBSaver::saveDBDetail(asio::io_context& ioc)
     {
         string tmp;
-        tmp=visitor::MultiDBSerialize();
-        std::atomic<bool> waiting =true;
-        std::thread work([&] ()
+        tmp=visitor::MultiDBSerialize();//完成数据库序列化
+        //TODO:fork on linux
+
+        bool waiting =true;//判断是否要等待
+        asio::steady_timer clk(ioc);
+        asio::post(getThreadPool(), [&] //将写磁盘的工作交给线程池中另外一个线程执行
         {
-            FILE* fp=nullptr;
+            FILE* fp = nullptr;
             try
             {
                 fp = fopen("backup2.mrdb", "wb");
@@ -37,7 +41,7 @@ namespace myredis
             }
             catch (const exception& e)
             {
-                if (fp!=NULL)
+                if (fp != NULL)
                     fclose(fp);
                 printlog(e);
                 waiting = false;
@@ -54,13 +58,18 @@ namespace myredis
             {
                 printlog(e);
             };
-            waiting = false;
+            ioc.post([&] {waiting = false; clk.cancel(); });
+            //ioc.post：将这个任务交给ioc所在的主线程执行，保证了线程安全
         });
-        work.detach();
-        while (waiting)
+        if (waiting)
         {
-            clk.expires_after(1s);
-            co_await clk.async_wait(asio::use_awaitable);
+            clk.expires_after(steady_clock::duration::max());//等到猴年马月
+            try
+            {
+                co_await clk.async_wait(asio::use_awaitable);
+                //一直等到文件io完成，另外一个线程主动打断计时器
+            }
+            catch (const exception& e){}
         }
         co_return;
     }
@@ -75,7 +84,7 @@ namespace myredis
                 clk.expires_after(getDurationTime());//间隔一段时间保存磁盘
                 co_await clk.async_wait(asio::use_awaitable);//睡觉,等待唤醒
                 assert((fmt::print("start RDBSave\n"), 1));
-                co_await saveDBDetail(clk,ioc);//保存数据库
+                co_await saveDBDetail(ioc);//保存数据库
                 assert((fmt::print("end RDBSave\n"), 1));
             }
         }, detached);
