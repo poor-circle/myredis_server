@@ -34,6 +34,7 @@ namespace myredis
         asio::post(getThreadPool(), [&] //将写磁盘的工作交给线程池中另外一个线程执行
         {
             FILE* fp = nullptr;
+            this_thread::sleep_for(30s);
             try
             {
                 fp = fopen("backup2.mrdb", "wb");

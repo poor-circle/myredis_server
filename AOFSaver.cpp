@@ -86,7 +86,7 @@ namespace myredis
         for (size_t i = 0; i < data_base_count; ++i)
         {
             fclose(AOFSaver::getFile(i));
-            auto name = ("aof/" + to_string(i) + ".maof2");
+            auto name = ("aof/" + to_string(i) + "_2.maof");
             if ((AOFSaver::getFile(i) = fopen(name.c_str(), "wb"))==nullptr)
                 throw exception("AOFSaver failed when create new AOF file");
         }
@@ -97,7 +97,7 @@ namespace myredis
         for (size_t i = 0; i < data_base_count; ++i)
         {
             fclose(AOFSaver::getFile(i));
-            auto name = ("aof/" + to_string(i) + ".maof"),name2=name+"2";
+            auto name = ("aof/" + to_string(i) + ".maof"),name2= ("aof/" + to_string(i) + "_2.maof");
             remove(name.c_str());
             if (rename(name2.c_str(), name.c_str()))
                 throw exception("AOFSaver failed when rename AOF file");
