@@ -20,8 +20,8 @@ namespace myredis::visitor
         ret.append(sizeof(*sz), '\0');
         memcpy(ret.data() + pos, sz, sizeof(*sz));
     }
+    
     //格式： 类型 value----string
-    //格式：
     template<typename T>
         void serialize(const object& obj, string& ret)
     {
@@ -112,4 +112,6 @@ namespace myredis::visitor
         }
         return ret;
     }
+
+
 }

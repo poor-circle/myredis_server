@@ -222,6 +222,9 @@
     <ClInclude Include="threadPool.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AOFSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -270,6 +273,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="threadPool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AOFSaver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
