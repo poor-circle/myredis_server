@@ -6,6 +6,8 @@
 
 //#define QPSTEST
 
+constexpr bool ENABLE_AOF = true;
+
 #define FFLUSH_EACH_COMMAND
 
 constexpr bool allKeyLRU = 1;
@@ -26,4 +28,8 @@ template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;
 namespace myredis
 {
 	constexpr int defaultPort = 6379;//默认端口，TODO:改为从配置文件中读取
+	constexpr int defaultInnerPort = 6380;//默认内部通信端口
+	constexpr bool enable_backup_server=true;
+	constexpr int son_server_expire_seconds = 20;
+	constexpr int son_server_speed_lower_rate = 10;//子服务器的性能下限
 }

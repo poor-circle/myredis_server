@@ -6,6 +6,7 @@ namespace myredis
 	{
 	private:
 		static asio::awaitable<void> saveDBDetail(asio::io_context& ioc);
+		static asio::awaitable<void> saveDBDetailMain(asio::io_context& ioc,string&data);
 		static std::chrono::seconds& getDurationTime();
 	public:
 		static void saveDB(asio::io_context& ioc);

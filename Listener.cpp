@@ -15,7 +15,7 @@ namespace myredis
             "*{1: ^{2}}*\n"
             "*{0: ^{2}}*\n"
             "*{0:*^{2}}*\n\n",
-            "", "myredis start listening at port:"+std::to_string(myredis::defaultPort), 75
+            "", "myredis start listening at port:"+std::to_string(port), 75
         );
         for (;;)
         {

@@ -3,6 +3,8 @@
 #include "Func/funcManager.h"
 #include "Func/pubsubFunc.h"
 #include "AOFSaver.h"
+#include "multiServer/SonServer.h"
+#include "code.h"
 namespace myredis::func
 {
 #include"namespace.i"
@@ -42,12 +44,7 @@ namespace myredis::func
         //函数存在，运行该函数，并将结果返回给客户端
         else
         {
-            if (iter->second.type == func::funcType::write)
-            {
-                AOFSaver::aofwriter(ctx.args, AOFSaver::getFile(ctx.session.getDataBaseID()));
-            }
-            auto reply = iter->second.syncptr(std::move(ctx));//运行对应的函数
-
+            auto reply=co_await funcRunner(iter->second, std::move(ctx));//运行对应的函数
 
             if (self.isBlocked()) //如果设置为阻塞态，则等待对应事件发生，调用用户提供的回调函数并返回结果
             {
@@ -58,7 +55,7 @@ namespace myredis::func
             auto& que = self.wake_up_queue;
             while(!que.empty())
             {
-                BaseSession::wake_up(que.front().first, que.front().second);
+                co_await BaseSession::wake_up(que.front().first, que.front().second);
                 que.pop();
             }
 
@@ -79,5 +76,21 @@ namespace myredis::func
 
         }
 	}
+    asio::awaitable<optional<string>> funcRunner(func::funcInfo foo,context&&ctx)
+    {
+        static auto clk = steady_clock();
+        auto args = ctx.args;
+        auto &session = ctx.session;
+        auto tp = clk.now();
+        auto ret=foo.syncptr(std::move(ctx));//运行对应的函数 
+        auto duration = clk.now() - tp;//计算自己的执行时间
+        if ((foo.type == func::funcType::write|| foo.type == func::funcType::blocked)&&code::isFuncSucceed(ret))
+        {
+            AOFSaver::aofwriter(args, AOFSaver::getFile(session.getDataBaseID()));
+            if (SonServer::getSonServer().getCas()!=SonServer::serverCas::notConnect)
+                co_await SonServer::getSonServer().send(args,duration_cast<seconds>(duration));
+        }
+        co_return ret;
+    }
 }
 

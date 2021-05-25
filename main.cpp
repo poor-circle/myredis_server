@@ -6,6 +6,8 @@
 #include "RDBSaver.h"
 #include "AOFSaver.h"
 #include "threadPool.h"
+#include "multiServer/SonServer.h"
+
 #if defined(_MSC_VER)
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
@@ -31,6 +33,11 @@ namespace myredis
             AOFSaver::aofload();//加载AOF文件
             co_spawn(io_context, listener.Run(), detached);//开始监听端口
             co_spawn(io_context, objectMap::expiredKeyCollecting, detached);//运行垃圾回收
+            if (enable_backup_server)
+            {
+                SonServer::rawSonServer(io_context,myredis::defaultInnerPort);
+                SonServer::getSonServer().run();//开始监听并准备与子服务器同步
+            }
             RDBSaver::saveDB(io_context);//定时保存RDB文件
             io_context.run();
             getThreadPool().join();
@@ -41,13 +48,19 @@ namespace myredis
         }
     }
 }
-int main()
+int main(int argc,char **argv)
 {
 
 #if defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     //MSVC内存泄漏侦测，按ctrl+c关闭程序(而不是直接关闭窗口)，如果有内存泄漏，则输出窗口会做提示
 #endif
+    if (argc == 3)
+    {
+        std::string ip = argv[1],port=argv[2];
+
+    }
     myredis::run();
+    
     return 0;
 }

@@ -16,3 +16,4 @@
 #include "sparsepp/spp.h"
 #include "stdc++.h"
 #include "util/pattern.hpp"
+#include "util/SPSCQueue.h"

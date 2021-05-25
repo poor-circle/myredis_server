@@ -21,50 +21,44 @@ namespace myredis
         getDurationTime() = time_duration;
     }
 
-    asio::awaitable<void> RDBSaver::saveDBDetail(asio::io_context& ioc)
+    asio::awaitable<void> RDBSaver::saveDBDetailMain(asio::io_context& ioc,string&data)
     {
-        string tmp;
-     
-        AOFSaver::saveToTempFile();
-        //TODO:fork on linux
-        tmp=visitor::MultiDBSerialize();//完成数据库序列化
-
-        bool waiting =true;//判断是否要等待
+        bool waiting = true;//判断是否要等待
         asio::steady_timer clk(ioc);
         asio::post(getThreadPool(), [&] //将写磁盘的工作交给线程池中另外一个线程执行
-        {
-            FILE* fp = nullptr;
-            this_thread::sleep_for(30s);
-            try
             {
-                fp = fopen("backup2.mrdb", "wb");
-                if (fp == nullptr)
-                    throw exception("RDBSaver failed when open file");
-                if (fwrite(tmp.data(), sizeof(char), tmp.size(), fp) != tmp.size())
-                    throw exception("RDBSaver failed when writing RDB file to disk");
-            }
-            catch (const exception& e)
-            {
-                if (fp != NULL)
-                    fclose(fp);
-                printlog(e);
-                waiting = false;
-                return;
-            };
-            fclose(fp);
-            try
-            {
-                remove("backup.mrdb");//allow failed
-                if (rename("backup2.mrdb", "backup.mrdb"))
-                    throw exception("RDBSaver failed when rename RDB file");
-            }
-            catch (const exception& e)
-            {
-                printlog(e);
-            };
-            ioc.post([&] {waiting = false; clk.cancel(); });
-            //ioc.post：将这个任务交给ioc所在的主线程执行，保证了线程安全
-        });
+                FILE* fp = nullptr;
+                this_thread::sleep_for(30s);
+                try
+                {
+                    fp = fopen("backup2.mrdb", "wb");
+                    if (fp == nullptr)
+                        throw exception("RDBSaver failed when open file");
+                    if (fwrite(data.data(), sizeof(char), data.size(), fp) != data.size())
+                        throw exception("RDBSaver failed when writing RDB file to disk");
+                }
+                catch (const exception& e)
+                {
+                    if (fp != NULL)
+                        fclose(fp);
+                    printlog(e);
+                    waiting = false;
+                    return;
+                };
+                fclose(fp);
+                try
+                {
+                    remove("backup.mrdb");//allow failed
+                    if (rename("backup2.mrdb", "backup.mrdb"))
+                        throw exception("RDBSaver failed when rename RDB file");
+                }
+                catch (const exception& e)
+                {
+                    printlog(e);
+                };
+                ioc.post([&] {waiting = false; clk.cancel(); });
+                //ioc.post：将这个任务交给ioc所在的主线程执行，保证了线程安全
+            });
         if (waiting)
         {
             clk.expires_after(steady_clock::duration::max());//等到猴年马月
@@ -73,8 +67,21 @@ namespace myredis
                 co_await clk.async_wait(asio::use_awaitable);
                 //一直等到文件io完成，另外一个线程主动打断计时器
             }
-            catch (const exception& e){}
+            catch (const exception& e) {}
         }
+        co_return;
+    }
+
+    asio::awaitable<void> RDBSaver::saveDBDetail(asio::io_context& ioc)
+    {
+        string tmp;
+     
+        AOFSaver::saveToTempFile();
+        //TODO:fork on linux
+        tmp=visitor::MultiDBSerialize();//完成数据库序列化
+
+        saveDBDetailMain(ioc, tmp);
+        
         AOFSaver::moveTempFile();
         co_return;
     }
@@ -84,7 +91,7 @@ namespace myredis
         asio::co_spawn(ioc, [&ioc] ()->asio::awaitable<void>
         {
             asio::steady_timer clk(ioc);
-            clk.expires_after(1s);//间隔一段时间保存磁盘
+            clk.expires_after(getDurationTime());//间隔一段时间保存磁盘
             while (true)
             {
                 co_await clk.async_wait(asio::use_awaitable);//睡觉,等待唤醒

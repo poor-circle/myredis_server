@@ -13,7 +13,8 @@
 #include "../ObjectVisitor/ListVisitor/ltrim.h"
 #include "../ObjectVisitor/ListVisitor/lrem.h"
 #include "../ObjectVisitor/ListVisitor/linsert.h"
-
+#include "../AOFSaver.h"
+#include "../funcController.h"
 
 namespace myredis::func {
 #include"../namespace.i"
@@ -718,6 +719,34 @@ namespace myredis::func {
 	}
 
 	/*
+	* blpop helper (inner function)
+	* @author:lizezheng
+	* date:2021/4/27
+	*/
+	std::optional<string> blpopHelper(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		auto iter = objectMap.find(args[1]);
+		optional<string> ret = nullopt;//返回空，代表失败，监视器将继续监视
+		//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
+		//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
+		if (iter != objectMap.cend())
+		{
+			auto ans = visit([](auto& e)
+				{
+					return visitor::lpop(e);
+				}, iter->second);
+			if (ans.first == code::status::success)
+			{
+				//返回key的名字和key的值
+				ret = code::getMultiReply(args[1], ans.second);
+			}
+		}
+		return ret;
+	}
+
+	/*
 	* blpop key [key...] timeout 
 	* block and wait if list isnt empty
 	* @author:lizezheng
@@ -761,25 +790,13 @@ namespace myredis::func {
 			auto watch_list = std::make_shared<watcher>();
 			//添加监视器，用于在合适的情况下唤醒会话
 			objectMap::addWatches(args.begin() + 1, args.end() - 1,ctx.session.getDataBaseID(),ctx.session.getSessionID(), watch_list,
-				[&objectMap](const string& keyName)
+				[&ctx](const string& keyName)->asio::awaitable<optional<string>>
 				{
-					auto iter = objectMap.find(keyName);
-					optional<string> ret=nullopt;//返回空，代表失败，监视器将继续监视
-					//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
-					//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
-					if (iter != objectMap.cend())
-					{
-						auto ans = visit([](auto& e)
-						{
-							return visitor::lpop(e);
-						}, iter->second);
-						if (ans.first == code::status::success)
-						{
-							//返回key的名字和key的值
-							ret = code::getMultiReply(keyName, ans.second);
-						}
-					}
-					return ret;
+					co_return co_await funcRunner
+					(
+						func::funcInfo(blpopHelper,func::funcType::write),
+						context(vector<string>({ "lpop", keyName }),ctx.session)
+					);
 				});
 			//将会话设为阻塞态,并设置阻塞时间
 			ctx.session.setBlocked(code::multi_nil,seconds(sec), watch_list);
@@ -790,6 +807,34 @@ namespace myredis::func {
 			printlog(e);
 			return nullopt;//返回空值
 		}
+	}
+
+	/*
+	* brpop helper (inner function)
+	* @author:lizezheng
+	* date:2021/4/27
+	*/
+	std::optional<string> brpopHelper(context&& ctx) noexcept
+	{
+		auto&& args = ctx.args;
+		auto&& objectMap = ctx.session.getObjectMap();
+		auto iter = objectMap.find(args[1]);
+		optional<string> ret = nullopt;//返回空，代表失败，监视器将继续监视
+		//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
+		//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
+		if (iter != objectMap.cend())
+		{
+			auto ans = visit([](auto& e)
+				{
+					return visitor::rpop(e);
+				}, iter->second);
+			if (ans.first == code::status::success)
+			{
+				//返回key的名字和key的值
+				ret = code::getMultiReply(args[1], ans.second);
+			}
+		}
+		return ret;
 	}
 
 	/*
@@ -835,27 +880,15 @@ namespace myredis::func {
 			//否则，准备进入阻塞态
 			auto watch_list = std::make_shared<watcher>();
 			//添加监视器，用于在合适的情况下唤醒会话
-			objectMap::addWatches(args.begin() + 1, args.end() - 1, ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
-				[&objectMap](const string& keyName)
-			{
-				auto iter = objectMap.find(keyName);
-				optional<string> ret = nullopt;//返回空，代表失败，监视器将继续监视
-				//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
-				//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
-				if (iter != objectMap.cend())
+			objectMap::addWatches(args.begin() + 1, args.end() - 1, ctx.session.getDataBaseID(), 
+				ctx.session.getSessionID(), watch_list,[&ctx](const string& keyName)->asio::awaitable<optional<string>>
 				{
-					auto ans = visit([](auto& e)
-					{
-						return visitor::rpop(e);
-					}, iter->second);
-					if (ans.first == code::status::success)
-					{
-						//返回key的名字和key的值
-						ret = code::getMultiReply(keyName,ans.second,1);
-					}
-				}
-				return ret;
-			});
+					co_return co_await funcRunner
+					(
+						func::funcInfo(brpopHelper, func::funcType::write),
+						context(vector<string>({ "rpop", keyName }), ctx.session)
+					);
+				});
 			//将会话设为阻塞态,并设置阻塞时间
 			ctx.session.setBlocked(code::multi_nil, seconds(sec), watch_list);
 			return nullopt;
@@ -866,6 +899,7 @@ namespace myredis::func {
 			return nullopt;//返回空值
 		}
 	}
+
 
 	/*
 	* brpoplpush source destination timeout 
@@ -964,35 +998,14 @@ namespace myredis::func {
 			//否则，准备进入阻塞态
 			auto watch_list = std::make_shared<watcher>();
 			//添加监视器，用于在合适的情况下唤醒会话
-			objectMap::addWatches(args.begin() + 1, args.begin() + 2 , ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
-				[&objectMap,&ctx,&args](const string& keyName)
+			objectMap::addWatches(args.begin() + 1, args.begin() + 2 , ctx.session.getDataBaseID(),
+				ctx.session.getSessionID(), watch_list,[&ctx](const string& keyName)->asio::awaitable<optional<string>>
 			{
-				auto iter = objectMap.find(keyName);
-
-				optional<string> ret = nullopt;//返回空，代表失败，监视器将继续监视
-				//返回非空值，代表监视成功，该线程的所有监视器将被删除，并将字符串返回给客户端，退出阻塞状态
-				//如果队列为空，返回空，继续监视。如果队列不为空，弹出队列的队首，停止阻塞，将其返回给客户端
-				if (iter != objectMap.cend())
-				{
-					auto popRet = visit([](auto& e)
-					{
-						return visitor::rpop(e);
-					}, iter->second);
-					if (popRet.first == code::status::success)
-					{
-						//返回key的名字和key的值
-						std::vector<string> pushContent;
-						pushContent.emplace_back(popRet.second);
-						auto destnIter = objectMap.find(args[2]);
-						auto pushRet = visit([&pushContent, &ctx, &args](auto& e)
-						{
-							return visitor::lpush(e, pushContent, args[2], ctx.session);
-						}, destnIter->second);
-						ret = code::getBulkReply(popRet.second);
-					}
-				}
-
-				return ret;
+				co_return co_await funcRunner
+				(
+					getfuncManager().find("rpoplpush")->second,
+					context(vector<string>({ "rpoplpush", keyName,ctx.args[2]}), ctx.session)
+				);
 			});
 			//将会话设为阻塞态,并设置阻塞时间
 			ctx.session.setBlocked(code::multi_nil, seconds(sec), watch_list);

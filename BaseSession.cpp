@@ -224,7 +224,7 @@ do{\
         this->logined = logined;
     }
 
-    awaitable<string> BaseSession::wait()
+    awaitable<optional<string>> BaseSession::wait()
     {
         try
         {
@@ -237,25 +237,25 @@ do{\
         }
         catch (const exception& e)//抛出异常,代表阻塞操作被事件中断
         {
-
+            
         }
         watch_list = nullptr;
         blocked = false;
         co_return std::move(result);
     }
 
-    void BaseSession::wake_up(const string& sv, int64_t dataBaseID)
+    asio::awaitable<void> BaseSession::wake_up(const string& sv, int64_t dataBaseID)
     {
         static auto& set = BaseSession::getSessionMap();
         auto& watchMap = objectMap::getWatchMap(dataBaseID);
         auto iter = watchMap.find(sv);
         if (iter == watchMap.end())
-            return;
+            co_return;
         auto& queue = iter->second;
         if (queue.empty())
         {
             watchMap.erase(iter);
-            return;
+            co_return;
         }
         while (true)
         {
@@ -263,16 +263,20 @@ do{\
             if (iter2 != set.end())//如果存在
             {
                 auto ptr = iter2->second;
-                auto ret = (*queue.front().op)(sv);
-                if (ret.has_value())
+                //TODO:当连接断开时，无法侦测
+                if (ptr->socket.is_open())
                 {
-                    ptr->wake_up(std::move(ret.value()));
-                    for (auto&& e : *queue.front().nodes)//删除监视表上的全部节点
+                    auto ret = co_await(*queue.front().op)(sv);
+                    if (code::isFuncSucceed(ret))
                     {
-                        e.first->erase(e.second);
+                        ptr->wake_up(std::move(ret));
+                        for (auto&& e : *queue.front().nodes)//删除监视表上的全部节点
+                        {
+                            e.first->erase(e.second);
+                        }
                     }
+                    else break;
                 }
-                else break;
             }
             else
             {
@@ -285,6 +289,7 @@ do{\
                 break;
             }
         }
+        co_return;
     }
 
     int64_t BaseSession::getSessionID() const  noexcept
@@ -349,7 +354,7 @@ do{\
         return subPatterns;
     }
 
-    void BaseSession::wake_up(string&& result)
+    void BaseSession::wake_up(optional<string>&& result)
     {
         this->result = std::move(result);
         clock.cancel_one();

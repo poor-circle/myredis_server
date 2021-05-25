@@ -129,12 +129,12 @@ namespace myredis
 		int64_t sessionID;//线程ID
 		watcherPtr nodes;
 		//记录其他key上的监视器
-		std::shared_ptr<std::function<std::optional<string>(const string&)>> op;
+		std::shared_ptr<std::function<asio::awaitable<std::optional<string>>(const string&)>> op;
 		//用户自定义的操作，返回值：bool：是否让队列中的下一个监视器继续执行，string:准备返回给客户端的string
 		//参数：const string&:被监视的object的key名
 		watchInfo(int64_t sessionID,
 			watcherPtr nodes,
-			std::shared_ptr<std::function<std::optional<string>(const string&)>> op) :
+			std::shared_ptr<std::function<asio::awaitable<std::optional<string>>(const string&)>> op) :
 			sessionID(sessionID), nodes(nodes), op(op) {}
 	};
 
@@ -175,10 +175,10 @@ namespace myredis
 		size_t size() const;
 		template<typename Iter>
 		static void addWatches(Iter begin, Iter end, int64_t dataBaseID, int64_t sessionID,watcherPtr& tab,
-							   std::function<std::optional<string>(const string&)>&& op)
+							   std::function<asio::awaitable<std::optional<string>>(const string&)>&& op)
 		{
 			auto &map = objectMap::getWatchMap(dataBaseID);
-			auto func = std::make_shared<std::function<std::optional<string>(const string&)>>(std::move(op));
+			auto func = std::make_shared<std::function<asio::awaitable<std::optional<string>>(const string&)>>(std::move(op));
 			for (; begin != end; begin = std::next(begin))//遍历所有的key
 			{
 				auto iter = map.find(*begin);
@@ -189,7 +189,7 @@ namespace myredis
 				if (tab->find(&iter->second) != tab->end())//如果已经存在相同的key，直接跳过
 					continue;
 				iter->second.emplace_back(watchInfo(sessionID, tab, func));//向这个key的监视队列的队尾添加一个监视器
-				tab->emplace(&iter->second, std::prev(iter->second.end()));//向
+				tab->emplace(&iter->second, std::prev(iter->second.end()));
 			}
 		}
 	};

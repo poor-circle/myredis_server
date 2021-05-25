@@ -189,6 +189,8 @@
     <ClInclude Include="Func\setFunc.h" />
     <ClInclude Include="Func\stringFunc.h" />
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="multiServer\FatherServer.h" />
+    <ClInclude Include="multiServer\SonServer.h" />
     <ClInclude Include="namespace.i" />
     <ClInclude Include="object.hpp" />
     <ClInclude Include="ObjectVisitor\keyVisitor\object_encode.h" />
@@ -225,6 +227,7 @@
     <ClInclude Include="util\hash_set.hpp" />
     <ClInclude Include="util\key_ordered_map.hpp" />
     <ClInclude Include="util\pattern.hpp" />
+    <ClInclude Include="util\SPSCQueue.h" />
     <ClInclude Include="util\string.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -241,6 +244,8 @@
     <ClCompile Include="Func\stringFunc.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="multiServer\FatherServer.cpp" />
+    <ClCompile Include="multiServer\SonServer.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="RDBSaver.cpp" />
     <ClCompile Include="stdafx.cpp">

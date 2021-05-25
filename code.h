@@ -48,6 +48,12 @@ namespace myredis::code
 	const string server_exception_error = "-server internal exception.\r\n";
 	const string illegal_command_when_subscribe = "-ERR only (P)SUBSCRIBE / (P)UNSUBSCRIBE / PING / QUIT allowed in this context\r\n";
 
+
+	inline bool isFuncSucceed(std::optional<string>& result)
+	{
+		return result.has_value() && result.value()[0] != '-';
+	}
+
 	template<typename T>
 	inline void getReplyTo(const T& str, std::back_insert_iterator<string> s)
 	{

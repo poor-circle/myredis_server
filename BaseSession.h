@@ -54,8 +54,8 @@ namespace myredis
         hash_set<Pattern>& getsubPatterns() noexcept;
         bool isBlocked() const noexcept;
         void setBlocked(string time_out_reply, std::chrono::steady_clock::duration time,watcherPtr& watch_list);
-        asio::awaitable<string> wait();
-        static void wake_up(const string& sv, int64_t dataBaseID);
+        asio::awaitable<std::optional<string>> wait();
+        static asio::awaitable<void> wake_up(const string& sv, int64_t dataBaseID);
         std::queue<std::pair<string, int64_t>> wake_up_queue;
         int64_t getSessionID() const noexcept;
         //创建一个新的协程来发送一条消息
@@ -74,8 +74,8 @@ namespace myredis
         hash_set<string> subChannels;
         hash_set<Pattern> subPatterns;
         static std::atomic<int64_t> IDNow;
-        void wake_up(string&& result);
-        string result;
+        void wake_up(std::optional<string>&& result);
+        std::optional<string> result;
         asio::io_context& ioc;
         asio::ip::tcp::socket socket;
         asio::steady_timer clock;

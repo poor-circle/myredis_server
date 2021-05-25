@@ -6,7 +6,7 @@ namespace myredis
 {
 #include"namespace.i"
     // 将command编码并追加到dest上
-    void AOFSaver::aofencode(vector<string>& command,FILE* dest)  //批量回复
+    void AOFSaver::aofencode(const vector<string>& command,FILE* dest)  //批量回复
     {
         fmt::print(dest,"*{}\r\n",command.size());
         for (auto &str : command) {
@@ -105,19 +105,22 @@ namespace myredis
         }
     }
     /* command代表已经处理过的写命令,fp是存入的文件指针 */
-    void AOFSaver::aofwriter(vector<string>& command, FILE* fp)
+    void AOFSaver::aofwriter(const vector<string>& command, FILE* fp)
     {
-        try
+        if (ENABLE_AOF)
         {
-            if (fp == nullptr)
-                throw exception("AOF failed when open file");
-            aofencode(command,fp);
+            try
+            {
+                if (fp == nullptr)
+                    throw exception("AOF failed when open file");
+                aofencode(command, fp);
+            }
+            catch (const exception& e)
+            {
+                printlog(e);
+                return;
+            };
         }
-        catch (const exception& e)
-        {
-            printlog(e);
-            return;
-        };
     }
 
     void AOFSaver::aofload() noexcept
