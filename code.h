@@ -46,6 +46,8 @@ namespace myredis::code
 	const string args_illegal_error = "-Illegal args.\r\n";
 	const string iterator_illegal_error = "-Illegal iterator.\r\n";
 	const string server_exception_error = "-server internal exception.\r\n";
+	const string no_slave_error = "-there is no slave server.\r\n";
+	const string no_master_error = "-there is no master server.\r\n";
 	const string illegal_command_when_subscribe = "-ERR only (P)SUBSCRIBE / (P)UNSUBSCRIBE / PING / QUIT allowed in this context\r\n";
 
 
@@ -171,6 +173,31 @@ namespace myredis::code
 			back_inserter(s),
 			FMT_COMPILE("-{}\r\n"),
 			getMessage(errorInfo)
+		);
+		return s;
+	}
+
+	inline string getErrorReply(std::string_view sv) //´íÎó»Ø¸´
+	{
+		string s;
+		fmt::format_to
+		(
+			back_inserter(s),
+			FMT_COMPILE("-{}\r\n"),
+			sv
+		);
+		return s;
+	}
+
+	inline string endpoint_toString(const asio::ip::tcp::endpoint &ep) //´íÎó»Ø¸´
+	{
+		string s;
+		fmt::format_to
+		(
+			back_inserter(s),
+			FMT_COMPILE("{}:{}"),
+			ep.address().to_string(),
+			ep.port()
 		);
 		return s;
 	}

@@ -86,7 +86,8 @@ do{\
 
     BaseSession::BaseSession(asio::io_context& ioc, tcp::socket&& socket) :
         ioc(ioc), socket(move(socket)), dataBaseID(0), closed(false),
-        logined(false), blocked(false), clock(ioc),watch_list(nullptr)
+        logined(false), blocked(false), clock(ioc),watch_list(nullptr),
+        isInnerSession(false)
     {
         if (strlen(myredis_password) == 0) logined = true;
         sessionID = BaseSession::IDNow++;
@@ -314,6 +315,16 @@ do{\
     int64_t BaseSession::getSubscribeCount() const noexcept
     {
         return subChannels.size()+subPatterns.size();
+    }
+
+    bool BaseSession::getIsInnerSession()
+    {
+        return isInnerSession;
+    }
+
+    void BaseSession::setIsInnerSession(bool flag)
+    {
+        isInnerSession = flag;
     }
 
     bool BaseSession::isBlocked() const noexcept

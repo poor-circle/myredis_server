@@ -2,6 +2,8 @@
 #include "connectFunc.h"
 #include "../object.hpp"
 #include "../code.h"
+#include "../multiServer/SonServer.h"
+#include "../multiServer/FatherServer.h"
 namespace myredis::func
 {
 #include"../namespace.i"
@@ -94,5 +96,31 @@ namespace myredis::func
 	{
 		ctx.session.setClosed();
 		return "";
+	}
+	//slave ( reply the ip and port of slave server)
+	//args：none
+	//author: lizezheng
+	//date: 2021/05/26
+	std::optional<string> slave(context&& ctx) noexcept
+	{
+		auto server = SonServer::getSonServer();
+		if (server != nullptr && server->getCas() == SonServer::serverCas::sync)//确实存在子服务器
+		{
+			return code::getSingleReply(code::endpoint_toString(server->getAddress()));
+		}
+		else return code::no_slave_error;
+	}
+	//master ( reply the ip and port of slave server)
+	//args：none
+	//author: lizezheng
+	//date: 2021/05/26
+	std::optional<string> master(context&& ctx) noexcept
+	{
+		auto server = FatherServer::getFatherServer();
+		if (server != nullptr && server->getCas() == FatherServer::serverCas::sync)//确实存在主服务器
+		{
+			return code::getSingleReply(code::endpoint_toString(server->getAddress()));
+		}
+		else return code::no_master_error;
 	}
 }

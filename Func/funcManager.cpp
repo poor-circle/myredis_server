@@ -82,6 +82,8 @@ namespace myredis
 			connect(echo),
 			connect(auth),
 			connect(select),
+			connect(slave),
+			connect(master),
 
 			//¼àÌı-×èÈûº¯Êı
 			blocked(blpop),

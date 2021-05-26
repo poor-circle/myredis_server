@@ -4,6 +4,7 @@
 #include "Func/pubsubFunc.h"
 #include "AOFSaver.h"
 #include "multiServer/SonServer.h"
+#include "multiServer/FatherServer.h"
 #include "code.h"
 namespace myredis::func
 {
@@ -81,14 +82,26 @@ namespace myredis::func
         static auto clk = steady_clock();
         auto args = ctx.args;
         auto &session = ctx.session;
-        auto tp = clk.now();
-        auto ret=foo.syncptr(std::move(ctx));//运行对应的函数 
-        auto duration = clk.now() - tp;//计算自己的执行时间
-        if ((foo.type == func::funcType::write|| foo.type == func::funcType::blocked)&&code::isFuncSucceed(ret))
+        std::optional<string> ret;
+        auto server = FatherServer::getFatherServer();
+        if ((foo.type !=func::funcType::connect&& foo.type != func::funcType::read)&&
+            server != nullptr && server->getCas() != FatherServer::serverCas::no_father&&
+            session.getIsInnerSession()==false)
         {
-            AOFSaver::aofwriter(args, AOFSaver::getFile(session.getDataBaseID()));
-            if (SonServer::getSonServer().getCas()!=SonServer::serverCas::notConnect)
-                co_await SonServer::getSonServer().send(args,duration_cast<seconds>(duration));
+            ret = code::getErrorReply(code::endpoint_toString(server->getAddress()));//重定向错误，要求客户端去访问主服务器
+        }
+        else
+        {
+            auto tp = clk.now();
+            ret = foo.syncptr(std::move(ctx));//运行对应的函数 
+            auto duration = clk.now() - tp;//计算自己的执行时间
+            if ((foo.type == func::funcType::write || foo.type == func::funcType::blocked) && code::isFuncSucceed(ret))
+            {
+                AOFSaver::aofwriter(args, AOFSaver::getFile(session.getDataBaseID()));
+                auto server = SonServer::getSonServer();
+                if (server!=nullptr&&server->getCas() != SonServer::serverCas::notConnect)
+                    co_await server->send(args, duration_cast<seconds>(duration));
+            }
         }
         co_return ret;
     }

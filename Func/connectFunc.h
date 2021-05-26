@@ -17,6 +17,10 @@ namespace myredis::func
 	std::optional<string> echo(context&& ctx) noexcept;
 	//	quit		created by lizezheng	date:2021/4/19
 	std::optional<string> quit(context&& ctx) noexcept;
+	//	subserver   created by lizezheng	date:2021/5/26
+	std::optional<string> slave(context&& ctx) noexcept;
+	//	subserver   created by lizezheng	date:2021/5/26
+	std::optional<string> master(context&& ctx) noexcept;
 }
 
 

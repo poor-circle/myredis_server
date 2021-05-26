@@ -21,14 +21,13 @@ namespace myredis
         getDurationTime() = time_duration;
     }
 
-    asio::awaitable<void> RDBSaver::saveDBDetailMain(asio::io_context& ioc,string&data)
+    asio::awaitable<void> RDBSaver::saveDBToDesk(asio::io_context& ioc,string&data)
     {
         bool waiting = true;//判断是否要等待
         asio::steady_timer clk(ioc);
         asio::post(getThreadPool(), [&] //将写磁盘的工作交给线程池中另外一个线程执行
             {
                 FILE* fp = nullptr;
-                this_thread::sleep_for(30s);
                 try
                 {
                     fp = fopen("backup2.mrdb", "wb");
@@ -80,7 +79,7 @@ namespace myredis
         //TODO:fork on linux
         tmp=visitor::MultiDBSerialize();//完成数据库序列化
 
-        saveDBDetailMain(ioc, tmp);
+        saveDBToDesk(ioc, tmp);
         
         AOFSaver::moveTempFile();
         co_return;

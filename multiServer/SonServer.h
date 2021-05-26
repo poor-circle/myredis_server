@@ -19,14 +19,15 @@ namespace myredis
 		std::unique_ptr<asio::ip::tcp::socket> soc;
 		serverCas cas;
 		asio::steady_timer clk,timeout_clk;
-
 		static std::unique_ptr<SonServer>& _getSonServer();
+		uint16_t sonServerNormalPort;
 	public:
-		SonServer(asio::io_context& ioc, uint16_t port);
 		asio::awaitable<void> run();
 		asio::awaitable<void> send(std::vector<string>& cmd,std::chrono::seconds);
 		serverCas getCas();
-		static SonServer& getSonServer();
+		static SonServer* getSonServer();
 		static void rawSonServer(asio::io_context& ioc, uint16_t port);
+		SonServer(asio::io_context& ioc, uint16_t port);
+		asio::ip::tcp::endpoint getAddress();
 	};
 }

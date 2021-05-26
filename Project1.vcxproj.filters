@@ -240,6 +240,9 @@
     <ClInclude Include="multiServer\FatherServer.h">
       <Filter>头文件\multiServer</Filter>
     </ClInclude>
+    <ClInclude Include="port.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -298,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="multiServer\FatherServer.cpp">
       <Filter>源文件\multiServer</Filter>
+    </ClCompile>
+    <ClCompile Include="port.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

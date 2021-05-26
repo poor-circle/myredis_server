@@ -218,6 +218,7 @@
     <ClInclude Include="ObjectVisitor\stringVisitor\get.h" />
     <ClInclude Include="ObjectVisitor\stringVisitor\incr.h" />
     <ClInclude Include="ObjectVisitor\unserialize.h" />
+    <ClInclude Include="port.h" />
     <ClInclude Include="RDBSaver.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdc++.h" />
@@ -247,6 +248,7 @@
     <ClCompile Include="multiServer\FatherServer.cpp" />
     <ClCompile Include="multiServer\SonServer.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="port.cpp" />
     <ClCompile Include="RDBSaver.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

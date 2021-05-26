@@ -27,9 +27,9 @@ template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;
 
 namespace myredis
 {
-	constexpr int defaultPort = 6379;//默认端口，TODO:改为从配置文件中读取
-	constexpr int defaultInnerPort = 6380;//默认内部通信端口
+
 	constexpr bool enable_backup_server=true;
-	constexpr int son_server_expire_seconds = 20;
+	constexpr int son_server_expire_seconds = 10;//父子服务器最长通讯延时
 	constexpr int son_server_speed_lower_rate = 10;//子服务器的性能下限
+	constexpr int max_un_sync_limit = 1000;
 }

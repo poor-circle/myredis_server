@@ -62,12 +62,15 @@ namespace myredis
         void addNewCoroToSendMessage(string&& msg);
         bool isSubscribed() const noexcept;
         int64_t getSubscribeCount() const noexcept;
+        bool getIsInnerSession();
+        void setIsInnerSession(bool);
     private:
         ~BaseSession();
         BaseSession(asio::io_context& ioc, asio::ip::tcp::socket&& socket);
         bool closed;
         bool logined;
         bool blocked;
+        bool isInnerSession;
         int64_t dataBaseID;
         int64_t sessionID;
         // 用于记录当前会话订阅了多少个频道
