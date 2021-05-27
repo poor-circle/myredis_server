@@ -54,14 +54,13 @@ namespace myredis
         co_return;
     }
 
-    asio::awaitable<void> SonServer::sendCmd(std::vector<string>&& cmd,asio::steady_timer *clk)
+    asio::awaitable<void> SonServer::sendCmd(std::vector<string>&& cmd)
     {
         if (cmdQueue.empty())
         {
             sendClk.cancel();
         }
         cmdQueue.push_back(cmd);
-        clkQueue.push_back(clk);
         co_return;
     }
 
@@ -164,7 +163,7 @@ namespace myredis
                             sendClk.expires_after(asio::steady_timer::duration::max());
                             try
                             {
-                                co_await sendClk.async_wait(asio::use_awaitable);
+                                sendClk.async_wait(asio::use_awaitable);
                             }
                             catch (const std::exception&) {}
                         }
@@ -206,7 +205,7 @@ namespace myredis
                     while (true)
                     {
                         clk.expires_after(seconds(son_server_expire_seconds));
-                        co_await clk.async_wait(asio::use_awaitable);
+                        clk.async_wait(asio::use_awaitable);
                         if (cmdQueue.empty())
                             co_await send(std::vector<string>{cmd}, 0s);//发送命令
                     }
@@ -248,7 +247,7 @@ namespace myredis
         {
             asio::steady_timer timeout_clk(ioc);
             timeout_clk.expires_after(seconds(son_server_expire_seconds) + son_server_speed_lower_rate * cmd_used_time);//设置超时时间
-            co_await sendCmd(std::move(cmd),&timeout_clk);//发送命令
+            co_await sendCmd(std::move(cmd));//发送命令
             try
             {
                 co_await timeout_clk.async_wait(asio::use_awaitable);

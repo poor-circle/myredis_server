@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AOFSaver.h"
 #include <filesystem>
-
+#include "multiServer/FatherServer.h"
 namespace myredis
 {
 #include"namespace.i"
@@ -109,17 +109,22 @@ namespace myredis
     {
         if (ENABLE_AOF)
         {
-            try
+            auto father = FatherServer::getFatherServer();
+            if (father != nullptr && father->getCas() != FatherServer::serverCas::sync)
             {
-                if (fp == nullptr)
-                    throw exception("AOF failed when open file");
-                aofencode(command, fp);
+                try
+                {
+                    if (fp == nullptr)
+                        throw exception("AOF failed when open file");
+                    aofencode(command, fp);
+                }
+                catch (const exception& e)
+                {
+                    printlog(e);
+                    return;
+                };
             }
-            catch (const exception& e)
-            {
-                printlog(e);
-                return;
-            };
+            
         }
     }
 

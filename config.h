@@ -32,4 +32,5 @@ namespace myredis
 	constexpr int son_server_expire_seconds = 10;//父子服务器最长通讯延时
 	constexpr int son_server_speed_lower_rate = 10;//子服务器的性能下限
 	constexpr int max_un_sync_limit = 1000;
+	constexpr int RDB_Duration_second = 60;
 }

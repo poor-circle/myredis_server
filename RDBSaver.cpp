@@ -5,6 +5,7 @@
 #include "ObjectVisitor/unserialize.h"
 #include "threadPool.h"
 #include "AOFSaver.h"
+#include "multiServer/FatherServer.h"
 namespace myredis
 {
 #include"namespace.i"
@@ -12,7 +13,7 @@ namespace myredis
 
     std::chrono::seconds& RDBSaver::getDurationTime()
     {
-        static seconds sec=60s;
+        static seconds sec=seconds(RDB_Duration_second);
         return sec;
     }
 
@@ -74,30 +75,50 @@ namespace myredis
     asio::awaitable<void> RDBSaver::saveDBDetail(asio::io_context& ioc)
     {
         string tmp;
-     
-        AOFSaver::saveToTempFile();
-        //TODO:fork on linux
-        tmp=visitor::MultiDBSerialize();//完成数据库序列化
+        auto father = FatherServer::getFatherServer();
+        if (father!=nullptr&&father->getCas() != FatherServer::serverCas::sync)
+        {
+            AOFSaver::saveToTempFile();
+            //TODO:fork on linux
+            tmp=visitor::MultiDBSerialize();//完成数据库序列化
 
-        saveDBToDesk(ioc, tmp);
+            co_await saveDBToDesk(ioc, tmp);
         
-        AOFSaver::moveTempFile();
+            AOFSaver::moveTempFile();
+        }
+        
         co_return;
     }
-
+    std::unique_ptr<asio::steady_timer>& getInnerClk()
+    {
+        static std::unique_ptr<asio::steady_timer> clk;
+        return clk;
+    }
+    void RDBSaver::saveNow()
+    {
+        getInnerClk()->cancel();
+    }
     void RDBSaver::saveDB(asio::io_context &ioc)
     {
+        getInnerClk() = std::make_unique<asio::steady_timer>(ioc);
         asio::co_spawn(ioc, [&ioc] ()->asio::awaitable<void>
         {
-            asio::steady_timer clk(ioc);
-            clk.expires_after(getDurationTime());//间隔一段时间保存磁盘
+            
+            asio::steady_timer& clk=*getInnerClk();
             while (true)
             {
-                co_await clk.async_wait(asio::use_awaitable);//睡觉,等待唤醒
+                clk.expires_after(getDurationTime());
+                try
+                {
+                    co_await clk.async_wait(asio::use_awaitable);//睡觉,等待唤醒
+                }
+                catch (const std::exception&)
+                {
+
+                }
                 assert((fmt::print("start RDBSave\n"), 1));
                 co_await saveDBDetail(ioc);//保存数据库
                 assert((fmt::print("end RDBSave\n"), 1));
-                clk.expires_after(getDurationTime());
             }
         }, detached);
     }

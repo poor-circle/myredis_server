@@ -29,7 +29,7 @@ namespace myredis
 		serverCas getCas();
 		static SonServer* getSonServer();
 		static void rawSonServer(asio::io_context& ioc, uint16_t port);
-		asio::awaitable<void> sendCmd(std::vector<string>&& cmd,asio::steady_timer *clk);
+		asio::awaitable<void> sendCmd(std::vector<string>&& cmd);
 		SonServer(asio::io_context& ioc, uint16_t port);
 		asio::ip::tcp::endpoint getAddress();
 	};

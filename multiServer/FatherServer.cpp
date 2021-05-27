@@ -88,16 +88,22 @@ namespace myredis
 
         try
         {
-
+            char ch[1];
             auto session = BaseSession::create(ioc, asio::ip::tcp::socket(ioc));
             session->setIsInnerSession(true);
             while (cas==serverCas::sync)
             {
                 cmd = co_await getCmd(soc);
+                auto cmd2 = cmd;
+                auto iter = getfuncManager().find(cmd[0]);
+                if (iter == getfuncManager().end())
+                {
+                    throw std::exception("shit");
+                }
                 auto info = getfuncManager().find(cmd[0])->second;
-                auto ret = co_await func::funcRunner(info, func::context(std::move(cmd), *session));
+                auto ret = co_await func::funcRunner(info, func::context(std::move(cmd2), *session));
                 if (ret.has_value())
-                    co_await asio::async_write(soc, asio::buffer(ret.value().data(), ret.value().size()), asio::use_awaitable);
+                    co_await asio::async_write(soc, asio::buffer(ch), asio::use_awaitable);
                 else
                 {
                     throw std::exception("error fatherserver command!");
@@ -106,7 +112,9 @@ namespace myredis
         }
         catch (std::exception& e)
         {
+            printlog(e);
             cas = serverCas::no_father;
+            RDBSaver::saveNow();
         }
     }
     FatherServer::serverCas FatherServer::getCas()

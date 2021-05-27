@@ -95,12 +95,12 @@ namespace myredis::func
             auto tp = clk.now();
             ret = foo.syncptr(std::move(ctx));//运行对应的函数 
             auto duration = clk.now() - tp;//计算自己的执行时间
-            if ((foo.type == func::funcType::write || foo.type == func::funcType::blocked) && code::isFuncSucceed(ret))
+            if ((foo.type != func::funcType::read && foo.type != func::funcType::connect) && code::isFuncSucceed(ret))
             {
                 AOFSaver::aofwriter(args, AOFSaver::getFile(session.getDataBaseID()));
                 auto server = SonServer::getSonServer();
                 if (server!=nullptr&&server->getCas() != SonServer::serverCas::notConnect)
-                    co_await server->send(args, duration_cast<seconds>(duration));
+                    co_await server->send(std::move(args), duration_cast<seconds>(duration));
             }
         }
         co_return ret;
