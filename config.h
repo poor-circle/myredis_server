@@ -6,7 +6,7 @@
 
 //#define QPSTEST
 
-#define FFLUSH_EACH_COMMAND
+//#define FFLUSH_EACH_COMMAND
 
 constexpr bool allKeyLRU = 1;
 
