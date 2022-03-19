@@ -6,9 +6,9 @@
 #include"ObjectVisitor/StringVisitor/get.h"
 #include"ObjectVisitor/keyVisitor/object_encode.h"
 
-//µ¥Ôª²âÊÔ¿ò¼Ü
+//å•å…ƒæµ‹è¯•æ¡†æ¶
 
-//²âÊÔ¶ÔÏóÀàĞÍÊÇ·ñÏàµÈ£¨¶ÔÏó£¬º¯Êı»òlambda£¬´ı±È½ÏÖµ£¬Ô­Ê¼²âÊÔÊı¾İ£¬ÌáÊ¾ĞÅÏ¢£©
+//æµ‹è¯•å¯¹è±¡ç±»å‹æ˜¯å¦ç›¸ç­‰ï¼ˆå¯¹è±¡ï¼Œå‡½æ•°æˆ–lambdaï¼Œå¾…æ¯”è¾ƒå€¼ï¼ŒåŸå§‹æµ‹è¯•æ•°æ®ï¼Œæç¤ºä¿¡æ¯ï¼‰
 #define TEST_OBJECT_EQAUL(elem,visitor,output,testdata,message)\
 assert(visit([&](auto&& o)\
 {\
@@ -21,7 +21,7 @@ assert(visit([&](auto&& o)\
     return false;\
 }, elem))
 
-//²âÊÔÆÕÍ¨ÀàĞÍÊÇ·ñÏàµÈ£¨´ı±È½ÏÖµ1£¬º¯Êı»òlambda£¬´ı±È½ÏÖµ2£¬Ô­Ê¼²âÊÔÊı¾İ£¬ÌáÊ¾ĞÅÏ¢£©
+//æµ‹è¯•æ™®é€šç±»å‹æ˜¯å¦ç›¸ç­‰ï¼ˆå¾…æ¯”è¾ƒå€¼1ï¼Œå‡½æ•°æˆ–lambdaï¼Œå¾…æ¯”è¾ƒå€¼2ï¼ŒåŸå§‹æµ‹è¯•æ•°æ®ï¼Œæç¤ºä¿¡æ¯ï¼‰
 #define TEST_EQAUL(elem,visitor,output,testdata,message)\
 assert([&]()\
 {\
@@ -36,7 +36,7 @@ assert([&]()\
 
 namespace myredis
 {
-    void stringToObjectTest();//²âÊÔsetº¯ÊıÄÜ·ñÕı³£¹¤×÷
+    void stringToObjectTest();//æµ‹è¯•setå‡½æ•°èƒ½å¦æ­£å¸¸å·¥ä½œ
 
 #include "namespace.i"
     void Test()
@@ -60,7 +60,7 @@ namespace myredis
     using namespace code;
     void stringToObjectTest()
     {
-        //²âÊÔÊı¾İ¼¯ºÏ
+        //æµ‹è¯•æ•°æ®é›†åˆ
         const vector<tuple<string, string>> data =
         {
             {"1","int64"},
@@ -102,15 +102,15 @@ namespace myredis
             auto g = s.size();
             auto object = stringToObject(std::move(s));
 
-            //²âÊÔ¶ÔÏóÀàĞÍÊÇ·ñÏàµÈ£¨¶ÔÏó£¬º¯Êı»òlambda£¬´ı±È½ÏÖµ£¬Ô­Ê¼²âÊÔÊı¾İ,´íÎóÌáÊ¾£©
-            TEST_OBJECT_EQAUL(object, visitor::type,"string",e,"¶ÔÏóÀàĞÍ´íÎó");
-            TEST_OBJECT_EQAUL(object, visitor::object_encode, std::get<1>(e),e,"¶ÔÏó±àÂë´íÎó");
+            //æµ‹è¯•å¯¹è±¡ç±»å‹æ˜¯å¦ç›¸ç­‰ï¼ˆå¯¹è±¡ï¼Œå‡½æ•°æˆ–lambdaï¼Œå¾…æ¯”è¾ƒå€¼ï¼ŒåŸå§‹æµ‹è¯•æ•°æ®,é”™è¯¯æç¤ºï¼‰
+            TEST_OBJECT_EQAUL(object, visitor::type,"string",e,"å¯¹è±¡ç±»å‹é”™è¯¯");
+            TEST_OBJECT_EQAUL(object, visitor::object_encode, std::get<1>(e),e,"å¯¹è±¡ç¼–ç é”™è¯¯");
 
             auto ans = visit([](auto &&o) {return visitor::get(o); },object);
 
-            //²âÊÔÆÕÍ¨ÀàĞÍÊÇ·ñÏàµÈ£¨´ı±È½ÏÖµ1£¬º¯Êı»òlambda£¬´ı±È½ÏÖµ2£¬´íÎóÌáÊ¾£©
-            TEST_EQAUL(ans,[](auto&& o) {return o.first; }, myredis::code::status::success,e, "²Ù×÷²»³É¹¦");
-            TEST_EQAUL(ans,[](auto&& o) {return o.second;}, std::get<0>(e),e,"²Ù×÷·µ»ØµÄ×Ö·û´®ÓĞÎó");
+            //æµ‹è¯•æ™®é€šç±»å‹æ˜¯å¦ç›¸ç­‰ï¼ˆå¾…æ¯”è¾ƒå€¼1ï¼Œå‡½æ•°æˆ–lambdaï¼Œå¾…æ¯”è¾ƒå€¼2ï¼Œé”™è¯¯æç¤ºï¼‰
+            TEST_EQAUL(ans,[](auto&& o) {return o.first; }, myredis::code::status::success,e, "æ“ä½œä¸æˆåŠŸ");
+            TEST_EQAUL(ans,[](auto&& o) {return o.second;}, std::get<0>(e),e,"æ“ä½œè¿”å›çš„å­—ç¬¦ä¸²æœ‰è¯¯");
 
         }
     }

@@ -27,7 +27,7 @@ namespace myredis::visitor
     template<typename T>
         void unserialize(T& obj, FILE* fp)
     {
-        throw std::exception{"Î´ÊµÏÖ¶ÔÓ¦µÄ·´ĞòÁĞ»¯º¯Êı£¡"};
+        throw std::exception{"æœªå®ç°å¯¹åº”çš„ååºåˆ—åŒ–å‡½æ•°ï¼"};
     }
 
     template<> inline
@@ -49,12 +49,12 @@ namespace myredis::visitor
     template<> inline
         void unserialize(std::unique_ptr<string>& obj, FILE* fp)
     {
-        new (&obj) std::unique_ptr<string>(new string());//ÔÚ·ÖÅäºÃµÄÄÚ´æÉÏ¹¹½¨¶ÔÏó
+        new (&obj) std::unique_ptr<string>(new string());//åœ¨åˆ†é…å¥½çš„å†…å­˜ä¸Šæ„å»ºå¯¹è±¡
         stringUnserialize(fp, *obj);
     }
 
     // set
-    // ¸ñÊ½£º ÀàĞÍ£¨1×Ö½Ú£© ¸öÊı£¨8×Ö½Ú£© Êı¾İ£¨°´ÕÕCÓïÑÔ\0µÄ¸ñÊ½´æ) --- list¡¢set
+    // æ ¼å¼ï¼š ç±»å‹ï¼ˆ1å­—èŠ‚ï¼‰ ä¸ªæ•°ï¼ˆ8å­—èŠ‚ï¼‰ æ•°æ®ï¼ˆæŒ‰ç…§Cè¯­è¨€\0çš„æ ¼å¼å­˜) --- listã€set
     template<> inline
         void unserialize(std::unique_ptr<hash_set<string>>& obj, FILE* fp)
     {
@@ -62,7 +62,7 @@ namespace myredis::visitor
         auto cnt = fread(&sz, sizeof(sz), 1, fp);
         if (cnt != 1) 
             throw std::exception("");
-        new (&obj) std::unique_ptr<hash_set<string>>(new hash_set<string>());//ÔÚ·ÖÅäºÃµÄÄÚ´æÉÏ¹¹½¨¶ÔÏó
+        new (&obj) std::unique_ptr<hash_set<string>>(new hash_set<string>());//åœ¨åˆ†é…å¥½çš„å†…å­˜ä¸Šæ„å»ºå¯¹è±¡
         obj->reserve(sz);
         for (size_t i = 0; i < sz; ++i)
         {
@@ -71,7 +71,7 @@ namespace myredis::visitor
     }
 
     // list
-    // ¸ñÊ½£º ÀàĞÍ£¨1×Ö½Ú£© ¸öÊı£¨8×Ö½Ú£© Êı¾İ£¨°´ÕÕCÓïÑÔ\0µÄ¸ñÊ½´æ) --- list¡¢set
+    // æ ¼å¼ï¼š ç±»å‹ï¼ˆ1å­—èŠ‚ï¼‰ ä¸ªæ•°ï¼ˆ8å­—èŠ‚ï¼‰ æ•°æ®ï¼ˆæŒ‰ç…§Cè¯­è¨€\0çš„æ ¼å¼å­˜) --- listã€set
     template<> inline
         void unserialize(std::unique_ptr<deque<string>>& obj, FILE* fp)
     {
@@ -79,7 +79,7 @@ namespace myredis::visitor
         auto cnt = fread(&sz, sizeof(sz), 1, fp);
         if (cnt != 1) 
             throw std::exception("");
-        new (&obj) std::unique_ptr<deque<string>>(new deque<string>());//ÔÚ·ÖÅäºÃµÄÄÚ´æÉÏ¹¹½¨¶ÔÏó
+        new (&obj) std::unique_ptr<deque<string>>(new deque<string>());//åœ¨åˆ†é…å¥½çš„å†…å­˜ä¸Šæ„å»ºå¯¹è±¡
         for (size_t i = 0; i < sz; ++i)
         {
             obj->push_back(stringUnserialize(fp));
@@ -107,7 +107,7 @@ namespace myredis::visitor
         for (size_t i = 0; i < sz; ++i)
         {
             auto str=stringUnserialize(fp);
-            db.try_insert(std::move(str), objectUnserialize(fp));//Ğ¡ĞÄº¯ÊıÖ´ĞĞË³Ğò£¡
+            db.try_insert(std::move(str), objectUnserialize(fp));//å°å¿ƒå‡½æ•°æ‰§è¡Œé¡ºåºï¼
         }
         return;
     }
@@ -120,7 +120,7 @@ namespace myredis::visitor
             auto cnt = fread(&sz, sizeof(sz), 1, fp);
             if (cnt != 1 || sz > data_base_count) 
                 throw std::exception("");
-            //TODO:ÉêÇë×ã¹»¶àµÄÊı¾İ¿â
+            //TODO:ç”³è¯·è¶³å¤Ÿå¤šçš„æ•°æ®åº“
             for (size_t i = 0; i < sz; ++i)
             {
                 auto& db = objectMap::getObjectMap(i);
@@ -130,7 +130,7 @@ namespace myredis::visitor
         catch (const std::exception& e)
         {
             if (*e.what() == '\0')
-                printlogByStr("Êı¾İ¿âÄÚÈİ½âÎöÊ§°Ü£¡");
+                printlogByStr("æ•°æ®åº“å†…å®¹è§£æå¤±è´¥ï¼");
             else
                 printlog(e);
         }

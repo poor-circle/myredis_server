@@ -31,12 +31,12 @@ namespace myredis
 		{
 			return key1.str == key2.str;
 		}
-		//»ñÈ¡ÒÔsÎªµ¥Î»µÄunixÊ±¼ä´Á
+		//è·å–ä»¥sä¸ºå•ä½çš„unixæ—¶é—´æˆ³
 		static std::chrono::seconds getUnixDuration(std::chrono::seconds sec=std::chrono::seconds(0))
 		{
 			return std::chrono::seconds(std::time(NULL))+sec;
 		}
-		//»ñÈ¡ÒÔmsÎªµ¥Î»µÄunixÊ±¼ä´Á
+		//è·å–ä»¥msä¸ºå•ä½çš„unixæ—¶é—´æˆ³
 		static time_duration getUnixMSDuration(std::chrono::milliseconds ms = std::chrono::milliseconds(0))
 		{
 			auto gg = std::chrono::steady_clock::now().time_since_epoch() % std::chrono::seconds(1);
@@ -73,35 +73,35 @@ namespace std
 			return boost::container::hash_value(p.iter->getStr());
 		}
 	};
-	//Ìí¼Ó±ê×¼¿â¶ÔÓÚmyredis::stringµÄ¹şÏ£Ö§³Ö
+	//æ·»åŠ æ ‡å‡†åº“å¯¹äºmyredis::stringçš„å“ˆå¸Œæ”¯æŒ
 }
 
 namespace myredis
 {
 
-	//myredisÖĞ£ºkeyÒ»¶¨ÊÇÔ­Ê¼×Ö·û´®£¬valueÔò¿ÉÄÜÊÇ¸÷ÖÖ¶ÔÏó£º
+	//myredisä¸­ï¼škeyä¸€å®šæ˜¯åŸå§‹å­—ç¬¦ä¸²ï¼Œvalueåˆ™å¯èƒ½æ˜¯å„ç§å¯¹è±¡ï¼š
 
-	//valueµÄÏêÏ¸ÀàĞÍ£º
-	//1.Ò»¹²ÓĞ5ÖÖ¶ÔÏó
-	//2.Ã¿ÖÖ¶ÔÏó¿ÉÒÔÓĞ²»Í¬µÄ±àÂë
-	//Ä¿Ç°£¬stringÊµÏÖÁËËÄÖÖ±àÂë£¬ÆäËû¶ÔÏóÄ¿Ç°Ö»ÊµÏÖÒ»ÖÖ±àÂë
+	//valueçš„è¯¦ç»†ç±»å‹ï¼š
+	//1.ä¸€å…±æœ‰5ç§å¯¹è±¡
+	//2.æ¯ç§å¯¹è±¡å¯ä»¥æœ‰ä¸åŒçš„ç¼–ç 
+	//ç›®å‰ï¼Œstringå®ç°äº†å››ç§ç¼–ç ï¼Œå…¶ä»–å¯¹è±¡ç›®å‰åªå®ç°ä¸€ç§ç¼–ç 
 	
-	//unique_ptr£ºÒ»ÖÖÖÇÄÜÖ¸Õë£¬ĞÔÄÜºÍÔ­Ê¼Ö¸ÕëÏàµÈ£¬ÄÜ×Ô¶¯ÊÍ·ÅÖ¸ÏòµÄ¶ÔÏóµÄÄÚ´æ
-	//unique_ptr²»Ö§³Ö¸´ÖÆ£¨Ö»ÄÜÓĞÒ»¸öÖ¸ÕëÖ¸Ïò¶ÔÏó£©
+	//unique_ptrï¼šä¸€ç§æ™ºèƒ½æŒ‡é’ˆï¼Œæ€§èƒ½å’ŒåŸå§‹æŒ‡é’ˆç›¸ç­‰ï¼Œèƒ½è‡ªåŠ¨é‡Šæ”¾æŒ‡å‘çš„å¯¹è±¡çš„å†…å­˜
+	//unique_pträ¸æ”¯æŒå¤åˆ¶ï¼ˆåªèƒ½æœ‰ä¸€ä¸ªæŒ‡é’ˆæŒ‡å‘å¯¹è±¡ï¼‰
 
-	using object = std::variant  //myredis»ù±¾¶ÔÏó,»ùÓÚstd::variantÊµÏÖµÄÔËĞĞÊ±¶àÌ¬£¬ĞÔÄÜÇ¿ÓÚ¼Ì³ĞºÍĞéº¯Êı
+	using object = std::variant  //myredisåŸºæœ¬å¯¹è±¡,åŸºäºstd::variantå®ç°çš„è¿è¡Œæ—¶å¤šæ€ï¼Œæ€§èƒ½å¼ºäºç»§æ‰¿å’Œè™šå‡½æ•°
 	<
-		int64_t,											//ÕûÊı±àÂë,×Ö·û´®¶ÔÏó
-		double,												//¸¡µã±àÂë,×Ö·û´®¶ÔÏó 
-		std::unique_ptr<string>,							//×Ö·û´®±àÂë(¿ÉÒÔÊÇembstr±àÂë»òraw±àÂë),×Ö·û´®¶ÔÏó
-		std::unique_ptr<hash_set<string>>,					//hash¼¯ºÏ±àÂë£¬set¶ÔÏó
-															//TODO:intset±àÂë£¬set¶ÔÏó
-		std::unique_ptr<hash_map<string, string>>,			//hashÓ³Éä±àÂë£¬hash¶ÔÏó
-															//TODO:ziplist±àÂë£¬hash¶ÔÏó
-		std::unique_ptr<key_ordered_map<double, string>>,	//ÓĞĞòÓ³Éä¼¯ºÏ±àÂë£¬zset¶ÔÏó
-															//TODO:ziplist±àÂë£¬zset¶ÔÏó
-		std::unique_ptr<deque<string>>						//Ë«¶Ë¶ÓÁĞ±àÂë£¬list¶ÔÏó
-															//TODO:ziplist±àÂë£¬list¶ÔÏó
+		int64_t,											//æ•´æ•°ç¼–ç ,å­—ç¬¦ä¸²å¯¹è±¡
+		double,												//æµ®ç‚¹ç¼–ç ,å­—ç¬¦ä¸²å¯¹è±¡ 
+		std::unique_ptr<string>,							//å­—ç¬¦ä¸²ç¼–ç (å¯ä»¥æ˜¯embstrç¼–ç æˆ–rawç¼–ç ),å­—ç¬¦ä¸²å¯¹è±¡
+		std::unique_ptr<hash_set<string>>,					//hashé›†åˆç¼–ç ï¼Œsetå¯¹è±¡
+															//TODO:intsetç¼–ç ï¼Œsetå¯¹è±¡
+		std::unique_ptr<hash_map<string, string>>,			//hashæ˜ å°„ç¼–ç ï¼Œhashå¯¹è±¡
+															//TODO:ziplistç¼–ç ï¼Œhashå¯¹è±¡
+		std::unique_ptr<key_ordered_map<double, string>>,	//æœ‰åºæ˜ å°„é›†åˆç¼–ç ï¼Œzsetå¯¹è±¡
+															//TODO:ziplistç¼–ç ï¼Œzsetå¯¹è±¡
+		std::unique_ptr<deque<string>>						//åŒç«¯é˜Ÿåˆ—ç¼–ç ï¼Œlistå¯¹è±¡
+															//TODO:ziplistç¼–ç ï¼Œlistå¯¹è±¡
 	>;
 	
 
@@ -116,7 +116,7 @@ namespace myredis
 				: object_from_index<I + 1>(index - 1);
 	}
 
-	//½«Ò»¸öString×ª»»ÎªStringÀàĞÍµÄ¶ÔÏó
+	//å°†ä¸€ä¸ªStringè½¬æ¢ä¸ºStringç±»å‹çš„å¯¹è±¡
 	object stringToObject(string&& str);
 
 	struct watchInfo;
@@ -126,24 +126,24 @@ namespace myredis
 
 	struct watchInfo
 	{
-		int64_t sessionID;//Ïß³ÌID
+		int64_t sessionID;//çº¿ç¨‹ID
 		watcherPtr nodes;
-		//¼ÇÂ¼ÆäËûkeyÉÏµÄ¼àÊÓÆ÷
+		//è®°å½•å…¶ä»–keyä¸Šçš„ç›‘è§†å™¨
 		std::shared_ptr<std::function<std::optional<string>(const string&)>> op;
-		//ÓÃ»§×Ô¶¨ÒåµÄ²Ù×÷£¬·µ»ØÖµ£ºbool£ºÊÇ·ñÈÃ¶ÓÁĞÖĞµÄÏÂÒ»¸ö¼àÊÓÆ÷¼ÌĞøÖ´ĞĞ£¬string:×¼±¸·µ»Ø¸ø¿Í»§¶ËµÄstring
-		//²ÎÊı£ºconst string&:±»¼àÊÓµÄobjectµÄkeyÃû
+		//ç”¨æˆ·è‡ªå®šä¹‰çš„æ“ä½œï¼Œè¿”å›å€¼ï¼šboolï¼šæ˜¯å¦è®©é˜Ÿåˆ—ä¸­çš„ä¸‹ä¸€ä¸ªç›‘è§†å™¨ç»§ç»­æ‰§è¡Œï¼Œstring:å‡†å¤‡è¿”å›ç»™å®¢æˆ·ç«¯çš„string
+		//å‚æ•°ï¼šconst string&:è¢«ç›‘è§†çš„objectçš„keyå
 		watchInfo(int64_t sessionID,
 			watcherPtr nodes,
 			std::shared_ptr<std::function<std::optional<string>(const string&)>> op) :
 			sessionID(sessionID), nodes(nodes), op(op) {}
 	};
 
-	class objectMap //²»ÒªÖ±½Ó´´½¨Õâ¸ö¶ÔÏó£¡(Í¨¹ıgetObjectMapÀ´»ñÈ¡£©
+	class objectMap //ä¸è¦ç›´æ¥åˆ›å»ºè¿™ä¸ªå¯¹è±¡ï¼(é€šè¿‡getObjectMapæ¥è·å–ï¼‰
 	{
 	private:
 		boost::container::list<keyInfo> keylist;
 		hash_map<keyIter, object> map,cowMAP;
-		std::set<keyIter> expireHeap;//Ä¿Ç°¼ò»¯ÁËÊµÏÖ£¬Ã»ÓĞÕæÕıÊ¹ÓÃ*¶Ñ*
+		std::set<keyIter> expireHeap;//ç›®å‰ç®€åŒ–äº†å®ç°ï¼Œæ²¡æœ‰çœŸæ­£ä½¿ç”¨*å †*
 		void _updateExpireTime(const keyIter& iter, keyInfo::time_duration ms);
 	public:
 		void updateExpireTime(const keyIter& iter,std::chrono::seconds sec);
@@ -152,7 +152,7 @@ namespace myredis
 		void cancelExpireTime(const keyIter& iter);
 		static asio::awaitable<void> expiredKeyCollecting();
 
-		//Ö±½ÓĞŞ¸ÄÊı¾İ¿â
+		//ç›´æ¥ä¿®æ”¹æ•°æ®åº“
 		void update(keyInfo&& key,object&& obj);
 		hash_map<keyIter, object>::iterator try_insert(keyInfo&& key, object&& obj);
 
@@ -179,17 +179,17 @@ namespace myredis
 		{
 			auto &map = objectMap::getWatchMap(dataBaseID);
 			auto func = std::make_shared<std::function<std::optional<string>(const string&)>>(std::move(op));
-			for (; begin != end; begin = std::next(begin))//±éÀúËùÓĞµÄkey
+			for (; begin != end; begin = std::next(begin))//éå†æ‰€æœ‰çš„key
 			{
 				auto iter = map.find(*begin);
-				if (iter == map.end())//Èç¹û¼àÊÓ±íÖĞ²»´æÔÚÕâ¸ökey£¬ÔòÌí¼ÓÒ»¸ö
+				if (iter == map.end())//å¦‚æœç›‘è§†è¡¨ä¸­ä¸å­˜åœ¨è¿™ä¸ªkeyï¼Œåˆ™æ·»åŠ ä¸€ä¸ª
 				{
 					iter = map.emplace(*begin, boost::container::list<watchInfo>()).first;
 				}
-				if (tab->find(&iter->second) != tab->end())//Èç¹ûÒÑ¾­´æÔÚÏàÍ¬µÄkey£¬Ö±½ÓÌø¹ı
+				if (tab->find(&iter->second) != tab->end())//å¦‚æœå·²ç»å­˜åœ¨ç›¸åŒçš„keyï¼Œç›´æ¥è·³è¿‡
 					continue;
-				iter->second.emplace_back(watchInfo(sessionID, tab, func));//ÏòÕâ¸ökeyµÄ¼àÊÓ¶ÓÁĞµÄ¶ÓÎ²Ìí¼ÓÒ»¸ö¼àÊÓÆ÷
-				tab->emplace(&iter->second, std::prev(iter->second.end()));//Ïò
+				iter->second.emplace_back(watchInfo(sessionID, tab, func));//å‘è¿™ä¸ªkeyçš„ç›‘è§†é˜Ÿåˆ—çš„é˜Ÿå°¾æ·»åŠ ä¸€ä¸ªç›‘è§†å™¨
+				tab->emplace(&iter->second, std::prev(iter->second.end()));//å‘
 			}
 		}
 	};

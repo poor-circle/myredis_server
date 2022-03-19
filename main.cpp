@@ -17,7 +17,7 @@ namespace myredis
     #include "namespace.i"
     static void run()
     {
-        //Test();//debugÊ±Ö´ĞĞµ¥Ôª²âÊÔ
+        //Test();//debugæ—¶æ‰§è¡Œå•å…ƒæµ‹è¯•
         try
         {
             asio::io_context io_context;
@@ -27,11 +27,11 @@ namespace myredis
                 io_context.stop();
             });
             myredis::Listener listener(io_context, myredis::defaultPort);
-            RDBSaver::loadDB();//¼ÓÔØRDBÎÄ¼ş
-            AOFSaver::aofload();//¼ÓÔØAOFÎÄ¼ş
-            co_spawn(io_context, listener.Run(), detached);//¿ªÊ¼¼àÌı¶Ë¿Ú
-            co_spawn(io_context, objectMap::expiredKeyCollecting, detached);//ÔËĞĞÀ¬»ø»ØÊÕ
-            RDBSaver::saveDB(io_context);//¶¨Ê±±£´æRDBÎÄ¼ş
+            RDBSaver::loadDB();//åŠ è½½RDBæ–‡ä»¶
+            AOFSaver::aofload();//åŠ è½½AOFæ–‡ä»¶
+            co_spawn(io_context, listener.Run(), detached);//å¼€å§‹ç›‘å¬ç«¯å£
+            co_spawn(io_context, objectMap::expiredKeyCollecting, detached);//è¿è¡Œåƒåœ¾å›æ”¶
+            RDBSaver::saveDB(io_context);//å®šæ—¶ä¿å­˜RDBæ–‡ä»¶
             io_context.run();
             getThreadPool().join();
         }
@@ -46,7 +46,7 @@ int main()
 
 #if defined(_MSC_VER)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //MSVCÄÚ´æĞ¹Â©Õì²â£¬°´ctrl+c¹Ø±Õ³ÌĞò(¶ø²»ÊÇÖ±½Ó¹Ø±Õ´°¿Ú)£¬Èç¹ûÓĞÄÚ´æĞ¹Â©£¬ÔòÊä³ö´°¿Ú»á×öÌáÊ¾
+    //MSVCå†…å­˜æ³„æ¼ä¾¦æµ‹ï¼ŒæŒ‰ctrl+cå…³é—­ç¨‹åº(è€Œä¸æ˜¯ç›´æ¥å…³é—­çª—å£)ï¼Œå¦‚æœæœ‰å†…å­˜æ³„æ¼ï¼Œåˆ™è¾“å‡ºçª—å£ä¼šåšæç¤º
 #endif
     myredis::run();
     return 0;

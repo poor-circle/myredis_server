@@ -3,9 +3,9 @@
 #include "func.h"
 namespace myredis::func
 {
-	//ÔÚÕâÀïÉùÃ÷¸÷ÖÖº¯ÊıÀàĞÍ
+	//åœ¨è¿™é‡Œå£°æ˜å„ç§å‡½æ•°ç±»å‹
 
-	//Õâ¸öÎÄ¼ş¸ºÔğ¸÷ÖÖºÍkeyÓĞ¹ØµÄº¯Êı
+	//è¿™ä¸ªæ–‡ä»¶è´Ÿè´£å„ç§å’Œkeyæœ‰å…³çš„å‡½æ•°
 
 	//	exists		created by tigerwang	date:2021/4/19
 	std::optional<string> exists(context&& ctx) noexcept;
@@ -20,10 +20,10 @@ namespace myredis::func
 	//	object	created by lizezheng	date:2021/4/20
 	std::optional<string> object(context&& ctx) noexcept;
 	//	sort	created by lizezheng	date:2021/4/21
-	// TODO:µÈ´ıÊµÏÖÆäËû¼¸¸öÊı¾İ½á¹¹
+	// TODO:ç­‰å¾…å®ç°å…¶ä»–å‡ ä¸ªæ•°æ®ç»“æ„
 	std::optional<string> sort(context&& ctx) noexcept;
 	//	dump	created by lizezheng	date:2021/4/21
-	// TODO:µÈ´ı·´ĞòÁĞ»¯µÄÊµÏÖ
+	// TODO:ç­‰å¾…ååºåˆ—åŒ–çš„å®ç°
 	std::optional<string> dump(context&& ctx) noexcept;
 	//	type	created by lizezheng	date:2021/4/21
 	std::optional<string> type(context&& ctx) noexcept;

@@ -3,10 +3,10 @@
 #include "../code.h"
 #include "../object.hpp"
 
-//Ã¿Ò»¸övisitor¶¼ÒªÊµÏÖËùÓĞÀàĞÍµÄ²Ù×÷
+//æ¯ä¸€ä¸ªvisitoréƒ½è¦å®ç°æ‰€æœ‰ç±»å‹çš„æ“ä½œ
 namespace myredis::visitor
 {
-    // »ñÈ¡¶ÔÏóµÄĞòÁĞ»¯×Ö·û´®£¬ÓÃÓÚRDB³Ö¾Ã»¯
+    // è·å–å¯¹è±¡çš„åºåˆ—åŒ–å­—ç¬¦ä¸²ï¼Œç”¨äºRDBæŒä¹…åŒ–
 
     inline void appendObjectType(const object& obj, string& ret)
     {
@@ -21,11 +21,11 @@ namespace myredis::visitor
         memcpy(ret.data() + pos, sz, sizeof(*sz));
     }
     
-    //¸ñÊ½£º ÀàĞÍ value----string
+    //æ ¼å¼ï¼š ç±»å‹ value----string
     template<typename T>
         void serialize(const object& obj, string& ret)
     {
-        throw std::exception("Î´ÊµÏÖ¶ÔÓ¦µÄĞòÁĞ»¯º¯Êı£¡");
+        throw std::exception("æœªå®ç°å¯¹åº”çš„åºåˆ—åŒ–å‡½æ•°ï¼");
     }
     template<> inline
         void serialize<const int64_t&>(const object& obj, string& ret)
@@ -51,7 +51,7 @@ namespace myredis::visitor
         ret += *std::get<std::unique_ptr<string>>(obj);
     }
     // set
-    // ¸ñÊ½£º ÀàĞÍ£¨1×Ö½Ú£© ¸öÊı£¨8×Ö½Ú£© Êı¾İ£¨°´ÕÕCÓïÑÔ\0µÄ¸ñÊ½´æ) --- list¡¢set
+    // æ ¼å¼ï¼š ç±»å‹ï¼ˆ1å­—èŠ‚ï¼‰ ä¸ªæ•°ï¼ˆ8å­—èŠ‚ï¼‰ æ•°æ®ï¼ˆæŒ‰ç…§Cè¯­è¨€\0çš„æ ¼å¼å­˜) --- listã€set
     template<> inline
         void serialize<const std::unique_ptr<hash_set<string>>&>(const object& obj, string& ret)
     {
@@ -67,7 +67,7 @@ namespace myredis::visitor
     }
 
     // list
-    // ¸ñÊ½£º ÀàĞÍ£¨1×Ö½Ú£© ¸öÊı£¨8×Ö½Ú£© Êı¾İ£¨°´ÕÕCÓïÑÔ\0µÄ¸ñÊ½´æ) --- list¡¢set
+    // æ ¼å¼ï¼š ç±»å‹ï¼ˆ1å­—èŠ‚ï¼‰ ä¸ªæ•°ï¼ˆ8å­—èŠ‚ï¼‰ æ•°æ®ï¼ˆæŒ‰ç…§Cè¯­è¨€\0çš„æ ¼å¼å­˜) --- listã€set
     template<> inline
         void serialize<const std::unique_ptr<deque<string>>&>(const object& obj, string& ret)
     {

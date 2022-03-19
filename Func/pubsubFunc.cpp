@@ -25,19 +25,19 @@ namespace myredis::func
 			string s;
 			for (auto arg=args.begin()+1;arg!=args.end();++arg)
 			{
-				auto myID = ctx.session.getSessionID();//»ñÈ¡±¾»á»°µÄid
-				// ½«¶©ÔÄµÄÆµµÀ¼ÇÂ¼µ½¶©ÔÄ±íÀï
+				auto myID = ctx.session.getSessionID();//è·å–æœ¬ä¼šè¯çš„id
+				// å°†è®¢é˜…çš„é¢‘é“è®°å½•åˆ°è®¢é˜…è¡¨é‡Œ
 				auto& subChannels = ctx.session.getsubChannels();
 				subChannels.emplace(*arg);
 				BaseSession::getChannelMap()[*arg].emplace(myID);
-				code::getMultiReplyTo(back_inserter(s),"subscribe", *arg,ctx.session.getSubscribeCount());// ·µ»Ø¶©ÔÄ³É¹¦µÄĞÅÏ¢
+				code::getMultiReplyTo(back_inserter(s),"subscribe", *arg,ctx.session.getSubscribeCount());// è¿”å›è®¢é˜…æˆåŠŸçš„ä¿¡æ¯
 			}
 			return s;
 		}
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -55,17 +55,17 @@ namespace myredis::func
 		try
 		{
 			string ret;
-			// ÎŞ²ÎÊı£¬ÍË¶©ËùÓĞÆµµÀ 
+			// æ— å‚æ•°ï¼Œé€€è®¢æ‰€æœ‰é¢‘é“ 
 			if(args.size()==1)
 			{
 				while (!subChannels.empty())
 				{
-					//»ñÈ¡Ò»Ìõ¶à²¥»Ø¸´(Ò»¹²ÈıÌõÄÚÈİ£©
+					//è·å–ä¸€æ¡å¤šæ’­å›å¤(ä¸€å…±ä¸‰æ¡å†…å®¹ï¼‰
 					code::getMultiReplyTo(back_inserter(ret),"unsubscribe",*subChannels.begin(), ctx.session.getSubscribeCount() -1);
 					auto iter = channelMap.find(*subChannels.begin());
 					auto channels = iter->second;
 					channels.erase(ctx.session.getSessionID());
-					if (channels.empty()) channelMap.erase(iter);//Èç¹ûÆµµÀÒÑ¾­Ã»ÓĞÈË¶©ÔÄ¾ÍÉ¾µô
+					if (channels.empty()) channelMap.erase(iter);//å¦‚æœé¢‘é“å·²ç»æ²¡æœ‰äººè®¢é˜…å°±åˆ æ‰
 
 
 					subChannels.erase(subChannels.begin());
@@ -73,19 +73,19 @@ namespace myredis::func
 			}
 			else
 			{
-				for (auto channel = args.begin() + 1; channel != args.end(); ++channel)//±éÀúËùÓĞ´«ÈëµÄÆµµÀÃû
+				for (auto channel = args.begin() + 1; channel != args.end(); ++channel)//éå†æ‰€æœ‰ä¼ å…¥çš„é¢‘é“å
 				{
 					auto subChannelIter = subChannels.find(*channel);
-					if (subChannelIter != subChannels.end())//Èç¹û±¾»á»°¶©ÔÄÁËÕâ¸öÆµµÀ
+					if (subChannelIter != subChannels.end())//å¦‚æœæœ¬ä¼šè¯è®¢é˜…äº†è¿™ä¸ªé¢‘é“
 					{
 						
 						auto iter = channelMap.find(*channel);
 						auto channels = iter->second;
 						channels.erase(ctx.session.getSessionID());
-						if (channels.empty()) channelMap.erase(iter);//Èç¹ûÆµµÀÒÑ¾­Ã»ÓĞÈË¶©ÔÄ¾ÍÉ¾µô
+						if (channels.empty()) channelMap.erase(iter);//å¦‚æœé¢‘é“å·²ç»æ²¡æœ‰äººè®¢é˜…å°±åˆ æ‰
 						subChannels.erase(subChannelIter);
 					}
-					//»ñÈ¡Ò»Ìõ¶à²¥»Ø¸´(Ò»¹²ÈıÌõÄÚÈİ£©
+					//è·å–ä¸€æ¡å¤šæ’­å›å¤(ä¸€å…±ä¸‰æ¡å†…å®¹ï¼‰
 					code::getMultiReplyTo(back_inserter(ret), "unsubscribe", *channel, ctx.session.getSubscribeCount());
 				}
 			}
@@ -94,7 +94,7 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -102,8 +102,8 @@ namespace myredis::func
 	* pubsub subcommand [argument [argument ...]]
 	* subcommand:
 	* pubsub channels [pattern]		
-	* pubsub numsub	[channels...] Ö¸¶¨ĞÅµÀµÄ¶©ÔÄÕß¸öÊı
-	* pubsub numpat ¿Í»§¶Ë¶©ÔÄµÄËùÓĞÄ£Ê½µÄ×ÜºÍ
+	* pubsub numsub	[channels...] æŒ‡å®šä¿¡é“çš„è®¢é˜…è€…ä¸ªæ•°
+	* pubsub numpat å®¢æˆ·ç«¯è®¢é˜…çš„æ‰€æœ‰æ¨¡å¼çš„æ€»å’Œ
 	* @author:tigerwang
 	* date:2021/5/4
 	*/
@@ -123,7 +123,7 @@ namespace myredis::func
 			auto subcommand = args[1];
 			boost::algorithm::to_lower(subcommand);
 			if (subcommand == "numsub"sv) {
-				// ·µ»ØÖ¸¶¨ĞÅµÀµÄ¶©ÔÄÕß¸öÊı
+				// è¿”å›æŒ‡å®šä¿¡é“çš„è®¢é˜…è€…ä¸ªæ•°
 				if (args.size() < 3) {
 					return code::args_count_error;
 				}
@@ -133,16 +133,16 @@ namespace myredis::func
 					auto channelIter = channelTable.find(*arg);
 					code::getBulkReplyTo(*arg, s);
 					if (channelIter == channelTable.end())
-						code::getIntegerReplyTo(0, s);// ·µ»Ø¶©ÔÄµÄÆµµÀÊı
+						code::getIntegerReplyTo(0, s);// è¿”å›è®¢é˜…çš„é¢‘é“æ•°
 					else
-						code::getIntegerReplyTo(channelIter->second.size(), s);// ·µ»Ø¶©ÔÄµÄÆµµÀÊı
+						code::getIntegerReplyTo(channelIter->second.size(), s);// è¿”å›è®¢é˜…çš„é¢‘é“æ•°
 					return 2;
 				});
 			}
 			else if (subcommand == "channels"sv) {
 				if (args.size() == 2)
 				{
-					// ÎŞ²ÎÊı ÁĞ³öËùÓĞ»îÔ¾ĞÅµÀ(¶©ÔÄÊı´óÓÚ1)
+					// æ— å‚æ•° åˆ—å‡ºæ‰€æœ‰æ´»è·ƒä¿¡é“(è®¢é˜…æ•°å¤§äº1)
 					return code::getMultiReplyByRange(channelTable.begin(), channelTable.end(),
 						[](hash_map<string,hash_set<int64_t>>::iterator arg, std::back_insert_iterator<string> s)
 					{
@@ -153,7 +153,7 @@ namespace myredis::func
 				}
 				else if(args.size()==3)
 				{
-					// ·µ»ØÆ¥ÅäÄ£Ê½µÄÆµµÀ
+					// è¿”å›åŒ¹é…æ¨¡å¼çš„é¢‘é“
 					return code::getMultiReplyByRange(args.begin()+2, args.end(),
 						[&channelTable](vector<string>::iterator arg, std::back_insert_iterator<string> s)
 					{
@@ -178,7 +178,7 @@ namespace myredis::func
 			}
 			else if (subcommand == "numpat"sv)
 			{
-				// ·µ»ØÄ£Ê½±íÖĞ¿Í»§¶ËµÄÊıÁ¿
+				// è¿”å›æ¨¡å¼è¡¨ä¸­å®¢æˆ·ç«¯çš„æ•°é‡
 				int64_t cnt = 0;
 				for (auto& e : patternTable)
 				{
@@ -194,7 +194,7 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -207,8 +207,8 @@ namespace myredis::func
 	{
 		auto&& args = ctx.args;
 		auto&& objectMap = ctx.session.getObjectMap();
-		auto& channelMap = BaseSession::getChannelMap();//È«¾Ö¶©ÔÄ±í
-		auto& table = BaseSession::getSessionMap();//»ñÈ¡¼ÇÂ¼ÁËËùÓĞµ±Ç°»á»°idµÄhash±í
+		auto& channelMap = BaseSession::getChannelMap();//å…¨å±€è®¢é˜…è¡¨
+		auto& table = BaseSession::getSessionMap();//è·å–è®°å½•äº†æ‰€æœ‰å½“å‰ä¼šè¯idçš„hashè¡¨
 		auto& patternTable = BaseSession::getPatternTable();
 		auto& subPatterns = ctx.session.getsubPatterns();
 		try
@@ -221,7 +221,7 @@ namespace myredis::func
 			
 			if (iter != channelMap.end())
 			{
-				auto sessionIDSet = iter->second;//»ñÈ¡¶©ÔÄ¸ÃÆµµÀµÄsessionID Ò»¸öhash_set
+				auto sessionIDSet = iter->second;//è·å–è®¢é˜…è¯¥é¢‘é“çš„sessionID ä¸€ä¸ªhash_set
 				pubCnt = sessionIDSet.size();
 				for (auto& e : sessionIDSet)
 				{
@@ -230,11 +230,11 @@ namespace myredis::func
 				}
 			}
 
-			// ±éÀúÄ£Ê½±í£¬Ïò¶©ÔÄÆ¥ÅäÄ£Ê½µÄID·¢ËÍĞÅÏ¢
+			// éå†æ¨¡å¼è¡¨ï¼Œå‘è®¢é˜…åŒ¹é…æ¨¡å¼çš„IDå‘é€ä¿¡æ¯
 			for (auto iter = patternTable.begin(); iter != patternTable.end(); iter++)
 			{
 				Pattern p = iter->first;
-				// ÆµµÀºÍregexÆ¥Åä,Ïò¸ÃregexÏÂµÄËùÓĞID·¢ËÍ
+				// é¢‘é“å’ŒregexåŒ¹é…,å‘è¯¥regexä¸‹çš„æ‰€æœ‰IDå‘é€
 				if (std::regex_match(args[1].c_str(), p.getRegex()))
 				{
 					pubCnt += iter->second.size();
@@ -250,7 +250,7 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -265,7 +265,7 @@ namespace myredis::func
 		auto&& objectMap = ctx.session.getObjectMap();
 		auto& patternTable = BaseSession::getPatternTable();
 		auto& subPatterns = ctx.session.getsubPatterns();
-		auto myID = ctx.session.getSessionID();//»ñÈ¡±¾»á»°µÄid
+		auto myID = ctx.session.getSessionID();//è·å–æœ¬ä¼šè¯çš„id
 		try
 		{
 			if (args.size() < 2) {
@@ -274,24 +274,24 @@ namespace myredis::func
 			string s;
 			for (auto arg = args.begin() + 1; arg != args.end(); ++arg)
 			{
-				// ¹¹ÔìÕıÔò±í´ïÊ½
+				// æ„é€ æ­£åˆ™è¡¨è¾¾å¼
 				std::regex rx;
 				auto flag = regex_constants::ECMAScript | regex_constants::syntax_option_type::optimize;
 				rx = regex((*arg).c_str(), flag);
 				Pattern p = { std::move(*arg),std::move(rx) };
-				// È«¾ÖÄ£Ê½±í
+				// å…¨å±€æ¨¡å¼è¡¨
 				patternTable[p].emplace(myID);
-				// ÔÚ¶©ÔÄÄ£Ê½ÖĞÔö¼ÓÒ»¸öÄ£Ê½
+				// åœ¨è®¢é˜…æ¨¡å¼ä¸­å¢åŠ ä¸€ä¸ªæ¨¡å¼
 				subPatterns.emplace(p);
 				
-				code::getMultiReplyTo(back_inserter(s), "psubscribe", p.getPatternStr(), ctx.session.getSubscribeCount());// ·µ»Ø¶©ÔÄ³É¹¦µÄĞÅÏ¢
+				code::getMultiReplyTo(back_inserter(s), "psubscribe", p.getPatternStr(), ctx.session.getSubscribeCount());// è¿”å›è®¢é˜…æˆåŠŸçš„ä¿¡æ¯
 			}
 			return s;
 		}
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -310,39 +310,39 @@ namespace myredis::func
 		try
 		{
 			string ret;
-			// ÎŞ²ÎÊı£¬ÍË¶©ËùÓĞÆµµÀ 
+			// æ— å‚æ•°ï¼Œé€€è®¢æ‰€æœ‰é¢‘é“ 
 			if (args.size() == 1)
 			{
 				while (!subPatterns.empty())
 				{
-					//»ñÈ¡Ò»Ìõ¶à²¥»Ø¸´(Ò»¹²ÈıÌõÄÚÈİ£©
+					//è·å–ä¸€æ¡å¤šæ’­å›å¤(ä¸€å…±ä¸‰æ¡å†…å®¹ï¼‰
 					code::getMultiReplyTo(back_inserter(ret), "punsubscribe", subPatterns.begin()->getPatternStr(), ctx.session.getSubscribeCount() - 1);
 					auto iter = patternTable.find(*subPatterns.begin());
 					auto& patterns = iter->second;
 					patterns.erase(ctx.session.getSessionID());
-					if (patterns.empty()) patternTable.erase(iter);//Èç¹ûÆµµÀÒÑ¾­Ã»ÓĞÈË¶©ÔÄ¾ÍÉ¾µô
+					if (patterns.empty()) patternTable.erase(iter);//å¦‚æœé¢‘é“å·²ç»æ²¡æœ‰äººè®¢é˜…å°±åˆ æ‰
 					subPatterns.erase(subPatterns.begin());
 				}
 			}
 			else
 			{
-				for (auto patternIter = args.begin() + 1; patternIter != args.end(); ++patternIter)//±éÀúËùÓĞ´«ÈëµÄÄ£Ê½Ãû
+				for (auto patternIter = args.begin() + 1; patternIter != args.end(); ++patternIter)//éå†æ‰€æœ‰ä¼ å…¥çš„æ¨¡å¼å
 				{
 					auto temp = Pattern(*patternIter);
 					auto subPatternIter = subPatterns.find(temp);
-					if (subPatternIter != subPatterns.end())//Èç¹û±¾»á»°¶©ÔÄÁËÕâ¸öÆµµÀ
+					if (subPatternIter != subPatterns.end())//å¦‚æœæœ¬ä¼šè¯è®¢é˜…äº†è¿™ä¸ªé¢‘é“
 					{
-						// È¥È«¾ÖÄ£Ê½±íÖĞÉ¾³ı»á»°ID
+						// å»å…¨å±€æ¨¡å¼è¡¨ä¸­åˆ é™¤ä¼šè¯ID
 						auto iter = patternTable.find(temp);
 						if (iter != patternTable.end()) {
 							auto& channels = iter->second;
 							channels.erase(sessionID);
-							if (channels.empty()) patternTable.erase(iter);//Èç¹ûÆµµÀÒÑ¾­Ã»ÓĞÈË¶©ÔÄ¾ÍÉ¾µô
-							// É¾³ı¶©ÔÄÄ£Ê½±íÖĞµÄ¶ÔÓ¦Ä£Ê½
+							if (channels.empty()) patternTable.erase(iter);//å¦‚æœé¢‘é“å·²ç»æ²¡æœ‰äººè®¢é˜…å°±åˆ æ‰
+							// åˆ é™¤è®¢é˜…æ¨¡å¼è¡¨ä¸­çš„å¯¹åº”æ¨¡å¼
 							subPatterns.erase(subPatternIter);
 						}
 					}
-					//»ñÈ¡Ò»Ìõ¶à²¥»Ø¸´(Ò»¹²ÈıÌõÄÚÈİ£©
+					//è·å–ä¸€æ¡å¤šæ’­å›å¤(ä¸€å…±ä¸‰æ¡å†…å®¹ï¼‰
 					code::getMultiReplyTo(back_inserter(ret), "punsubscribe", *patternIter, (int64_t)subPatterns.size());
 				}
 			}
@@ -351,7 +351,7 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 

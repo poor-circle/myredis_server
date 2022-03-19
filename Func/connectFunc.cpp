@@ -22,11 +22,11 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›žç©ºå€¼
 		}
 	}
 	//select (choose database by index)
-	//args£ºindex (0<=index<limit)
+	//argsï¼šindex (0<=index<limit)
 	//author: lizezheng
 	//date: 2021/04/19
 	std::optional<string> select(context&& ctx) noexcept
@@ -44,11 +44,11 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›žç©ºå€¼
 		}
 	}
 	//auth (for login)
-	//args£ºpassword
+	//argsï¼špassword
 	//author: lizezheng
 	//date: 2021/04/19
 	std::optional<string> auth(context&& ctx) noexcept
@@ -67,11 +67,11 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›žç©ºå€¼
 		}
 	}
 	//echo (just reply what client send)
-	//args£ºstring
+	//argsï¼šstring
 	//author: lizezheng
 	//date: 2021/04/19
 	std::optional<string> echo(context&& ctx) noexcept
@@ -87,7 +87,7 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›žç©ºå€¼
 		}
 	}
 	std::optional<string> quit(context&& ctx) noexcept

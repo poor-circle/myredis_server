@@ -4,7 +4,7 @@
 
 namespace myredis::func
 {
-	//Õâ¸öÎÄ¼ş¸ºÔğ¸÷ÖÖºÍlistÓĞ¹ØµÄº¯Êı
+	//è¿™ä¸ªæ–‡ä»¶è´Ÿè´£å„ç§å’Œlistæœ‰å…³çš„å‡½æ•°
 
 	//	lpush		created by tigerwang	date:2021/4/21
 	std::optional<string> lpush(context&& ctx) noexcept;

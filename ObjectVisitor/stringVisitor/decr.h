@@ -2,12 +2,12 @@
 #include "../../stdafx.h"
 #include "../../code.h"
 #include "../../object.hpp"
-//Ã¿Ò»¸övisitor¶¼ÒªÊµÏÖËùÓĞÀàĞÍµÄ²Ù×÷
-//visitor²ãº¯Êı£¬¶Ôvalue¶ÔÏóÖ´ĞĞ¾ßÌåµÄ²Ù×÷
-//value¶ÔÏó¿ÉÄÜÓĞ¶àÖÖ±àÂëºÍÀàĞÍ£¬¶ÔÓÚ²»Í¬µÄ±àÂëĞèÒª²»Í¬µÄÊµÏÖ·½Ê½£¬Õâ¾ÍÊÇ¶àÌ¬ĞÔ£º
+//æ¯ä¸€ä¸ªvisitoréƒ½è¦å®ç°æ‰€æœ‰ç±»å‹çš„æ“ä½œ
+//visitorå±‚å‡½æ•°ï¼Œå¯¹valueå¯¹è±¡æ‰§è¡Œå…·ä½“çš„æ“ä½œ
+//valueå¯¹è±¡å¯èƒ½æœ‰å¤šç§ç¼–ç å’Œç±»å‹ï¼Œå¯¹äºä¸åŒçš„ç¼–ç éœ€è¦ä¸åŒçš„å®ç°æ–¹å¼ï¼Œè¿™å°±æ˜¯å¤šæ€æ€§ï¼š
 namespace myredis::visitor
 {
-    // decr:Ö»ÊÊÓÃÓÚint64¶ÔÏó
+    // decr:åªé€‚ç”¨äºint64å¯¹è±¡
     template<typename T>
     std::pair<code::status, int64_t> decr(T& object)
     {
@@ -24,7 +24,7 @@ namespace myredis::visitor
         return myredis_succeed(object);
     }
 
-    // decrby:Ö»ÊÊÓÃÓÚint64¶ÔÏó
+    // decrby:åªé€‚ç”¨äºint64å¯¹è±¡
     template<typename T>
     std::pair<code::status, int64_t> decrby(T& object, int64_t decrement)
     {

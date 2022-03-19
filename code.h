@@ -5,25 +5,25 @@
 #include <string_view>
 namespace myredis::code
 {
-	enum class status			//º¯Êı´íÎóÂë
+	enum class status			//å‡½æ•°é”™è¯¯ç 
 	{
 		success,
-		object_type_error,		//¶ÔÏóÀàĞÍ´íÎó
-		value_overflow,			//ÊıÖµÒç³ö
+		object_type_error,		//å¯¹è±¡ç±»å‹é”™è¯¯
+		value_overflow,			//æ•°å€¼æº¢å‡º
 		invaild_argument,
-		object_is_empty,		//¶ÔÏóÎª¿Õ£¬½øĞĞ²Ù×÷£¬²úÉúÒì³£
+		object_is_empty,		//å¯¹è±¡ä¸ºç©ºï¼Œè¿›è¡Œæ“ä½œï¼Œäº§ç”Ÿå¼‚å¸¸
 		index_out_of_range
 		//add other error here
 	};
-	inline string& getMessage(status i)			// ´Ó´íÎóÂë»ñÈ¡´íÎóĞÅÏ¢
+	inline string& getMessage(status i)			// ä»é”™è¯¯ç è·å–é”™è¯¯ä¿¡æ¯
 	{
-		static string error_message[] = // ±ØĞë±£Ö¤messageË³ĞòºÍcodeÏàÍ¬!
+		static string error_message[] = // å¿…é¡»ä¿è¯messageé¡ºåºå’Œcodeç›¸åŒ!
 		{
 			"success",
 			"object type error",
 			"value overflow",
 			"invalid argument or integer out of range",
-			"object_is_empty",								// ¶ÔÆë£¬²»Ê¹ÓÃ
+			"object_is_empty",								// å¯¹é½ï¼Œä¸ä½¿ç”¨
 			"index_out_of_range"
 			//add other message here
 		};
@@ -55,7 +55,7 @@ namespace myredis::code
 	}
 
 	template<typename T>
-	inline string getBulkReply(const T& str)  //ÅúÁ¿»Ø¸´
+	inline string getBulkReply(const T& str)  //æ‰¹é‡å›å¤
 	{
 		string s;
 		fmt::format_to
@@ -69,7 +69,7 @@ namespace myredis::code
 	}
 
 	template<>
-	inline string getBulkReply(const string& str)  //ÅúÁ¿»Ø¸´
+	inline string getBulkReply(const string& str)  //æ‰¹é‡å›å¤
 	{
 		string s;
 		fmt::format_to
@@ -83,7 +83,7 @@ namespace myredis::code
 	}
 
 	template<>
-	inline string getBulkReply(const std::string_view& str)  //ÅúÁ¿»Ø¸´
+	inline string getBulkReply(const std::string_view& str)  //æ‰¹é‡å›å¤
 	{
 		string s;
 		fmt::format_to
@@ -98,7 +98,7 @@ namespace myredis::code
 
 
 	template<typename T>
-	inline void getBulkReplyTo(const T& str, std::back_insert_iterator<string> s)  //ÅúÁ¿»Ø¸´
+	inline void getBulkReplyTo(const T& str, std::back_insert_iterator<string> s)  //æ‰¹é‡å›å¤
 	{
 		fmt::format_to
 		(
@@ -110,7 +110,7 @@ namespace myredis::code
 	}
 
 	template<>
-	inline void getBulkReplyTo(const string& str, std::back_insert_iterator<string> s)  //ÅúÁ¿»Ø¸´
+	inline void getBulkReplyTo(const string& str, std::back_insert_iterator<string> s)  //æ‰¹é‡å›å¤
 	{
 		fmt::format_to
 		(
@@ -122,7 +122,7 @@ namespace myredis::code
 	}
 
 	template<>
-	inline void getBulkReplyTo(const std::string_view& str, std::back_insert_iterator<string> s)  //ÅúÁ¿»Ø¸´
+	inline void getBulkReplyTo(const std::string_view& str, std::back_insert_iterator<string> s)  //æ‰¹é‡å›å¤
 	{
 		fmt::format_to
 		(
@@ -134,7 +134,7 @@ namespace myredis::code
 	}
 
 	template<typename T>
-	inline string getSingleReply(const T& str) //×´Ì¬»Ø¸´
+	inline string getSingleReply(const T& str) //çŠ¶æ€å›å¤
 	{
 		string s;
 		fmt::format_to
@@ -147,7 +147,7 @@ namespace myredis::code
 	}
 
 	template<typename T>
-	inline void getSingleReplyTo(const T& str, std::back_insert_iterator<string> s) //×´Ì¬»Ø¸´
+	inline void getSingleReplyTo(const T& str, std::back_insert_iterator<string> s) //çŠ¶æ€å›å¤
 	{
 		fmt::format_to
 		(
@@ -157,7 +157,7 @@ namespace myredis::code
 		);
 	}
 
-	inline string getErrorReply(status errorInfo) //´íÎó»Ø¸´
+	inline string getErrorReply(status errorInfo) //é”™è¯¯å›å¤
 	{
 		string s;
 		fmt::format_to
@@ -169,7 +169,7 @@ namespace myredis::code
 		return s;
 	}
 
-	inline void getErrorReplyTo( status errorInfo, std::back_insert_iterator<string> s) //´íÎó»Ø¸´
+	inline void getErrorReplyTo( status errorInfo, std::back_insert_iterator<string> s) //é”™è¯¯å›å¤
 	{
 		fmt::format_to
 		(
@@ -179,7 +179,7 @@ namespace myredis::code
 		);
 	}
 
-	inline string getIntegerReply(int64_t number) //ÕûÊı»Ø¸´
+	inline string getIntegerReply(int64_t number) //æ•´æ•°å›å¤
 	{
 		string s;
 		fmt::format_to
@@ -191,7 +191,7 @@ namespace myredis::code
 		return s;
 	}
 
-	inline void getIntegerReplyTo(int64_t number,std::back_insert_iterator<string> s) //ÕûÊı»Ø¸´
+	inline void getIntegerReplyTo(int64_t number,std::back_insert_iterator<string> s) //æ•´æ•°å›å¤
 	{
 		fmt::format_to
 		(
@@ -204,13 +204,13 @@ namespace myredis::code
 	/*
 	*
 	* @author: Lizezheng
-	* getMultiReply:ÓÃÓÚ¸ñÊ½»¯¶àÅúÁ¿»Ø¸´
+	* getMultiReply:ç”¨äºæ ¼å¼åŒ–å¤šæ‰¹é‡å›å¤
 	* date:2021/04/18
-	* begin,end:Ò»¶Ôµü´úÆ÷
-	* lambda:Ò»¸öº¯Êı£¬½ÓÊÕÒ»¸ö²åÈëµü´úÆ÷ºÍÒ»¸öIterµü´úÆ÷£¬·µ»ØÒ»¸öÕûÊıÖµ£¬´ú±í²åÈëµÄ»Ø¸´ÊıÁ¿
+	* begin,end:ä¸€å¯¹è¿­ä»£å™¨
+	* lambda:ä¸€ä¸ªå‡½æ•°ï¼Œæ¥æ”¶ä¸€ä¸ªæ’å…¥è¿­ä»£å™¨å’Œä¸€ä¸ªIterè¿­ä»£å™¨ï¼Œè¿”å›ä¸€ä¸ªæ•´æ•°å€¼ï¼Œä»£è¡¨æ’å…¥çš„å›å¤æ•°é‡
 	*/
 	template<class Iter,typename func>
-	inline string getMultiReplyByRange(Iter begin, Iter end,func lambda) //¶àÅúÁ¿»Ø¸´
+	inline string getMultiReplyByRange(Iter begin, Iter end,func lambda) //å¤šæ‰¹é‡å›å¤
 	{
 		string s="*00000000000000\r\n";
 		auto index = s.size() - 3;
@@ -231,13 +231,13 @@ namespace myredis::code
 	}
 
 	template<typename T>
-	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const T& value) //¶àÅúÁ¿»Ø¸´
+	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const T& value) //å¤šæ‰¹é‡å›å¤
 	{
 		fmt::format_to(s, FMT_COMPILE("${}\r\n{}\r\n"), fmt::formatted_size(FMT_COMPILE("{}"), value) , value);
 	}
 
 	template<>
-	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value) //¶àÅúÁ¿»Ø¸´
+	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value) //å¤šæ‰¹é‡å›å¤
 	{
 		getIntegerReplyTo(value,s);
 	}
@@ -245,21 +245,21 @@ namespace myredis::code
 	
 
 	template<typename T, class ...Args>
-	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s,const T& value, const Args&... args) //¶àÅúÁ¿»Ø¸´
+	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s,const T& value, const Args&... args) //å¤šæ‰¹é‡å›å¤
 	{
 		fmt::format_to(s, FMT_COMPILE("${}\r\n{}\r\n"), fmt::formatted_size(FMT_COMPILE("{}"), value) , value);
 		_getMultiReplyWithOutHead(s,args...);
 	}
 
 	template<class ...Args>
-	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value, const Args&... args) //¶àÅúÁ¿»Ø¸´
+	inline void _getMultiReplyWithOutHead(std::back_insert_iterator<string> s, const int64_t& value, const Args&... args) //å¤šæ‰¹é‡å›å¤
 	{
 		getIntegerReplyTo(value, s);
 		_getMultiReplyWithOutHead(s, args...);
 	}
 
 	template<class ...Args>
-	inline void  getMultiReplyTo(std::back_insert_iterator<string> s,const Args&... args) //¶àÅúÁ¿»Ø¸´
+	inline void  getMultiReplyTo(std::back_insert_iterator<string> s,const Args&... args) //å¤šæ‰¹é‡å›å¤
 	{
 		fmt::format_to(s, FMT_COMPILE("*{}\r\n"), sizeof...(args));
 		_getMultiReplyWithOutHead(s,args...);
@@ -267,7 +267,7 @@ namespace myredis::code
 	}
 
 	template<class ...Args>
-	inline string getMultiReply(const Args&... args) //¶àÅúÁ¿»Ø¸´
+	inline string getMultiReply(const Args&... args) //å¤šæ‰¹é‡å›å¤
 	{
 		string s;
 		getMultiReplyTo(back_inserter(s),args...);
@@ -281,7 +281,7 @@ namespace myredis::code
 
 
 	template<class Iter, typename func,typename func2>
-	static string getScanReply(Iter begin, Iter end, func lambda,func2 dislambda) //¶àÅúÁ¿»Ø¸´
+	static string getScanReply(Iter begin, Iter end, func lambda,func2 dislambda) //å¤šæ‰¹é‡å›å¤
 	{
 		string s = "*00000000000000\r\n";
 		auto index = s.size() - 3;

@@ -35,7 +35,7 @@ namespace myredis::func
 			}
 			if (iter == objectMap.cend())
 			{
-				// Èç¹ûÃ»ÕÒµ½,ÔòĞÂ½¨Ò»¸ö¿ÕÁĞ±í,²¢ÔÚÍ·²¿²åÈë
+				// å¦‚æœæ²¡æ‰¾åˆ°,åˆ™æ–°å»ºä¸€ä¸ªç©ºåˆ—è¡¨,å¹¶åœ¨å¤´éƒ¨æ’å…¥
 				auto set = std::make_unique<hash_set<string>>();
 				auto ret = visitor::sadd(set, addContent);
 				objectMap.update(std::move(args[1]), std::move(set));
@@ -58,7 +58,7 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -227,7 +227,7 @@ namespace myredis::func
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 

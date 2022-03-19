@@ -27,11 +27,11 @@ namespace myredis
      
         AOFSaver::saveToTempFile();
         //TODO:fork on linux
-        tmp=visitor::MultiDBSerialize();//Íê³ÉÊı¾İ¿âĞòÁĞ»¯
+        tmp=visitor::MultiDBSerialize();//å®Œæˆæ•°æ®åº“åºåˆ—åŒ–
 
-        bool waiting =true;//ÅĞ¶ÏÊÇ·ñÒªµÈ´ı
+        bool waiting =true;//åˆ¤æ–­æ˜¯å¦è¦ç­‰å¾…
         asio::steady_timer clk(ioc);
-        asio::post(getThreadPool(), [&] //½«Ğ´´ÅÅÌµÄ¹¤×÷½»¸øÏß³Ì³ØÖĞÁíÍâÒ»¸öÏß³ÌÖ´ĞĞ
+        asio::post(getThreadPool(), [&] //å°†å†™ç£ç›˜çš„å·¥ä½œäº¤ç»™çº¿ç¨‹æ± ä¸­å¦å¤–ä¸€ä¸ªçº¿ç¨‹æ‰§è¡Œ
         {
             FILE* fp = nullptr;
             this_thread::sleep_for(30s);
@@ -63,15 +63,15 @@ namespace myredis
                 printlog(e);
             };
             ioc.post([&] {waiting = false; clk.cancel(); });
-            //ioc.post£º½«Õâ¸öÈÎÎñ½»¸øiocËùÔÚµÄÖ÷Ïß³ÌÖ´ĞĞ£¬±£Ö¤ÁËÏß³Ì°²È«
+            //ioc.postï¼šå°†è¿™ä¸ªä»»åŠ¡äº¤ç»™iocæ‰€åœ¨çš„ä¸»çº¿ç¨‹æ‰§è¡Œï¼Œä¿è¯äº†çº¿ç¨‹å®‰å…¨
         });
         if (waiting)
         {
-            clk.expires_after(steady_clock::duration::max());//µÈµ½ºïÄêÂíÔÂ
+            clk.expires_after(steady_clock::duration::max());//ç­‰åˆ°çŒ´å¹´é©¬æœˆ
             try
             {
                 co_await clk.async_wait(asio::use_awaitable);
-                //Ò»Ö±µÈµ½ÎÄ¼şioÍê³É£¬ÁíÍâÒ»¸öÏß³ÌÖ÷¶¯´ò¶Ï¼ÆÊ±Æ÷
+                //ä¸€ç›´ç­‰åˆ°æ–‡ä»¶ioå®Œæˆï¼Œå¦å¤–ä¸€ä¸ªçº¿ç¨‹ä¸»åŠ¨æ‰“æ–­è®¡æ—¶å™¨
             }
             catch (const exception& e){}
         }
@@ -84,12 +84,12 @@ namespace myredis
         asio::co_spawn(ioc, [&ioc] ()->asio::awaitable<void>
         {
             asio::steady_timer clk(ioc);
-            clk.expires_after(1s);//¼ä¸ôÒ»¶ÎÊ±¼ä±£´æ´ÅÅÌ
+            clk.expires_after(1s);//é—´éš”ä¸€æ®µæ—¶é—´ä¿å­˜ç£ç›˜
             while (true)
             {
-                co_await clk.async_wait(asio::use_awaitable);//Ë¯¾õ,µÈ´ı»½ĞÑ
+                co_await clk.async_wait(asio::use_awaitable);//ç¡è§‰,ç­‰å¾…å”¤é†’
                 assert((fmt::print("start RDBSave\n"), 1));
-                co_await saveDBDetail(ioc);//±£´æÊı¾İ¿â
+                co_await saveDBDetail(ioc);//ä¿å­˜æ•°æ®åº“
                 assert((fmt::print("end RDBSave\n"), 1));
                 clk.expires_after(getDurationTime());
             }

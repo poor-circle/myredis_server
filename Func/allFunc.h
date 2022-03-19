@@ -1,5 +1,5 @@
 #pragma once
-//这个头文件负责包含所有用到的Func
+//杩欎釜澶存枃浠惰礋璐ｅ寘鍚墍鏈夌敤鍒扮殑Func
 #include "keyFunc.h"
 #include "stringFunc.h"
 #include "connectFunc.h"

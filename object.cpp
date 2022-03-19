@@ -49,7 +49,7 @@ namespace myredis
 			expireHeap.emplace(iter);
 	}
 
-	//¹ıÆÚkeyµÄÖ÷¶¯À¬»ø»ØÊÕ
+	//è¿‡æœŸkeyçš„ä¸»åŠ¨åƒåœ¾å›æ”¶
 	asio::awaitable<void> objectMap::expiredKeyCollecting()
 	{
 		assert((fmt::print("start expiredKey scan\n"), 1));
@@ -71,40 +71,40 @@ namespace myredis
 				assert(map.size() == map.expireHeap.size());
 				++cnt;
 				auto now = steady_clock::now();
-				if (cnt%10==0&&now > pre_time + long_work_time)//À¬»ø»ØÊÕÉÏÏŞÊ±¼ä
+				if (cnt%10==0&&now > pre_time + long_work_time)//åƒåœ¾å›æ”¶ä¸Šé™æ—¶é—´
 				{
 					assert((fmt::print("then sleep:{},work:{}us\n\n", tp, (now- pre_time)/1us),1));
 					cnt = 0;
 					pre_index = i;
 					sleepTime = max<double>(minsleepTime.count(),sleepTime/ downRate);
-					tp = max(minsleepTime, min(milliseconds((int)sleepTime), stdsleepTime/2));//ÓĞÃ»»ØÊÕµÄÀ¬»ø£¬Ë¯ÃßÊ±¼ä¼õ°ë£¨ÇÒÊ¹ÓÃ¿ìÆô¶¯£¬Èç¹ûË¯ÃßÊ±¼ä¹ı³¤Á¢¼´»Ö¸´µ½±ê×¼Ë¯ÃßÊ±¼ä£©
+					tp = max(minsleepTime, min(milliseconds((int)sleepTime), stdsleepTime/2));//æœ‰æ²¡å›æ”¶çš„åƒåœ¾ï¼Œç¡çœ æ—¶é—´å‡åŠï¼ˆä¸”ä½¿ç”¨å¿«å¯åŠ¨ï¼Œå¦‚æœç¡çœ æ—¶é—´è¿‡é•¿ç«‹å³æ¢å¤åˆ°æ ‡å‡†ç¡çœ æ—¶é—´ï¼‰
 					clk.expires_after(tp);
 					assert((fmt::print("least element:{}\n", map.expireHeap.size()), 1));
 					//assert(map.map.size() == map.expireHeap.size());
 					assert((fmt::print("stop expiredKey scan\n"), 1));
-					co_await clk.async_wait(asio::use_awaitable);//ÈÃ³öĞ­³Ì¿ØÖÆÈ¨
+					co_await clk.async_wait(asio::use_awaitable);//è®©å‡ºåç¨‹æ§åˆ¶æƒ
 					assert((fmt::print("start expiredKey scan\n"), 1));
-					pre_time = steady_clock::now();//¿ªÊ¼ĞÂÒ»ÂÖ»ØÊÕ£¬ÖØÉè³õÊ¼Ê±¼ä
+					pre_time = steady_clock::now();//å¼€å§‹æ–°ä¸€è½®å›æ”¶ï¼Œé‡è®¾åˆå§‹æ—¶é—´
 				}
 			}
 			assert((fmt::print("least element:{}\n",map.expireHeap.size()),1));
 			//assert(map.map.size() == map.expireHeap.size());
 			i = (i + 1) % data_base_count;
-			if (i == pre_index)//ÈÆÁËÒ»È¦ÁË£¬ËùÓĞµÄÀ¬»ø¶¼»ØÊÕ¸É¾»ÁË
+			if (i == pre_index)//ç»•äº†ä¸€åœˆäº†ï¼Œæ‰€æœ‰çš„åƒåœ¾éƒ½å›æ”¶å¹²å‡€äº†
 			{
 				assert((fmt::print("then sleep:{},work:{}us\n\n", tp, (steady_clock::now()-pre_time)/1us),1));
 				sleepTime = min<double>(maxsleepTime.count(), sleepTime*riseRate);
-				tp = min(maxsleepTime, milliseconds((int)sleepTime));//Ã»Ê²Ã´À¬»ø£¬Ë¯ÃßÊ±¼ä¼Ó±¶
+				tp = min(maxsleepTime, milliseconds((int)sleepTime));//æ²¡ä»€ä¹ˆåƒåœ¾ï¼Œç¡çœ æ—¶é—´åŠ å€
 				clk.expires_after(tp);
 				assert((fmt::print("stop expiredKey scan,then sleep:{}\n\n", tp), 1));
-				co_await clk.async_wait(asio::use_awaitable);//ÈÃ³öĞ­³Ì¿ØÖÆÈ¨
+				co_await clk.async_wait(asio::use_awaitable);//è®©å‡ºåç¨‹æ§åˆ¶æƒ
 				assert((fmt::print("start expiredKey scan\n"), 1));
-				pre_time = steady_clock::now();//¿ªÊ¼ĞÂÒ»ÂÖ»ØÊÕ£¬ÖØÉè³õÊ¼Ê±¼ä
+				pre_time = steady_clock::now();//å¼€å§‹æ–°ä¸€è½®å›æ”¶ï¼Œé‡è®¾åˆå§‹æ—¶é—´
 			}
 		} while (true);
 	}
 
-	//TODO::²åÈëĞèÒª¼ì²éÊÇ·ñĞèÒªÌÔÌ­Ä³¸ö»º´æ
+	//TODO::æ’å…¥éœ€è¦æ£€æŸ¥æ˜¯å¦éœ€è¦æ·˜æ±°æŸä¸ªç¼“å­˜
 	void objectMap::update(keyInfo&& key, object&& obj)
 	{
 		keylist.emplace_back(std::move(key));
@@ -120,7 +120,7 @@ namespace myredis
 		}
 		else
 		{
-			if (ans->first.iter->getLiveTime() != key.getLiveTime())//¸üĞÂ¹ıÆÚÊ±¼ä
+			if (ans->first.iter->getLiveTime() != key.getLiveTime())//æ›´æ–°è¿‡æœŸæ—¶é—´
 			{
 				_updateExpireTime(ans->first.iter, key.getLiveTime());
 			}
@@ -146,7 +146,7 @@ namespace myredis
 		return ans.second?ans.first:map.end();
 	}
 
-	//Ã¿´Î²éÕÒ¶¼ĞèÒª¸üĞÂ»º´æÓÅÏÈ¼¶
+	//æ¯æ¬¡æŸ¥æ‰¾éƒ½éœ€è¦æ›´æ–°ç¼“å­˜ä¼˜å…ˆçº§
 	hash_map<keyIter, object>::iterator objectMap::find(const string& str)
 	{
 		string& temp = (string&)str;
@@ -154,7 +154,7 @@ namespace myredis
 		auto ans = map.find(prev(keylist.end()));
 		temp = std::move(keylist.back().str);
 		keylist.pop_back();
-		//¹ıÆÚ´¦Àí
+		//è¿‡æœŸå¤„ç†
 		if (ans!=map.end() && ans->first.iter->isExpired())
 		{
 			assert((fmt::print("erase expired key:{}\n", ans->first.iter->getStr()), 1));
@@ -168,13 +168,13 @@ namespace myredis
 			return ans;
 	}
 
-	//Ã¿´Î²éÕÒ¶¼ĞèÒª¸üĞÂ»º´æÓÅÏÈ¼¶
+	//æ¯æ¬¡æŸ¥æ‰¾éƒ½éœ€è¦æ›´æ–°ç¼“å­˜ä¼˜å…ˆçº§
 	hash_map<keyIter, object>::iterator objectMap::find(string&& str)
 	{
 		keylist.emplace_back(std::move(str));
 		auto ans = map.find(prev(keylist.end()));
 		keylist.pop_back();
-		//¹ıÆÚ´¦Àí
+		//è¿‡æœŸå¤„ç†
 		if (ans != map.end() && ans->first.iter->isExpired())
 		{
 			assert((fmt::print("erase expired key:{}\n", ans->first.iter->getStr()), 1));
@@ -188,19 +188,19 @@ namespace myredis
 			return ans;
 	}
 
-	//´Óconst keyµÄiter»ñÈ¡const value,²»ÌÔÌ­»º´æ
+	//ä»const keyçš„iterè·å–const value,ä¸æ·˜æ±°ç¼“å­˜
 	const object& objectMap::find(boost::container::list<keyInfo>::const_iterator iter)
 	{
 		return map.find(*(boost::container::list<keyInfo>::iterator*)(&iter))->second;
 	}
 
-	//»ñÈ¡const keyµÄiter£¬²»ÌÔÌ­»º´æ
+	//è·å–const keyçš„iterï¼Œä¸æ·˜æ±°ç¼“å­˜
 	hash_map<keyIter, object>::const_iterator objectMap::cbegin() const
 	{
 		return map.cbegin();
 	}
 
-	//»ñÈ¡const keyµÄiter£¬²»ÌÔÌ­»º´æ
+	//è·å–const keyçš„iterï¼Œä¸æ·˜æ±°ç¼“å­˜
 	hash_map<keyIter, object>::const_iterator objectMap::cend() const
 	{
 		return map.end();

@@ -3,13 +3,13 @@
 #include "func.h"
 namespace myredis::func
 {
-	//ÔÚÕâÀïÉùÃ÷¸÷ÖÖº¯ÊıÀàĞÍ
+	//åœ¨è¿™é‡Œå£°æ˜å„ç§å‡½æ•°ç±»å‹
 
-	//Õâ¸öÎÄ¼ş¸ºÔğ¸÷ÖÖºÍstringÓĞ¹ØµÄº¯Êı
+	//è¿™ä¸ªæ–‡ä»¶è´Ÿè´£å„ç§å’Œstringæœ‰å…³çš„å‡½æ•°
 
-	//ÉèÖÃÒ»¸ö×Ö·û´®
+	//è®¾ç½®ä¸€ä¸ªå­—ç¬¦ä¸²
 	std::optional<string> set(context&& ctx) noexcept;
-	//»ñÈ¡Ò»¸ö×Ö·û´®
+	//è·å–ä¸€ä¸ªå­—ç¬¦ä¸²
 	std::optional<string> get(context&& ctx) noexcept;
 	//	sgetrange	created by lizezheng	date:2021/4/18
 	std::optional<string> setrange(context&& ctx) noexcept;

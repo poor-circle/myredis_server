@@ -3,9 +3,9 @@
 #include "func.h"
 namespace myredis::func
 {
-	//ÔÚÕâÀïÉùÃ÷¸÷ÖÖº¯ÊıÀàĞÍ
+	//åœ¨è¿™é‡Œå£°æ˜å„ç§å‡½æ•°ç±»å‹
 
-	//Õâ¸öÎÄ¼ş¸ºÔğ¸÷ÖÖºÍkeyÓĞ¹ØµÄº¯Êı
+	//è¿™ä¸ªæ–‡ä»¶è´Ÿè´£å„ç§å’Œkeyæœ‰å…³çš„å‡½æ•°
 
 	//	ping		created by lizezheng	date:2021/4/19
 	std::optional<string> ping(context&& ctx) noexcept;

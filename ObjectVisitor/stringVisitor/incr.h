@@ -2,16 +2,16 @@
 #include "../../stdafx.h"
 #include "../../code.h"
 #include "../../object.hpp"
-//Ã¿Ò»¸övisitor¶¼ÒªÊµÏÖËùÓĞÀàĞÍµÄ²Ù×÷
-//visitor²ãº¯Êı£¬¶Ôvalue¶ÔÏóÖ´ĞĞ¾ßÌåµÄ²Ù×÷
-//value¶ÔÏó¿ÉÄÜÓĞ¶àÖÖ±àÂëºÍÀàĞÍ£¬¶ÔÓÚ²»Í¬µÄ±àÂëĞèÒª²»Í¬µÄÊµÏÖ·½Ê½£¬Õâ¾ÍÊÇ¶àÌ¬ĞÔ£º
-//ÀıÈç£¬getº¯ÊıµÄµ×²ãÊµÏÖ£º
-//¶ÔÓÚint64_tºÍdouble:ĞèÒª×ª»»³É×Ö·û´®
-//¶ÔÓÚstringÀàĞÍÔòÖ±½Ó·µ»Ø×Ö·û´®±¾Éí¼´¿É
-//¶ÔÓÚ·Ç×Ö·û´®µÄÀàĞÍ£¬Ê¹ÓÃgetÊÇ²»ºÏ·¨µÄ
+//æ¯ä¸€ä¸ªvisitoréƒ½è¦å®ç°æ‰€æœ‰ç±»å‹çš„æ“ä½œ
+//visitorå±‚å‡½æ•°ï¼Œå¯¹valueå¯¹è±¡æ‰§è¡Œå…·ä½“çš„æ“ä½œ
+//valueå¯¹è±¡å¯èƒ½æœ‰å¤šç§ç¼–ç å’Œç±»å‹ï¼Œå¯¹äºä¸åŒçš„ç¼–ç éœ€è¦ä¸åŒçš„å®ç°æ–¹å¼ï¼Œè¿™å°±æ˜¯å¤šæ€æ€§ï¼š
+//ä¾‹å¦‚ï¼Œgetå‡½æ•°çš„åº•å±‚å®ç°ï¼š
+//å¯¹äºint64_tå’Œdouble:éœ€è¦è½¬æ¢æˆå­—ç¬¦ä¸²
+//å¯¹äºstringç±»å‹åˆ™ç›´æ¥è¿”å›å­—ç¬¦ä¸²æœ¬èº«å³å¯
+//å¯¹äºéå­—ç¬¦ä¸²çš„ç±»å‹ï¼Œä½¿ç”¨getæ˜¯ä¸åˆæ³•çš„
 namespace myredis::visitor
 {
-    // incr:Ö»ÊÊÓÃÓÚint64_t¶ÔÏó
+    // incr:åªé€‚ç”¨äºint64_tå¯¹è±¡
     template<typename T>
     std::pair<code::status, int64_t> incr(T& object)
     {
@@ -44,7 +44,7 @@ namespace myredis::visitor
         return myredis_succeed(object);
     }
 
-    //incrbyfloatº¯Êı:Ö»ÊÊÓÃÓÚdoubleºÍint64_t¶ÔÏó
+    //incrbyfloatå‡½æ•°:åªé€‚ç”¨äºdoubleå’Œint64_tå¯¹è±¡
     template<typename T>
     std::pair<code::status, string&> incrbyfloat(T& value, object& obj, double increment)
     {

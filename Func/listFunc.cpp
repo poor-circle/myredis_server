@@ -38,7 +38,7 @@ namespace myredis::func {
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.cend()) 
 			{
-				// Èç¹ûÃ»ÕÒµ½,ÔòĞÂ½¨Ò»¸ö¿ÕÁĞ±í,²¢ÔÚÍ·²¿²åÈë
+				// å¦‚æœæ²¡æ‰¾åˆ°,åˆ™æ–°å»ºä¸€ä¸ªç©ºåˆ—è¡¨,å¹¶åœ¨å¤´éƒ¨æ’å…¥
 				auto list = std::make_unique<deque<string>>();
 				auto ret = visitor::lpush(list, pushContent, args[1],ctx.session);
 				objectMap.update(std::move(args[1]), std::move(list));
@@ -61,7 +61,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 	
@@ -85,7 +85,7 @@ namespace myredis::func {
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.cend())
 			{
-				// Èç¹ûÃ»ÕÒµ½,Ê²Ã´¶¼²»×ö
+				// å¦‚æœæ²¡æ‰¾åˆ°,ä»€ä¹ˆéƒ½ä¸åš
 				return code::getIntegerReply(0);
 			}
 			else
@@ -105,7 +105,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -125,7 +125,7 @@ namespace myredis::func {
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.cend())
 			{
-				// Èç¹ûÃ»ÕÒµ½,¿´×÷ÊÇ¿Õlist ·µ»Ø0
+				// å¦‚æœæ²¡æ‰¾åˆ°,çœ‹ä½œæ˜¯ç©ºlist è¿”å›0
 				return code::getIntegerReply(0);
 			}
 			else
@@ -145,7 +145,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -165,12 +165,12 @@ namespace myredis::func {
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.cend())
 			{
-				// ÕÒ²»µ½¶ÔÓ¦µÄkey·µ»Ønil
+				// æ‰¾ä¸åˆ°å¯¹åº”çš„keyè¿”å›nil
 				return code::nil;
 			}
 			else
 			{
-				// start,end µ½¶ÔÓ¦µÄlrangeº¯ÊıÀïÖ´ĞĞ
+				// start,end åˆ°å¯¹åº”çš„lrangeå‡½æ•°é‡Œæ‰§è¡Œ
 				int64_t start, end;
 				if (try_lexical_convert(args[2], start) == false ||
 					try_lexical_convert(args[3], end) == false)
@@ -200,7 +200,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -224,7 +224,7 @@ namespace myredis::func {
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.cend())
 			{
-				// Èç¹ûÃ»ÕÒµ½,ÔòĞÂ½¨Ò»¸ö¿ÕÁĞ±í,²¢ÔÚÍ·²¿²åÈë
+				// å¦‚æœæ²¡æ‰¾åˆ°,åˆ™æ–°å»ºä¸€ä¸ªç©ºåˆ—è¡¨,å¹¶åœ¨å¤´éƒ¨æ’å…¥
 				auto list = std::make_unique<deque<string>>();
 				auto ret = visitor::rpush(list, pushContent,args[1],ctx.session);
 				objectMap.update(std::move(args[1]), std::move(list));
@@ -247,7 +247,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -271,7 +271,7 @@ namespace myredis::func {
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.cend())
 			{
-				// Èç¹ûÃ»ÕÒµ½,Ê²Ã´¶¼²»×ö
+				// å¦‚æœæ²¡æ‰¾åˆ°,ä»€ä¹ˆéƒ½ä¸åš
 				return code::getIntegerReply(0);
 			}
 			else
@@ -291,7 +291,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -330,7 +330,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -369,7 +369,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -378,7 +378,7 @@ namespace myredis::func {
 	* @author:tigerwang 
 	* date:2021/4/23
 	* update:
-	* 2021/4/30 ½«rpoplpush¸ÄÎªÏÈpopºópushµÄ·½Ê½. ¸±×÷ÓÃ:µ±sourceÎª¿Õlist,destination²»´æÔÚÊ±,»á³õÊ¼»¯destinationÎª¿ÕÁĞ±í
+	* 2021/4/30 å°†rpoplpushæ”¹ä¸ºå…ˆpopåpushçš„æ–¹å¼. å‰¯ä½œç”¨:å½“sourceä¸ºç©ºlist,destinationä¸å­˜åœ¨æ—¶,ä¼šåˆå§‹åŒ–destinationä¸ºç©ºåˆ—è¡¨
 	*/
 	std::optional<string> rpoplpush(context&& ctx) noexcept
 	{
@@ -393,16 +393,16 @@ namespace myredis::func {
 
 			if (srcIter == objectMap.cend())
 			{
-				// source²»´æÔÚ
+				// sourceä¸å­˜åœ¨
 				return code::nil;
 			}
-			// È·ÈÏsourceÊÇ·ñÊ±list
+			// ç¡®è®¤sourceæ˜¯å¦æ—¶list
 			auto srcLenRet = visit([](auto& e)
 			{
 				return visitor::llen(e);
 			}, srcIter->second);
 
-			// ²»ÊÇlist ·µ»Øerror;
+			// ä¸æ˜¯list è¿”å›error;
 			if (srcLenRet.first != code::status::success)
 			{
 				return code::getErrorReply(srcLenRet.first);
@@ -411,23 +411,23 @@ namespace myredis::func {
 			auto destnIter = srcIter;
 			if (args[1] != args[2])
 			{
-				// Èç¹ûsourceºÍdestination²»Í¬,ÕÒÒ»ÏÂdestination¶ÔÓ¦µÄ
+				// å¦‚æœsourceå’Œdestinationä¸åŒ,æ‰¾ä¸€ä¸‹destinationå¯¹åº”çš„
 				destnIter = objectMap.find(args[2]);
 				if (destnIter == objectMap.cend()) {
-					// ÕÒ²»µ½destination 
+					// æ‰¾ä¸åˆ°destination 
 					object list = std::make_unique<deque<string>>();
 					string destnKey = args[2];
-					// ĞÂ½¨Ò»¸ö¿ÕÁĞ±í
+					// æ–°å»ºä¸€ä¸ªç©ºåˆ—è¡¨
 					objectMap.update(std::move(destnKey), std::move(list));
 				}
 				else
 				{
-					// ÕÒµ½destination,È·ÈÏÊÇ·ñÊÇlist
+					// æ‰¾åˆ°destination,ç¡®è®¤æ˜¯å¦æ˜¯list
 					auto lenRet = visit([](auto& e)
 					{
 						return visitor::llen(e);
 					}, destnIter->second);
-					// ²»ÊÇlist ·µ»Øerror;
+					// ä¸æ˜¯list è¿”å›error;
 					if (lenRet.first != code::status::success)
 					{
 						return code::getErrorReply(lenRet.first);
@@ -435,19 +435,19 @@ namespace myredis::func {
 				}
 			}
 
-			// destinationºÍsource¾ùÎªList
+			// destinationå’Œsourceå‡ä¸ºList
 			auto popRet = visit([](auto& e)
 			{
 				return visitor::rpop(e);
 			}, srcIter->second);
 
-			// sourceÎª¿ÕÁĞ±í
+			// sourceä¸ºç©ºåˆ—è¡¨
 			if (popRet.first != code::status::success)
 			{
 				return code::nil;
 			}
 
-			// »ñÈ¡popµÄÄÚÈİ
+			// è·å–popçš„å†…å®¹
 			std::vector<string> pushContent;
 			pushContent.emplace_back(popRet.second);
 			string destnKey = args[2];
@@ -469,7 +469,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 	
@@ -493,7 +493,7 @@ namespace myredis::func {
 			}
 			else
 			{
-				// ½«index×ª»»ÎªÕûÊı
+				// å°†indexè½¬æ¢ä¸ºæ•´æ•°
 				int64_t index;
 				if (try_lexical_convert(args[2], index) == false
 					)
@@ -516,7 +516,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -540,7 +540,7 @@ namespace myredis::func {
 			}
 			else
 			{
-				// ½«index×ª»»ÎªÕûÊı
+				// å°†indexè½¬æ¢ä¸ºæ•´æ•°
 				int64_t index;
 				if (try_lexical_convert(args[2], index) == false
 					)
@@ -565,7 +565,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -585,7 +585,7 @@ namespace myredis::func {
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.cend())
 			{
-				// ÕÒ²»µ½¶ÔÓ¦µÄkey·µ»Ønil
+				// æ‰¾ä¸åˆ°å¯¹åº”çš„keyè¿”å›nil
 				return code::key_error;
 			}
 			else
@@ -614,7 +614,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -634,12 +634,12 @@ namespace myredis::func {
 			auto iter = objectMap.find(args[1]);
 			if (iter == objectMap.cend())
 			{
-				// ÕÒ²»µ½¶ÔÓ¦µÄkey·µ»Ønil
+				// æ‰¾ä¸åˆ°å¯¹åº”çš„keyè¿”å›nil
 				return code::getIntegerReply(0);
 			}
 			else
 			{
-				// start,end µ½¶ÔÓ¦µÄlrangeº¯ÊıÀïÖ´ĞĞ
+				// start,end åˆ°å¯¹åº”çš„lrangeå‡½æ•°é‡Œæ‰§è¡Œ
 				int64_t count;
 				if (try_lexical_convert(args[2], count) == false )
 				{
@@ -663,7 +663,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -713,7 +713,7 @@ namespace myredis::func {
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -732,11 +732,11 @@ namespace myredis::func {
 			if (args.size() <3)
 				return code::args_count_error;
 			int64_t sec;
-			if (!try_lexical_convert(args.back(), sec) || sec < 0)//µÃµ½×èÈûÊ±¼ä
+			if (!try_lexical_convert(args.back(), sec) || sec < 0)//å¾—åˆ°é˜»å¡æ—¶é—´
 			{
 				return code::args_illegal_error;
 			}
-			//Èç¹ûÏÖÔÚÒÑ¾­ÓĞ¿ÉÒÔ·µ»ØµÄstring£¬Ö±½Ó·µ»Ø
+			//å¦‚æœç°åœ¨å·²ç»æœ‰å¯ä»¥è¿”å›çš„stringï¼Œç›´æ¥è¿”å›
 			for (auto arg = args.begin() + 1, endarg = args.end() - 1; arg != endarg; ++arg)
 			{
 				auto iter = objectMap.find(*arg);
@@ -748,7 +748,7 @@ namespace myredis::func {
 					}, iter->second);
 					if (ret.first == code::status::success)
 					{
-						//·µ»ØkeyµÄÃû×ÖºÍkeyµÄÖµ
+						//è¿”å›keyçš„åå­—å’Œkeyçš„å€¼
 						return code::getMultiReply(*arg, ret.second);
 					}
 					else if (ret.first == code::status::object_type_error)
@@ -757,16 +757,16 @@ namespace myredis::func {
 					}
 				}
 			}
-			//·ñÔò£¬×¼±¸½øÈë×èÈûÌ¬
+			//å¦åˆ™ï¼Œå‡†å¤‡è¿›å…¥é˜»å¡æ€
 			auto watch_list = std::make_shared<watcher>();
-			//Ìí¼Ó¼àÊÓÆ÷£¬ÓÃÓÚÔÚºÏÊÊµÄÇé¿öÏÂ»½ĞÑ»á»°
+			//æ·»åŠ ç›‘è§†å™¨ï¼Œç”¨äºåœ¨åˆé€‚çš„æƒ…å†µä¸‹å”¤é†’ä¼šè¯
 			objectMap::addWatches(args.begin() + 1, args.end() - 1,ctx.session.getDataBaseID(),ctx.session.getSessionID(), watch_list,
 				[&objectMap](const string& keyName)
 				{
 					auto iter = objectMap.find(keyName);
-					optional<string> ret=nullopt;//·µ»Ø¿Õ£¬´ú±íÊ§°Ü£¬¼àÊÓÆ÷½«¼ÌĞø¼àÊÓ
-					//·µ»Ø·Ç¿ÕÖµ£¬´ú±í¼àÊÓ³É¹¦£¬¸ÃÏß³ÌµÄËùÓĞ¼àÊÓÆ÷½«±»É¾³ı£¬²¢½«×Ö·û´®·µ»Ø¸ø¿Í»§¶Ë£¬ÍË³ö×èÈû×´Ì¬
-					//Èç¹û¶ÓÁĞÎª¿Õ£¬·µ»Ø¿Õ£¬¼ÌĞø¼àÊÓ¡£Èç¹û¶ÓÁĞ²»Îª¿Õ£¬µ¯³ö¶ÓÁĞµÄ¶ÓÊ×£¬Í£Ö¹×èÈû£¬½«Æä·µ»Ø¸ø¿Í»§¶Ë
+					optional<string> ret=nullopt;//è¿”å›ç©ºï¼Œä»£è¡¨å¤±è´¥ï¼Œç›‘è§†å™¨å°†ç»§ç»­ç›‘è§†
+					//è¿”å›éç©ºå€¼ï¼Œä»£è¡¨ç›‘è§†æˆåŠŸï¼Œè¯¥çº¿ç¨‹çš„æ‰€æœ‰ç›‘è§†å™¨å°†è¢«åˆ é™¤ï¼Œå¹¶å°†å­—ç¬¦ä¸²è¿”å›ç»™å®¢æˆ·ç«¯ï¼Œé€€å‡ºé˜»å¡çŠ¶æ€
+					//å¦‚æœé˜Ÿåˆ—ä¸ºç©ºï¼Œè¿”å›ç©ºï¼Œç»§ç»­ç›‘è§†ã€‚å¦‚æœé˜Ÿåˆ—ä¸ä¸ºç©ºï¼Œå¼¹å‡ºé˜Ÿåˆ—çš„é˜Ÿé¦–ï¼Œåœæ­¢é˜»å¡ï¼Œå°†å…¶è¿”å›ç»™å®¢æˆ·ç«¯
 					if (iter != objectMap.cend())
 					{
 						auto ans = visit([](auto& e)
@@ -775,20 +775,20 @@ namespace myredis::func {
 						}, iter->second);
 						if (ans.first == code::status::success)
 						{
-							//·µ»ØkeyµÄÃû×ÖºÍkeyµÄÖµ
+							//è¿”å›keyçš„åå­—å’Œkeyçš„å€¼
 							ret = code::getMultiReply(keyName, ans.second);
 						}
 					}
 					return ret;
 				});
-			//½«»á»°ÉèÎª×èÈûÌ¬,²¢ÉèÖÃ×èÈûÊ±¼ä
+			//å°†ä¼šè¯è®¾ä¸ºé˜»å¡æ€,å¹¶è®¾ç½®é˜»å¡æ—¶é—´
 			ctx.session.setBlocked(code::multi_nil,seconds(sec), watch_list);
 			return nullopt;
 		}
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -807,11 +807,11 @@ namespace myredis::func {
 			if (args.size() < 3)
 				return code::args_count_error;
 			int64_t sec;
-			if (!try_lexical_convert(args.back(), sec) || sec < 0)//µÃµ½×èÈûÊ±¼ä
+			if (!try_lexical_convert(args.back(), sec) || sec < 0)//å¾—åˆ°é˜»å¡æ—¶é—´
 			{
 				return code::args_illegal_error;
 			}
-			//Èç¹ûÏÖÔÚÒÑ¾­ÓĞ¿ÉÒÔ·µ»ØµÄstring£¬Ö±½Ó·µ»Ø
+			//å¦‚æœç°åœ¨å·²ç»æœ‰å¯ä»¥è¿”å›çš„stringï¼Œç›´æ¥è¿”å›
 			for (auto arg = args.begin() + 1, endarg = args.end() - 1; arg != endarg; ++arg)
 			{
 				auto iter = objectMap.find(*arg);
@@ -823,7 +823,7 @@ namespace myredis::func {
 					}, iter->second);
 					if (ret.first == code::status::success)
 					{
-						//·µ»ØkeyµÄÃû×ÖºÍkeyµÄÖµ
+						//è¿”å›keyçš„åå­—å’Œkeyçš„å€¼
 						return code::getMultiReply(*arg, ret.second);
 					}
 					else if (ret.first == code::status::object_type_error)
@@ -832,16 +832,16 @@ namespace myredis::func {
 					}
 				}
 			}
-			//·ñÔò£¬×¼±¸½øÈë×èÈûÌ¬
+			//å¦åˆ™ï¼Œå‡†å¤‡è¿›å…¥é˜»å¡æ€
 			auto watch_list = std::make_shared<watcher>();
-			//Ìí¼Ó¼àÊÓÆ÷£¬ÓÃÓÚÔÚºÏÊÊµÄÇé¿öÏÂ»½ĞÑ»á»°
+			//æ·»åŠ ç›‘è§†å™¨ï¼Œç”¨äºåœ¨åˆé€‚çš„æƒ…å†µä¸‹å”¤é†’ä¼šè¯
 			objectMap::addWatches(args.begin() + 1, args.end() - 1, ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
 				[&objectMap](const string& keyName)
 			{
 				auto iter = objectMap.find(keyName);
-				optional<string> ret = nullopt;//·µ»Ø¿Õ£¬´ú±íÊ§°Ü£¬¼àÊÓÆ÷½«¼ÌĞø¼àÊÓ
-				//·µ»Ø·Ç¿ÕÖµ£¬´ú±í¼àÊÓ³É¹¦£¬¸ÃÏß³ÌµÄËùÓĞ¼àÊÓÆ÷½«±»É¾³ı£¬²¢½«×Ö·û´®·µ»Ø¸ø¿Í»§¶Ë£¬ÍË³ö×èÈû×´Ì¬
-				//Èç¹û¶ÓÁĞÎª¿Õ£¬·µ»Ø¿Õ£¬¼ÌĞø¼àÊÓ¡£Èç¹û¶ÓÁĞ²»Îª¿Õ£¬µ¯³ö¶ÓÁĞµÄ¶ÓÊ×£¬Í£Ö¹×èÈû£¬½«Æä·µ»Ø¸ø¿Í»§¶Ë
+				optional<string> ret = nullopt;//è¿”å›ç©ºï¼Œä»£è¡¨å¤±è´¥ï¼Œç›‘è§†å™¨å°†ç»§ç»­ç›‘è§†
+				//è¿”å›éç©ºå€¼ï¼Œä»£è¡¨ç›‘è§†æˆåŠŸï¼Œè¯¥çº¿ç¨‹çš„æ‰€æœ‰ç›‘è§†å™¨å°†è¢«åˆ é™¤ï¼Œå¹¶å°†å­—ç¬¦ä¸²è¿”å›ç»™å®¢æˆ·ç«¯ï¼Œé€€å‡ºé˜»å¡çŠ¶æ€
+				//å¦‚æœé˜Ÿåˆ—ä¸ºç©ºï¼Œè¿”å›ç©ºï¼Œç»§ç»­ç›‘è§†ã€‚å¦‚æœé˜Ÿåˆ—ä¸ä¸ºç©ºï¼Œå¼¹å‡ºé˜Ÿåˆ—çš„é˜Ÿé¦–ï¼Œåœæ­¢é˜»å¡ï¼Œå°†å…¶è¿”å›ç»™å®¢æˆ·ç«¯
 				if (iter != objectMap.cend())
 				{
 					auto ans = visit([](auto& e)
@@ -850,20 +850,20 @@ namespace myredis::func {
 					}, iter->second);
 					if (ans.first == code::status::success)
 					{
-						//·µ»ØkeyµÄÃû×ÖºÍkeyµÄÖµ
+						//è¿”å›keyçš„åå­—å’Œkeyçš„å€¼
 						ret = code::getMultiReply(keyName,ans.second,1);
 					}
 				}
 				return ret;
 			});
-			//½«»á»°ÉèÎª×èÈûÌ¬,²¢ÉèÖÃ×èÈûÊ±¼ä
+			//å°†ä¼šè¯è®¾ä¸ºé˜»å¡æ€,å¹¶è®¾ç½®é˜»å¡æ—¶é—´
 			ctx.session.setBlocked(code::multi_nil, seconds(sec), watch_list);
 			return nullopt;
 		}
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 
@@ -882,23 +882,23 @@ namespace myredis::func {
 			if (args.size() != 4)
 				return code::args_count_error;
 			int64_t sec;
-			if (!try_lexical_convert(args.back(), sec) || sec < 0)//µÃµ½×èÈûÊ±¼ä
+			if (!try_lexical_convert(args.back(), sec) || sec < 0)//å¾—åˆ°é˜»å¡æ—¶é—´
 			{
 				return code::args_illegal_error;
 			}
 			auto srcIter = objectMap.find(args[1]);
 			if (srcIter == objectMap.cend())
 			{
-				// source²»´æÔÚ
+				// sourceä¸å­˜åœ¨
 				return code::nil;
 			}
 
-			// »ñÈ¡sourceµÄ³¤¶È,Èç¹ûsource°üº¬ÔªËØ£¬Õâ¸öÃüÁîºÍrpoplpushÒ»Ñù¡£
+			// è·å–sourceçš„é•¿åº¦,å¦‚æœsourceåŒ…å«å…ƒç´ ï¼Œè¿™ä¸ªå‘½ä»¤å’Œrpoplpushä¸€æ ·ã€‚
 			auto lenRet = visit([](auto& e)
 			{
 				return visitor::llen(e);
 			}, srcIter->second);
-			// source²»Îªlist
+			// sourceä¸ä¸ºlist
 			if (lenRet.first != code::status::success)
 			{
 				return code::getErrorReply(lenRet.first);
@@ -907,25 +907,25 @@ namespace myredis::func {
 			auto destnIter = srcIter;
 			if (args[1] != args[2])
 			{
-				// Èç¹ûsourceºÍdestination²»Í¬,ÕÒÒ»ÏÂdestination¶ÔÓ¦µÄvalue
+				// å¦‚æœsourceå’Œdestinationä¸åŒ,æ‰¾ä¸€ä¸‹destinationå¯¹åº”çš„value
 				destnIter = objectMap.find(args[2]);
 				if (destnIter == objectMap.cend()) {
-					// ÕÒ²»µ½destination 
+					// æ‰¾ä¸åˆ°destination 
 					object list = std::make_unique<deque<string>>();
 					string destnKey = args[2];
-					// ĞÂ½¨Ò»¸ö¿ÕÁĞ±í
+					// æ–°å»ºä¸€ä¸ªç©ºåˆ—è¡¨
 					objectMap.update(std::move(destnKey), std::move(list));
-					// ¸üĞÂdestnIter
+					// æ›´æ–°destnIter
 					destnIter = objectMap.find(args[2]);
 				}
 				else
 				{
-					// ÕÒµ½destination,È·ÈÏÊÇ·ñÊÇlist
+					// æ‰¾åˆ°destination,ç¡®è®¤æ˜¯å¦æ˜¯list
 					auto lenRet = visit([](auto& e)
 					{
 						return visitor::llen(e);
 					}, destnIter->second);
-					// ²»ÊÇlist ·µ»Øerror;
+					// ä¸æ˜¯list è¿”å›error;
 					if (lenRet.first != code::status::success)
 					{
 						return code::getErrorReply(lenRet.first);
@@ -935,13 +935,13 @@ namespace myredis::func {
 
 			if(lenRet.second>0)
 			{
-				// destinationºÍsource¾ùÎªList
+				// destinationå’Œsourceå‡ä¸ºList
 				auto popRet = visit([](auto& e)
 				{
 					return visitor::rpop(e);
 				}, srcIter->second);
 
-				// »ñÈ¡popµÄÄÚÈİ
+				// è·å–popçš„å†…å®¹
 				std::vector<string> pushContent;
 				pushContent.emplace_back(popRet.second);
 				string destnKey = args[2];
@@ -960,18 +960,18 @@ namespace myredis::func {
 			}
 
 
-			// brpoplpush Ö»ĞèÒª¿¼ÂÇsourceÊÇ²»ÊÇÎª¿Õ¼´¿É
-			//·ñÔò£¬×¼±¸½øÈë×èÈûÌ¬
+			// brpoplpush åªéœ€è¦è€ƒè™‘sourceæ˜¯ä¸æ˜¯ä¸ºç©ºå³å¯
+			//å¦åˆ™ï¼Œå‡†å¤‡è¿›å…¥é˜»å¡æ€
 			auto watch_list = std::make_shared<watcher>();
-			//Ìí¼Ó¼àÊÓÆ÷£¬ÓÃÓÚÔÚºÏÊÊµÄÇé¿öÏÂ»½ĞÑ»á»°
+			//æ·»åŠ ç›‘è§†å™¨ï¼Œç”¨äºåœ¨åˆé€‚çš„æƒ…å†µä¸‹å”¤é†’ä¼šè¯
 			objectMap::addWatches(args.begin() + 1, args.begin() + 2 , ctx.session.getDataBaseID(), ctx.session.getSessionID(), watch_list,
 				[&objectMap,&ctx,&args](const string& keyName)
 			{
 				auto iter = objectMap.find(keyName);
 
-				optional<string> ret = nullopt;//·µ»Ø¿Õ£¬´ú±íÊ§°Ü£¬¼àÊÓÆ÷½«¼ÌĞø¼àÊÓ
-				//·µ»Ø·Ç¿ÕÖµ£¬´ú±í¼àÊÓ³É¹¦£¬¸ÃÏß³ÌµÄËùÓĞ¼àÊÓÆ÷½«±»É¾³ı£¬²¢½«×Ö·û´®·µ»Ø¸ø¿Í»§¶Ë£¬ÍË³ö×èÈû×´Ì¬
-				//Èç¹û¶ÓÁĞÎª¿Õ£¬·µ»Ø¿Õ£¬¼ÌĞø¼àÊÓ¡£Èç¹û¶ÓÁĞ²»Îª¿Õ£¬µ¯³ö¶ÓÁĞµÄ¶ÓÊ×£¬Í£Ö¹×èÈû£¬½«Æä·µ»Ø¸ø¿Í»§¶Ë
+				optional<string> ret = nullopt;//è¿”å›ç©ºï¼Œä»£è¡¨å¤±è´¥ï¼Œç›‘è§†å™¨å°†ç»§ç»­ç›‘è§†
+				//è¿”å›éç©ºå€¼ï¼Œä»£è¡¨ç›‘è§†æˆåŠŸï¼Œè¯¥çº¿ç¨‹çš„æ‰€æœ‰ç›‘è§†å™¨å°†è¢«åˆ é™¤ï¼Œå¹¶å°†å­—ç¬¦ä¸²è¿”å›ç»™å®¢æˆ·ç«¯ï¼Œé€€å‡ºé˜»å¡çŠ¶æ€
+				//å¦‚æœé˜Ÿåˆ—ä¸ºç©ºï¼Œè¿”å›ç©ºï¼Œç»§ç»­ç›‘è§†ã€‚å¦‚æœé˜Ÿåˆ—ä¸ä¸ºç©ºï¼Œå¼¹å‡ºé˜Ÿåˆ—çš„é˜Ÿé¦–ï¼Œåœæ­¢é˜»å¡ï¼Œå°†å…¶è¿”å›ç»™å®¢æˆ·ç«¯
 				if (iter != objectMap.cend())
 				{
 					auto popRet = visit([](auto& e)
@@ -980,7 +980,7 @@ namespace myredis::func {
 					}, iter->second);
 					if (popRet.first == code::status::success)
 					{
-						//·µ»ØkeyµÄÃû×ÖºÍkeyµÄÖµ
+						//è¿”å›keyçš„åå­—å’Œkeyçš„å€¼
 						std::vector<string> pushContent;
 						pushContent.emplace_back(popRet.second);
 						auto destnIter = objectMap.find(args[2]);
@@ -994,14 +994,14 @@ namespace myredis::func {
 
 				return ret;
 			});
-			//½«»á»°ÉèÎª×èÈûÌ¬,²¢ÉèÖÃ×èÈûÊ±¼ä
+			//å°†ä¼šè¯è®¾ä¸ºé˜»å¡æ€,å¹¶è®¾ç½®é˜»å¡æ—¶é—´
 			ctx.session.setBlocked(code::multi_nil, seconds(sec), watch_list);
 			return nullopt;
 		}
 		catch (const exception& e)
 		{
 			printlog(e);
-			return nullopt;//·µ»Ø¿ÕÖµ
+			return nullopt;//è¿”å›ç©ºå€¼
 		}
 	}
 	

@@ -15,46 +15,46 @@ namespace myredis::func
             ret = "";
             co_return;
         }
-		//²ÎÊıµÄµÚÒ»¸ö×Ö·û´®ÊÇº¯ÊıÃû£¬²éÕÒÊÇ·ñÓĞÕâ¸öº¯Êı
+		//å‚æ•°çš„ç¬¬ä¸€ä¸ªå­—ç¬¦ä¸²æ˜¯å‡½æ•°åï¼ŒæŸ¥æ‰¾æ˜¯å¦æœ‰è¿™ä¸ªå‡½æ•°
 		boost::algorithm::to_lower(ctx.args[0]);
 		auto iter = getfuncManager().find(args[0]);
-		//º¯Êı²»´æÔÚ£¬·µ»Ø´íÎóĞÅÏ¢
+		//å‡½æ•°ä¸å­˜åœ¨ï¼Œè¿”å›é”™è¯¯ä¿¡æ¯
         if (iter == getfuncManager().end())
         {
             //assert((fmt::print("{}", getMessage(status::command_error), 1));
             ret=code::command_error;
             co_return;
         }
-        //¼ìÑéÊÇ·ñÓµÓĞÈ¨ÏŞ
+        //æ£€éªŒæ˜¯å¦æ‹¥æœ‰æƒé™
         else if (args[0] != "auth"sv && self.isLogined() == false)
         {
-            assert((fmt::print("¿Í»§¶ËÎŞÈ¨ÏŞ!\n"), 1));
+            assert((fmt::print("å®¢æˆ·ç«¯æ— æƒé™!\n"), 1));
             ret=code::auth_error;
             co_return;
         }
-        //ÅĞ¶ÏÊÇ·ñ´¦ÓÚ¶©ÔÄÌ¬
+        //åˆ¤æ–­æ˜¯å¦å¤„äºè®¢é˜…æ€
         else if (self.isSubscribed() && !isAllowWhenSubscribed(args[0]))
         {
-            assert((fmt::print("¸ÃÃüÁîÔÚ¶©ÔÄ×´Ì¬ÏÂ²»ºÏ·¨!\n"), 1));
+            assert((fmt::print("è¯¥å‘½ä»¤åœ¨è®¢é˜…çŠ¶æ€ä¸‹ä¸åˆæ³•!\n"), 1));
             ret = code::illegal_command_when_subscribe;
             co_return;
         }
-        //º¯Êı´æÔÚ£¬ÔËĞĞ¸Ãº¯Êı£¬²¢½«½á¹û·µ»Ø¸ø¿Í»§¶Ë
+        //å‡½æ•°å­˜åœ¨ï¼Œè¿è¡Œè¯¥å‡½æ•°ï¼Œå¹¶å°†ç»“æœè¿”å›ç»™å®¢æˆ·ç«¯
         else
         {
             if (iter->second.type == func::funcType::write)
             {
                 AOFSaver::aofwriter(ctx.args, AOFSaver::getFile(ctx.session.getDataBaseID()));
             }
-            auto reply = iter->second.syncptr(std::move(ctx));//ÔËĞĞ¶ÔÓ¦µÄº¯Êı
+            auto reply = iter->second.syncptr(std::move(ctx));//è¿è¡Œå¯¹åº”çš„å‡½æ•°
 
 
-            if (self.isBlocked()) //Èç¹ûÉèÖÃÎª×èÈûÌ¬£¬ÔòµÈ´ı¶ÔÓ¦ÊÂ¼ş·¢Éú£¬µ÷ÓÃÓÃ»§Ìá¹©µÄ»Øµ÷º¯Êı²¢·µ»Ø½á¹û
+            if (self.isBlocked()) //å¦‚æœè®¾ç½®ä¸ºé˜»å¡æ€ï¼Œåˆ™ç­‰å¾…å¯¹åº”äº‹ä»¶å‘ç”Ÿï¼Œè°ƒç”¨ç”¨æˆ·æä¾›çš„å›è°ƒå‡½æ•°å¹¶è¿”å›ç»“æœ
             {
                 reply=co_await self.wait();
             }
 
-            //»½ĞÑËùÓĞ±»¼¤»îµÄ¼àÊÓÆ÷
+            //å”¤é†’æ‰€æœ‰è¢«æ¿€æ´»çš„ç›‘è§†å™¨
             auto& que = self.wake_up_queue;
             while(!que.empty())
             {
@@ -69,10 +69,10 @@ namespace myredis::func
                 co_return;
                 
             }
-            //replyÎª¿Õ£¬º¯ÊıÔËĞĞÊ±±ÀÀ££¬·µ»Ø´íÎóĞÅÏ¢
+            //replyä¸ºç©ºï¼Œå‡½æ•°è¿è¡Œæ—¶å´©æºƒï¼Œè¿”å›é”™è¯¯ä¿¡æ¯
             else
             {
-                assert((fmt::print("·şÎñÆ÷ÄÚ²¿´íÎó\n", reply.value()), 1));
+                assert((fmt::print("æœåŠ¡å™¨å†…éƒ¨é”™è¯¯\n", reply.value()), 1));
                 ret = code::server_exception_error;
                 co_return;
             }

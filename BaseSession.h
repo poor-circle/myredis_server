@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "object.hpp"
 
-//ÍøÂç¿ò¼Ü¿â£¬´ú±íÒ»¸ö»ù±¾µÄÁ¬½Ó»á»°
+//ç½‘ç»œæ¡†æ¶åº“ï¼Œä»£è¡¨ä¸€ä¸ªåŸºæœ¬çš„è¿æ¥ä¼šè¯
 namespace myredis
 {
 
@@ -46,10 +46,10 @@ namespace myredis
         bool isLogined() const noexcept;
         void setLogined(bool logined) noexcept;
         static SessionMap& getSessionMap();
-        // »ñµÃÈ«¾ÖµÄÆµµÀ±í
+        // è·å¾—å…¨å±€çš„é¢‘é“è¡¨
         static hash_map<string, hash_set<int64_t>>& getChannelMap() noexcept;
         static hash_map<Pattern,hash_set<int64_t>>& getPatternTable() noexcept;
-        // ¶©ÔÄµÄÆµµÀ
+        // è®¢é˜…çš„é¢‘é“
         hash_set<string>& getsubChannels() noexcept;
         hash_set<Pattern>& getsubPatterns() noexcept;
         bool isBlocked() const noexcept;
@@ -58,7 +58,7 @@ namespace myredis
         static void wake_up(const string& sv, int64_t dataBaseID);
         std::queue<std::pair<string, int64_t>> wake_up_queue;
         int64_t getSessionID() const noexcept;
-        //´´½¨Ò»¸öĞÂµÄĞ­³ÌÀ´·¢ËÍÒ»ÌõÏûÏ¢
+        //åˆ›å»ºä¸€ä¸ªæ–°çš„åç¨‹æ¥å‘é€ä¸€æ¡æ¶ˆæ¯
         void addNewCoroToSendMessage(string&& msg);
         bool isSubscribed() const noexcept;
         int64_t getSubscribeCount() const noexcept;
@@ -70,7 +70,7 @@ namespace myredis
         bool blocked;
         int64_t dataBaseID;
         int64_t sessionID;
-        // ÓÃÓÚ¼ÇÂ¼µ±Ç°»á»°¶©ÔÄÁË¶àÉÙ¸öÆµµÀ
+        // ç”¨äºè®°å½•å½“å‰ä¼šè¯è®¢é˜…äº†å¤šå°‘ä¸ªé¢‘é“
         hash_set<string> subChannels;
         hash_set<Pattern> subPatterns;
         static std::atomic<int64_t> IDNow;

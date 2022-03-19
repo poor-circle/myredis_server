@@ -64,7 +64,7 @@ do\
     iterStart = _iterNow + 1;\
 }while(false)
 
-    //¶ÁÈ¡¹Ì¶¨³¤¶ÈµÄ×Ö½Ú
+    //è¯»å–å›ºå®šé•¿åº¦çš„å­—èŠ‚
 #define ReadFixChar(line,buf,iterStart,iterEnd,length)\
 do{\
     line.clear();\
@@ -93,7 +93,7 @@ do{\
         getSessionMap().sessionMap.emplace(sessionID,this);
     }
 
-    constexpr static int BUFSIZE = 1000;//»º³åÇø´óĞ¡Ôİ¶¨Îª1000¸ö×Ö½Ú
+    constexpr static int BUFSIZE = 1000;//ç¼“å†²åŒºå¤§å°æš‚å®šä¸º1000ä¸ªå­—èŠ‚
 
     std::unique_ptr<BaseSession> BaseSession::create(asio::io_context& ioc, asio::ip::tcp::socket&& socket)
     {
@@ -122,13 +122,13 @@ do{\
             array<char, BUFSIZE> buf;
             auto iterBegin = buf.begin(), iterEnd = buf.begin();
 
-            //iterBeginºÍiterEndÊÇÒ»¶ÔÖ¸Õë
-            //iterBegin:Ó¦¸Ã´ÓÄÄÀï¿ªÊ¼¶Á
-            //iterEnd:¶Áµ½ÄÄÀïËã½áÊø
+            //iterBeginå’ŒiterEndæ˜¯ä¸€å¯¹æŒ‡é’ˆ
+            //iterBegin:åº”è¯¥ä»å“ªé‡Œå¼€å§‹è¯»
+            //iterEnd:è¯»åˆ°å“ªé‡Œç®—ç»“æŸ
             vector<string> args;
             while (self->closed==false)
             {
-                //¶ÁÈ¡*ºÅºóÃæµÄÕıÕûÊı£¨Ò»¹²ÓĞ¶àÉÙĞĞ£©
+                //è¯»å–*å·åé¢çš„æ­£æ•´æ•°ï¼ˆä¸€å…±æœ‰å¤šå°‘è¡Œï¼‰
                 size_t lineCount = 0;
                 if (iterEnd == iterBegin)
                 {
@@ -145,13 +145,13 @@ do{\
                     assert((fmt::print("line count:{}\n", lineCount), 1));
                     for (size_t i = 0; i < lineCount; ++i)
                     {
-                        //¶ÁÈ¡'$'ºÅºóÃæµÄÕıÕûÊı£¨Ò»ĞĞÓĞ¶à³¤£©
+                        //è¯»å–'$'å·åé¢çš„æ­£æ•´æ•°ï¼ˆä¸€è¡Œæœ‰å¤šé•¿ï¼‰
                         size_t length = 0;
                         ReadULLAfter(length, buf, iterBegin, iterEnd, '$');
                         assert((fmt::print("line length:{}\n", length), 1));
-                        //Ìø¹ıµ±Ç°Ã»¶ÁÍêµÄĞĞ
+                        //è·³è¿‡å½“å‰æ²¡è¯»å®Œçš„è¡Œ
                         SkipLine(buf, iterBegin, iterEnd);
-                        //¶ÁÈ¡¹Ì¶¨´óĞ¡µÄ×Ö·û£¬²¢ÈûÈë²ÎÊıÁĞ±íÖĞ
+                        //è¯»å–å›ºå®šå¤§å°çš„å­—ç¬¦ï¼Œå¹¶å¡å…¥å‚æ•°åˆ—è¡¨ä¸­
                         ReadFixChar(line, buf, iterBegin, iterEnd, length);
                         args.emplace_back(std::move(line));
                         assert((fmt::print("line context:\n{}\n", args.back()), 1));
@@ -228,14 +228,14 @@ do{\
     {
         try
         {
-            co_await clock.async_wait(asio::use_awaitable);//µÈ´ı³¬Ê±
-            //³¬Ê±£¬É¾³ıËùÓĞµÄ¼àÌıÆ÷
-            for (auto&& e : *watch_list)//É¾³ı¼àÊÓ±íÉÏµÄÈ«²¿½Úµã
+            co_await clock.async_wait(asio::use_awaitable);//ç­‰å¾…è¶…æ—¶
+            //è¶…æ—¶ï¼Œåˆ é™¤æ‰€æœ‰çš„ç›‘å¬å™¨
+            for (auto&& e : *watch_list)//åˆ é™¤ç›‘è§†è¡¨ä¸Šçš„å…¨éƒ¨èŠ‚ç‚¹
             {
                 e.first->erase(e.second);
             }
         }
-        catch (const exception& e)//Å×³öÒì³£,´ú±í×èÈû²Ù×÷±»ÊÂ¼şÖĞ¶Ï
+        catch (const exception& e)//æŠ›å‡ºå¼‚å¸¸,ä»£è¡¨é˜»å¡æ“ä½œè¢«äº‹ä»¶ä¸­æ–­
         {
 
         }
@@ -259,15 +259,15 @@ do{\
         }
         while (true)
         {
-            auto iter2=set.find(queue.front().sessionID);//²éÕÒ»á»°ÊÇ·ñ´æÔÚ
-            if (iter2 != set.end())//Èç¹û´æÔÚ
+            auto iter2=set.find(queue.front().sessionID);//æŸ¥æ‰¾ä¼šè¯æ˜¯å¦å­˜åœ¨
+            if (iter2 != set.end())//å¦‚æœå­˜åœ¨
             {
                 auto ptr = iter2->second;
                 auto ret = (*queue.front().op)(sv);
                 if (ret.has_value())
                 {
                     ptr->wake_up(std::move(ret.value()));
-                    for (auto&& e : *queue.front().nodes)//É¾³ı¼àÊÓ±íÉÏµÄÈ«²¿½Úµã
+                    for (auto&& e : *queue.front().nodes)//åˆ é™¤ç›‘è§†è¡¨ä¸Šçš„å…¨éƒ¨èŠ‚ç‚¹
                     {
                         e.first->erase(e.second);
                     }
@@ -276,12 +276,12 @@ do{\
             }
             else
             {
-                queue.front().nodes->erase(&queue);//keyÎŞĞ§£¬É¾³ı¶ÔÓ¦µÄ¼àÊÓÆ÷
+                queue.front().nodes->erase(&queue);//keyæ— æ•ˆï¼Œåˆ é™¤å¯¹åº”çš„ç›‘è§†å™¨
                 queue.pop_front();
             }
             if (queue.empty())
             {
-                watchMap.erase(iter);//Èç¹ûkeyµÄ¼àÊÓ½ÚµãÇåÁã£¬Çå¿Õkey
+                watchMap.erase(iter);//å¦‚æœkeyçš„ç›‘è§†èŠ‚ç‚¹æ¸…é›¶ï¼Œæ¸…ç©ºkey
                 break;
             }
         }
@@ -291,7 +291,7 @@ do{\
     {
         return sessionID;
     }
-    //´´½¨Ò»¸öĞÂµÄĞ­³ÌÀ´·¢ËÍÒ»ÌõÏûÏ¢
+    //åˆ›å»ºä¸€ä¸ªæ–°çš„åç¨‹æ¥å‘é€ä¸€æ¡æ¶ˆæ¯
     void BaseSession::addNewCoroToSendMessage(string&& msg)
     {
         auto& soc = socket;
@@ -357,7 +357,7 @@ do{\
 
     BaseSession::~BaseSession()
     {
-        // É¾³ıÆµµÀ
+        // åˆ é™¤é¢‘é“
         auto& channelMap = BaseSession::getChannelMap();
         auto& subChannels = getsubChannels();
         for(auto& e:subChannels)
@@ -369,7 +369,7 @@ do{\
             }
         }
 
-        // É¾³ıÄ£Ê½
+        // åˆ é™¤æ¨¡å¼
         auto& patternTable = BaseSession::getPatternTable();
         auto& subPatterns = getsubPatterns();
         for (auto& e : subPatterns)

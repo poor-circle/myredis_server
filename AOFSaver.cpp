@@ -5,19 +5,19 @@
 namespace myredis
 {
 #include"namespace.i"
-    // ½«command±àÂë²¢×·¼Óµ½destÉÏ
-    void AOFSaver::aofencode(vector<string>& command,FILE* dest)  //ÅúÁ¿»Ø¸´
+    // å°†commandç¼–ç å¹¶è¿½åŠ åˆ°destä¸Š
+    void AOFSaver::aofencode(vector<string>& command,FILE* dest)  //æ‰¹é‡å›å¤
     {
         fmt::print(dest,"*{}\r\n",command.size());
         for (auto &str : command) {
             fmt::print(dest,"${}\r\n{}\r\n",str.size(),str);
         }
 #ifdef FFLUSH_EACH_COMMAND
-        fflush(dest);//Çå¿Õ»º³åÇø£¬¼ÓÇ¿³Ö¾Ã»¯µÈ¼¶£¬µ«ÊÇ»áµ¼ÖÂĞ´ÈëËÙ¶ÈÏÂ½µ
+        fflush(dest);//æ¸…ç©ºç¼“å†²åŒºï¼ŒåŠ å¼ºæŒä¹…åŒ–ç­‰çº§ï¼Œä½†æ˜¯ä¼šå¯¼è‡´å†™å…¥é€Ÿåº¦ä¸‹é™
 #endif //  FFLUSH_EACH_COMMAND
         return ;
     }
-    // ´ÓfpÖĞ¶ÁÈ¡Ò»ÌõÃüÁîµ½command(ÒÔvectorµÄĞÎÊ½)
+    // ä»fpä¸­è¯»å–ä¸€æ¡å‘½ä»¤åˆ°command(ä»¥vectorçš„å½¢å¼)
 
 
     vector<string> AOFSaver::aofdecode(FILE* fp) 
@@ -104,7 +104,7 @@ namespace myredis
             AOFSaver::getFile(i)=fopen(name.c_str(),"ab");
         }
     }
-    /* command´ú±íÒÑ¾­´¦Àí¹ıµÄĞ´ÃüÁî,fpÊÇ´æÈëµÄÎÄ¼şÖ¸Õë */
+    /* commandä»£è¡¨å·²ç»å¤„ç†è¿‡çš„å†™å‘½ä»¤,fpæ˜¯å­˜å…¥çš„æ–‡ä»¶æŒ‡é’ˆ */
     void AOFSaver::aofwriter(vector<string>& command, FILE* fp)
     {
         try
@@ -122,8 +122,8 @@ namespace myredis
 
     void AOFSaver::aofload() noexcept
     {
-        // ½âÂë
-        // ¶Áµ½Ê²Ã´Ê±ºòËãÒ»ÌõÖ¸Áî
+        // è§£ç 
+        // è¯»åˆ°ä»€ä¹ˆæ—¶å€™ç®—ä¸€æ¡æŒ‡ä»¤
         for (size_t i = 0; i < data_base_count; ++i)
         {
             auto s = "aof/" + to_string(i) + ".maof";
@@ -132,12 +132,12 @@ namespace myredis
             try
             {
                 asio::io_context ioc;
-                //´´½¨Ğé¼ÙµÄ¿Í»§¶ËÁ¬½ÓÉÏÏÂÎÄ
+                //åˆ›å»ºè™šå‡çš„å®¢æˆ·ç«¯è¿æ¥ä¸Šä¸‹æ–‡
                 auto session = BaseSession::create(ioc, asio::ip::tcp::socket(ioc));
                 session->setDataBaseID(i);
                 while (!feof(fp))
                 {
-                    // Ò»´Î¶ÁÈ¡Ò»¸öÃüÁî 
+                    // ä¸€æ¬¡è¯»å–ä¸€ä¸ªå‘½ä»¤ 
                     auto command = aofdecode(fp);
                     if (command.size() == 0) break;
                     auto iter = getfuncManager().find(command[0]);

@@ -2,7 +2,7 @@
 #include "lrange.h"
 
 namespace myredis::visitor {
-    // lrange 只适用于list对象
-    // TODO:lrange还没写完
+    // lrange 鍙�傜敤浜巐ist瀵硅薄
+    // TODO:lrange杩樻病鍐欏畬
     
 }

@@ -5,7 +5,7 @@
 
 namespace myredis::visitor
 {
-    // lset 只适用于list对象
+    // lset 鍙�傜敤浜巐ist瀵硅薄
     template<typename T>
     std::pair<code::status, string&> lset(T& obj,int64_t index,string& value)
     {

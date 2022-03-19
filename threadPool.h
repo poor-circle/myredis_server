@@ -2,5 +2,5 @@
 #include"stdafx.h"
 namespace myredis
 {
-	asio::thread_pool& getThreadPool();//»ñÈ¡Ö´ĞĞ·ÇºËĞÄ²Ù×÷µÄÏß³Ì³Ø
+	asio::thread_pool& getThreadPool();//è·å–æ‰§è¡Œéæ ¸å¿ƒæ“ä½œçš„çº¿ç¨‹æ± 
 }

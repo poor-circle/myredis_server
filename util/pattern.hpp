@@ -34,5 +34,5 @@ namespace std
 			return boost::container::hash_value(p.getPatternStr());
 		}
 	};
-	//Ìí¼Ó±ê×¼¿â¶ÔÓÚmyredis::stringµÄ¹şÏ£Ö§³Ö
+	//æ·»åŠ æ ‡å‡†åº“å¯¹äºmyredis::stringçš„å“ˆå¸Œæ”¯æŒ
 }

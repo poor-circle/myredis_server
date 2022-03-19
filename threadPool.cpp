@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "threadPool.h"
 
-asio::thread_pool& myredis::getThreadPool()//»ñÈ¡Ö´ĞĞ·ÇºËĞÄ²Ù×÷µÄÏß³Ì³Ø
+asio::thread_pool& myredis::getThreadPool()//è·å–æ‰§è¡Œéæ ¸å¿ƒæ“ä½œçš„çº¿ç¨‹æ± 
 {
     static asio::thread_pool pool;
     return pool;

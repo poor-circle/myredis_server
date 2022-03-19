@@ -5,7 +5,7 @@
 
 namespace myredis::visitor
 {
-    // lpush Ö»ÊÊÓÃÓÚlist¶ÔÏó
+    // lpush åªé€‚ç”¨äºlistå¯¹è±¡
     template<typename T>
     std::pair<code::status, int64_t> lpush(T& value, std::vector<string>& pushContent,string key,BaseSession& session) 
     {
@@ -14,20 +14,20 @@ namespace myredis::visitor
     template<> inline
     std::pair<code::status, int64_t> lpush(std::unique_ptr<deque<string>>& value, std::vector<string>& pushContent, string key, BaseSession& session)
     {
-        if (value->empty())//Ìí¼ÓÒ»ÌõĞÅÏ¢£¬¸ÃĞÅÏ¢½«ÓÃÓÚ»½ĞÑ×èÈûÔÚ¸Ã¶ÓÁĞÉÏµÄ»á»°£¨Èç¹ûÓĞµÄ»°£©
+        if (value->empty())//æ·»åŠ ä¸€æ¡ä¿¡æ¯ï¼Œè¯¥ä¿¡æ¯å°†ç”¨äºå”¤é†’é˜»å¡åœ¨è¯¥é˜Ÿåˆ—ä¸Šçš„ä¼šè¯ï¼ˆå¦‚æœæœ‰çš„è¯ï¼‰
         {
             session.wake_up_queue.emplace(std::move(key), session.getDataBaseID());
         }
 
         for(auto iter = pushContent.begin();iter!=pushContent.end();iter++)
-            //  Ê¡È¥ÒÆ¶¯¸´ÖÆÔªËØµÄ¹ı³Ì
+            //  çœå»ç§»åŠ¨å¤åˆ¶å…ƒç´ çš„è¿‡ç¨‹
             value->emplace_front(*iter);
 
-        // ·µ»Ø¸öÊı
+        // è¿”å›ä¸ªæ•°
         return myredis_succeed(value->size());
     }
 
-    // rpush Ö»ÊÊÓÃÓÚlist¶ÔÏó
+    // rpush åªé€‚ç”¨äºlistå¯¹è±¡
     template<typename T>
     std::pair<code::status, int64_t> rpush(T& value, std::vector<string>& pushContent, string key, BaseSession& session)
     {
@@ -36,14 +36,14 @@ namespace myredis::visitor
     template<> inline
         std::pair<code::status, int64_t> rpush(std::unique_ptr<deque<string>>& value, std::vector<string>& pushContent, string key, BaseSession& session)
     {
-        if (value->empty())//Ìí¼ÓÒ»ÌõĞÅÏ¢£¬¸ÃĞÅÏ¢½«ÓÃÓÚ»½ĞÑ×èÈûÔÚ¸Ã¶ÓÁĞÉÏµÄ»á»°£¨Èç¹ûÓĞµÄ»°£©
+        if (value->empty())//æ·»åŠ ä¸€æ¡ä¿¡æ¯ï¼Œè¯¥ä¿¡æ¯å°†ç”¨äºå”¤é†’é˜»å¡åœ¨è¯¥é˜Ÿåˆ—ä¸Šçš„ä¼šè¯ï¼ˆå¦‚æœæœ‰çš„è¯ï¼‰
         {
             session.wake_up_queue.emplace(std::move(key), session.getDataBaseID());
         }
         for (auto iter = pushContent.begin(); iter != pushContent.end(); iter++)
-            //  Ê¡È¥ÒÆ¶¯¸´ÖÆÔªËØµÄ¹ı³Ì
+            //  çœå»ç§»åŠ¨å¤åˆ¶å…ƒç´ çš„è¿‡ç¨‹
             value->emplace_back(*iter);
-        // ·µ»Ø¸öÊı
+        // è¿”å›ä¸ªæ•°
         return myredis_succeed(value->size());
     }
 }

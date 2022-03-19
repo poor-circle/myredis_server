@@ -18,7 +18,7 @@ namespace myredis::visitor
         }
         auto list = std::vector<string>();
         const int64_t strLen = value->size();
-        // Èç¹ûÐ¡ÓÚÁã + strLen £¬»¹Ð¡ÓÚ0ËµÃ÷³¬¹ý³¤¶ÈÁË£¬Ö±½ÓÖÃ0
+        // å¦‚æžœå°äºŽé›¶ + strLen ï¼Œè¿˜å°äºŽ0è¯´æ˜Žè¶…è¿‡é•¿åº¦äº†ï¼Œç›´æŽ¥ç½®0
         if (start > strLen) 
             return myredis_succeed(std::vector<string>());
         

@@ -11,7 +11,7 @@ namespace myredis::func
 	std::optional<string> unsubscribe(context&& ctx) noexcept;
 
 	// pubsub			creator:tigerwang	date:2021/5/4
-	// note:目前只实现pubsub numsub
+	// note:鐩墠鍙疄鐜皃ubsub numsub
 	std::optional<string> pubsub(context&& ctx) noexcept;
 
 	// publish			creator:tigerwang	date:2021/5/5

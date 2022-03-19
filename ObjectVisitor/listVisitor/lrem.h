@@ -14,7 +14,7 @@ namespace myredis::visitor
         std::pair<code::status, int64_t> lrem(std::unique_ptr<deque<string>>& obj, int64_t count, string& value)
     {
         int delCount = 0;
-        // >0 从头到尾
+        // >0 浠庡ご鍒板熬
         if (count > 0) 
         {
             for (auto iter = obj->begin(); iter != obj->end(); ) {
@@ -30,7 +30,7 @@ namespace myredis::visitor
                 }
             }
         }
-        // =0删除所有的value
+        // =0鍒犻櫎鎵�鏈夌殑value
         if (count == 0) 
         {
             for (auto iter = obj->begin(); iter != obj->end();) {
@@ -43,8 +43,8 @@ namespace myredis::visitor
                 }
             }
         }
-        // <0从尾到头删除 
-        // 详见https://blog.csdn.net/u011391040/article/details/50433237
+        // <0浠庡熬鍒板ご鍒犻櫎 
+        // 璇﹁https://blog.csdn.net/u011391040/article/details/50433237
         if (count < 0) 
         {
             count = -count;

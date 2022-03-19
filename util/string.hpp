@@ -5,9 +5,9 @@
 namespace myredis
 {
 	using string = boost::container::string;
-    //boostµÄstringÀàĞÍ¾ßÓĞ¸üºÃµÄssoÓÅ»¯ÄÜÁ¦£¨Ö§³Ö´æ´¢size()-1¸ö×Ö·û£©£¬ÇÒ´óĞ¡¸üĞ¡£¨½ö3¸öÖ¸Õë£©
-    //std::string¸ü´ó£¬ssoÓÅ»¯Ğ§¹û¸ü²î£¬×Ô´øËã·¨½ÏÉÙ
-    //ĞèÒª×¢Òâ£¬±¾ÏîÄ¿ÖĞËùÓĞÃ»Ö¸Ã÷ÃüÃû¿Õ¼äµÄstring¾ùÎªboost::container::string
+    //boostçš„stringç±»å‹å…·æœ‰æ›´å¥½çš„ssoä¼˜åŒ–èƒ½åŠ›ï¼ˆæ”¯æŒå­˜å‚¨size()-1ä¸ªå­—ç¬¦ï¼‰ï¼Œä¸”å¤§å°æ›´å°ï¼ˆä»…3ä¸ªæŒ‡é’ˆï¼‰
+    //std::stringæ›´å¤§ï¼Œssoä¼˜åŒ–æ•ˆæœæ›´å·®ï¼Œè‡ªå¸¦ç®—æ³•è¾ƒå°‘
+    //éœ€è¦æ³¨æ„ï¼Œæœ¬é¡¹ç›®ä¸­æ‰€æœ‰æ²¡æŒ‡æ˜å‘½åç©ºé—´çš„stringå‡ä¸ºboost::container::string
 }
 namespace std
 {
@@ -19,5 +19,5 @@ namespace std
             return boost::container::hash_value(p);
         }
     };
-    //Ìí¼Ó±ê×¼¿â¶ÔÓÚmyredis::stringµÄ¹şÏ£Ö§³Ö
+    //æ·»åŠ æ ‡å‡†åº“å¯¹äºmyredis::stringçš„å“ˆå¸Œæ”¯æŒ
 }

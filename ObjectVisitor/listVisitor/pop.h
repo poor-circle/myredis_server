@@ -5,7 +5,7 @@
 
 namespace myredis::visitor
 {
-    // lpop 只适用于list对象
+    // lpop 鍙�傜敤浜巐ist瀵硅薄
     template<typename T>
     std::pair<code::status, string&> lpop(T& value)
     {
@@ -25,7 +25,7 @@ namespace myredis::visitor
         return myredis_succeed(temp);
     }
 
-    // rpop 只适用于list对象
+    // rpop 鍙�傜敤浜巐ist瀵硅薄
     template<typename T>
     std::pair<code::status, string&> rpop(T& value)
     {

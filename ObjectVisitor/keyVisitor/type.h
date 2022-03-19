@@ -1,6 +1,6 @@
 #pragma once
 #include "../../stdafx.h"
-//每一个visitor都要实现所有类型的操作
+//姣忎竴涓獀isitor閮借瀹炵幇鎵�鏈夌被鍨嬬殑鎿嶄綔
 namespace myredis::visitor
 {
     inline string type(int64_t object)

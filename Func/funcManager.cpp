@@ -18,9 +18,9 @@ namespace myredis
 	{
 		const static hash_map<string, func::funcInfo> manager
 		{
-			//ÔÚÕâÀï×¢²áÃ¿Ò»ÖÖfunc 
+			//åœ¨è¿™é‡Œæ³¨å†Œæ¯ä¸€ç§func 
 
-			// ¶Á
+			// è¯»
 			read(get),
 			read(strlen),
 			read(getrange),
@@ -39,7 +39,7 @@ namespace myredis
 			read(sismember),
 			read(ttl),
 			read(pttl),
-			// Ğ´
+			// å†™
 			write(set),
 			write(append),
 			write(setnx),
@@ -68,7 +68,7 @@ namespace myredis
 			write(sadd),
 			write(srem),
 
-			//key¹ıÆÚÏà¹Ø
+			//keyè¿‡æœŸç›¸å…³
 			write(setex),
 			write(pexpire),
 			write(expire),
@@ -76,18 +76,18 @@ namespace myredis
 			write(pexpireat),
 			write(persist),
 
-			//Á¬½Ó×´Ì¬
+			//è¿æ¥çŠ¶æ€
 			connect(ping),
 			connect(quit),
 			connect(echo),
 			connect(auth),
 			connect(select),
 
-			//¼àÌı-×èÈûº¯Êı
+			//ç›‘å¬-é˜»å¡å‡½æ•°
 			blocked(blpop),
 			blocked(brpop),
 			blocked(brpoplpush),
-			//Ö§³ÖÒì²½Ö´ĞĞµÄ¶©ÔÄ-·¢²¼£¨pubsub£©º¯Êı
+			//æ”¯æŒå¼‚æ­¥æ‰§è¡Œçš„è®¢é˜…-å‘å¸ƒï¼ˆpubsubï¼‰å‡½æ•°
 
 			pubsub(subscribe),
 			pubsub(unsubscribe),

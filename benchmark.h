@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-//debugÊ±Ö´ĞĞµ¥Ôª²âÊÔ
+//debugæ—¶æ‰§è¡Œå•å…ƒæµ‹è¯•
 namespace myredis
 {
 	void Test();

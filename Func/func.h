@@ -3,21 +3,21 @@
 #include "../BaseSession.h"
 namespace myredis::func
 {
-	//myredisÃüÁîÀàĞÍ£º
-	//·µ»ØÖµ£ºstring£¬ÓÃÓÚ·µ»Ø¸ø¿Í»§¶Ë
-	//²ÎÊı£ºÒ»¸öÒıÓÃÀàĞÍ£¬Ö¸ÏòÒ»¸övector<string>
-	//±£Ö¤ËùÓĞÒì³£¶¼ÔÚÄÚ²¿²¶»ñ£¬²»Å×³öÈÎºÎÒì³£
+	//myrediså‘½ä»¤ç±»å‹ï¼š
+	//è¿”å›å€¼ï¼šstringï¼Œç”¨äºè¿”å›ç»™å®¢æˆ·ç«¯
+	//å‚æ•°ï¼šä¸€ä¸ªå¼•ç”¨ç±»å‹ï¼ŒæŒ‡å‘ä¸€ä¸ªvector<string>
+	//ä¿è¯æ‰€æœ‰å¼‚å¸¸éƒ½åœ¨å†…éƒ¨æ•è·ï¼Œä¸æŠ›å‡ºä»»ä½•å¼‚å¸¸
 	
-	struct context//Á¬½ÓÉÏÏÂÎÄ
+	struct context//è¿æ¥ä¸Šä¸‹æ–‡
 	{
-		std::vector<string>&& args;//±¾´ÎÃüÁî´«µİµÄ²ÎÊı
-		BaseSession& session;//Á¬½ÓµÄÒıÓÃ
+		std::vector<string>&& args;//æœ¬æ¬¡å‘½ä»¤ä¼ é€’çš„å‚æ•°
+		BaseSession& session;//è¿æ¥çš„å¼•ç”¨
 		context(std::vector<string>&& args,BaseSession& session):
 			args(std::move(args)),session(session){}
 	};
 
-	using syncFuncPtr = std::optional<boost::container::string>(*)(context&& ctx) noexcept;//Í¬²½apiµÄº¯ÊıÖ¸Õë
-	using asyncFuncPtr = asio::awaitable<std::optional<boost::container::string>>(*)(context&& ctx) noexcept;//Òì²½apiµÄº¯ÊıÖ¸Õë
+	using syncFuncPtr = std::optional<boost::container::string>(*)(context&& ctx) noexcept;//åŒæ­¥apiçš„å‡½æ•°æŒ‡é’ˆ
+	using asyncFuncPtr = asio::awaitable<std::optional<boost::container::string>>(*)(context&& ctx) noexcept;//å¼‚æ­¥apiçš„å‡½æ•°æŒ‡é’ˆ
 
 	enum class funcType
 	{
@@ -30,7 +30,7 @@ namespace myredis::func
 	struct funcInfo
 	{
 		syncFuncPtr syncptr;
-		funcType type;//º¯ÊıÀàĞÍ
+		funcType type;//å‡½æ•°ç±»å‹
 		bool isAsyncFunc(void) const noexcept
 		{
 			return false;
@@ -39,6 +39,6 @@ namespace myredis::func
 	};
 
 
-	//ÃüÁî²ãÀàËÆÓÚspring bootµÄcontroller²ã£¬Ã¿Ò»¸öº¯Êı¶ÔÓ¦Ò»¸ömyredisÃüÁî
-	//¾ø´ó²¿·ÖÇé¿öÏÂ²»ĞèÒª¹ØĞÄÍøÂç²ãµÄÏ¸½Ú
+	//å‘½ä»¤å±‚ç±»ä¼¼äºspring bootçš„controllerå±‚ï¼Œæ¯ä¸€ä¸ªå‡½æ•°å¯¹åº”ä¸€ä¸ªmyrediså‘½ä»¤
+	//ç»å¤§éƒ¨åˆ†æƒ…å†µä¸‹ä¸éœ€è¦å…³å¿ƒç½‘ç»œå±‚çš„ç»†èŠ‚
 }

@@ -1,5 +1,5 @@
 #pragma once
-//°üº¬Õû¸ö±ê×¼¿âµÄÍ·ÎÄ¼ş
+//åŒ…å«æ•´ä¸ªæ ‡å‡†åº“çš„å¤´æ–‡ä»¶
 #include <cctype>
 #include <cerrno>
 #include <cfloat>

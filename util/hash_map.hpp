@@ -4,7 +4,7 @@ namespace myredis
 {
 	template<class T1,class T2>
 	using hash_map = spp::sparse_hash_map<T1,T2>;
-	//Ê¹ÓÃÕâÖÖ¸ßĞ§ÇÒ½ÚÊ¡ÄÚ´æµÄhash_map(µ×²ãÊ¹ÓÃ¿ª·ÅÑ°Ö··¨½â¾öhash³åÍ»£©
-	//À´´úÌæ±ê×¼¿âµÄunordered_map£¨µ×²ãÊ¹ÓÃÀ­Á´·¨½â¾öhash³åÍ»£©
+	//ä½¿ç”¨è¿™ç§é«˜æ•ˆä¸”èŠ‚çœå†…å­˜çš„hash_map(åº•å±‚ä½¿ç”¨å¼€æ”¾å¯»å€æ³•è§£å†³hashå†²çªï¼‰
+	//æ¥ä»£æ›¿æ ‡å‡†åº“çš„unordered_mapï¼ˆåº•å±‚ä½¿ç”¨æ‹‰é“¾æ³•è§£å†³hashå†²çªï¼‰
 
 }

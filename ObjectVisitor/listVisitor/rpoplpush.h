@@ -4,11 +4,11 @@
 #include "../../object.hpp"
 
 
- /* 注意：该API已经弃用 */
+ /* 娉ㄦ剰锛氳API宸茬粡寮冪敤 */
 namespace myredis::visitor
 {
 
-    // rpoplpush 只适用于list对象
+    // rpoplpush 鍙�傜敤浜巐ist瀵硅薄
     template<typename T>
     std::pair<code::status, string&> rpoplpush(T& source, object& des)
     {
